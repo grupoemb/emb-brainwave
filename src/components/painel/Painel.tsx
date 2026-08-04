@@ -3,6 +3,9 @@ import { Flame, Sparkles } from "lucide-react";
 import { useState } from "react";
 
 import { Revelar } from "@/components/Revelar";
+import { ComparativoContas } from "@/components/painel/ComparativoContas";
+import { DestaquesPeriodo } from "@/components/painel/DestaquesPeriodo";
+
 import {
   Tooltip,
   TooltipContent,
