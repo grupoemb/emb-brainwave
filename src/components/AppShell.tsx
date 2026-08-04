@@ -1,98 +1,18 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import {
-  LayoutDashboard,
-  CalendarDays,
-  KanbanSquare,
-  PenLine,
-  BarChart3,
-  Lightbulb,
-  Brain,
-  Radar,
-  Settings,
-  Menu,
-  X,
-  LogOut,
-} from "lucide-react";
+import { Menu, X, LogOut } from "lucide-react";
 
+import { BuscaGlobal } from "@/components/busca/BuscaGlobal";
 import { LogoB7 } from "@/components/ui/LogoB7";
 import { supabase } from "@/integrations/supabase/client";
+import { GRUPOS, TODOS_ITENS } from "@/lib/navegacao";
 
 import { obterMeuPerfil } from "@/lib/perfil.functions";
 import { useEffect, useState, type ReactNode } from "react";
 
-type ItemNav = {
-  rotulo: string;
-  to: string;
-  icone: typeof LayoutDashboard;
-  subtitulo: string;
-  desativado?: boolean;
-};
+const TODOS = TODOS_ITENS;
 
-const GRUPOS: { grupo: string; itens: ItemNav[] }[] = [
-  {
-    grupo: "Operação",
-    itens: [
-      {
-        rotulo: "Painel",
-        to: "/",
-        icone: LayoutDashboard,
-        subtitulo: "O resumo do dia da equipe",
-      },
-      {
-        rotulo: "Calendário",
-        to: "/calendario",
-        icone: CalendarDays,
-        subtitulo: "Agenda de publicações por dia",
-      },
-      {
-        rotulo: "Kanban",
-        to: "/kanban",
-        icone: KanbanSquare,
-        subtitulo: "Fluxo de produção por etapa",
-      },
-      { rotulo: "Criar", to: "/criar", icone: PenLine, subtitulo: "Estúdio de geração com IA" },
-    ],
-  },
-  {
-    grupo: "Inteligência",
-    itens: [
-      {
-        rotulo: "Métricas",
-        to: "/metricas",
-        icone: BarChart3,
-        subtitulo: "Desempenho, ritmo e benchmark",
-      },
-      {
-        rotulo: "Pautas",
-        to: "/pautas",
-        icone: Lightbulb,
-        subtitulo: "Ideias sugeridas e o resultado de cada uma",
-      },
-      { rotulo: "Cérebro", to: "/cerebro", icone: Brain, subtitulo: "Playbook e aprendizados da marca" },
-      {
-        rotulo: "Reels Radar",
-        to: "/radar",
-        icone: Radar,
-        subtitulo: "Referências e leitura do mercado",
-      },
-    ],
-  },
-  {
-    grupo: "Configuração",
-    itens: [
-      {
-        rotulo: "Ajustes",
-        to: "/ajustes",
-        icone: Settings,
-        subtitulo: "Perfil, equipe, contas e marca",
-      },
-    ],
-  },
-];
-
-const TODOS = GRUPOS.flatMap((g) => g.itens);
 
 function Navegacao({ aoNavegar }: { aoNavegar?: () => void }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -289,9 +209,13 @@ export function AppShell({ children }: { children: ReactNode }) {
               ) : null}
             </div>
           </div>
-          <div className="lg:hidden">
-            <Avatar nome={perfil?.nome ?? "EM"} />
+          <div className="flex items-center gap-2">
+            <BuscaGlobal />
+            <div className="lg:hidden">
+              <Avatar nome={perfil?.nome ?? "EM"} />
+            </div>
           </div>
+
         </header>
 
         <main className="px-4 py-5 lg:px-6">
