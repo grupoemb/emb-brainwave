@@ -209,9 +209,13 @@ export function AppShell({ children }: { children: ReactNode }) {
               ) : null}
             </div>
           </div>
-          <div className="lg:hidden">
-            <Avatar nome={perfil?.nome ?? "EM"} />
+          <div className="flex items-center gap-2">
+            <BuscaGlobal />
+            <div className="lg:hidden">
+              <Avatar nome={perfil?.nome ?? "EM"} />
+            </div>
           </div>
+
         </header>
 
         <main className="px-4 py-5 lg:px-6">
