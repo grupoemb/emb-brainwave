@@ -30,9 +30,9 @@ export function Cerebro() {
           <h2 className="text-sm font-bold text-txt">O que os dados dizem</h2>
           {carregando ? (
             <div className="space-y-2">
-              <div className="h-3 w-full rounded bg-white/6" />
-              <div className="h-3 w-11/12 rounded bg-white/6" />
-              <div className="h-3 w-2/3 rounded bg-white/6" />
+              <div className="h-3 w-full esqueleto rounded" />
+              <div className="h-3 w-11/12 esqueleto rounded" />
+              <div className="h-3 w-2/3 esqueleto rounded" />
             </div>
           ) : playbook ? (
             <div className="prosa">
@@ -55,9 +55,9 @@ export function Cerebro() {
           {carregando ? (
             Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="cartao space-y-2 p-4">
-                <div className="h-4 w-3/4 rounded bg-white/6" />
-                <div className="h-1 w-full rounded bg-white/6" />
-                <div className="h-3 w-2/3 rounded bg-white/6" />
+                <div className="h-4 w-3/4 esqueleto rounded" />
+                <div className="h-1 w-full esqueleto rounded" />
+                <div className="h-3 w-2/3 esqueleto rounded" />
               </div>
             ))
           ) : ativos.length === 0 && historico.length === 0 ? (

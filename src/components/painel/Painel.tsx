@@ -133,19 +133,19 @@ export function Painel() {
   if (carregando || !dados) {
     return (
       <Revelar className="space-y-4">
-        <div className="secao-entrada h-12 w-72 rounded bg-white/6" />
+        <div className="secao-entrada h-12 w-72 esqueleto rounded" />
         <div className="secao-entrada grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
           {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="cartao min-h-[5.9rem] p-4">
-              <div className="h-3 w-20 rounded bg-white/6" />
-              <div className="mt-6 h-6 w-16 rounded bg-white/6" />
+              <div className="h-3 w-20 esqueleto rounded" />
+              <div className="mt-6 h-6 w-16 esqueleto rounded" />
             </div>
           ))}
         </div>
         <div className="secao-entrada grid gap-3 lg:grid-cols-3">
           {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="cartao h-52 p-4">
-              <div className="h-3 w-28 rounded bg-white/6" />
+              <div className="h-3 w-28 esqueleto rounded" />
             </div>
           ))}
         </div>
@@ -258,8 +258,8 @@ export function Painel() {
           <div className="grid gap-3 lg:grid-cols-3">
             {Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="cartao h-72 p-4">
-                <div className="h-3 w-24 rounded bg-white/6" />
-                <div className="mt-6 h-7 w-28 rounded bg-white/6" />
+                <div className="h-3 w-24 esqueleto rounded" />
+                <div className="mt-6 h-7 w-28 esqueleto rounded" />
               </div>
             ))}
           </div>

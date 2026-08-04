@@ -56,12 +56,12 @@ function Chip({
 function EsqueletoResultado() {
   return (
     <div className="cartao animate-pulse space-y-3 p-4">
-      <div className="h-4 w-1/3 rounded bg-white/6" />
-      <div className="h-3 w-full rounded bg-white/6" />
-      <div className="h-3 w-11/12 rounded bg-white/6" />
-      <div className="h-3 w-4/5 rounded bg-white/6" />
-      <div className="h-3 w-full rounded bg-white/6" />
-      <div className="h-3 w-2/3 rounded bg-white/6" />
+      <div className="h-4 w-1/3 esqueleto rounded" />
+      <div className="h-3 w-full esqueleto rounded" />
+      <div className="h-3 w-11/12 esqueleto rounded" />
+      <div className="h-3 w-4/5 esqueleto rounded" />
+      <div className="h-3 w-full esqueleto rounded" />
+      <div className="h-3 w-2/3 esqueleto rounded" />
     </div>
   );
 }
