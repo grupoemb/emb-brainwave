@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
-import { Plus } from "lucide-react";
+import { KanbanSquare, Plus } from "lucide-react";
 import { toast } from "sonner";
 
 import { toastDesfazer } from "@/lib/toastDesfazer";
 
 import { Revelar } from "@/components/Revelar";
+import { CabecalhoTela } from "@/components/ui/CabecalhoTela";
+
 import { MenuFiltro } from "@/components/filtros/MenuFiltro";
 import { VazioFiltrado } from "@/components/filtros/VazioFiltrado";
 import { CartaoPost } from "@/components/conteudo/CartaoPost";
