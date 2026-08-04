@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
+import { getRouteApi, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { Loader2, Sparkles } from "lucide-react";
 import Markdown from "react-markdown";
@@ -86,9 +86,10 @@ function tituloDe(texto: string, brief: string) {
 export function Estudio() {
   const { organizationId } = useOrg();
   const navigate = useNavigate();
+  const { tipo: tipoInicial, brief: briefInicial } = rotaCriar.useSearch();
 
-  const [tipo, setTipo] = useState<Tipo>("carousel");
-  const [brief, setBrief] = useState("");
+  const [tipo, setTipo] = useState<Tipo>(tipoInicial as Tipo);
+  const [brief, setBrief] = useState(briefInicial);
   const [resultado, setResultado] = useState<string>("");
   const [semChave, setSemChave] = useState(false);
   const [historico, setHistorico] = useState<Geracao[]>([]);
