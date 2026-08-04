@@ -148,6 +148,7 @@ export function Calendario() {
     const iso = post.scheduled_for ? trocarDia(post.scheduled_for, dia) : meioDiaSP(dia);
     try {
       await agendar.mutateAsync({ id, scheduled_for: iso });
+      toast.success(`Agendado para ${format(dia, "dd/MM", { locale: ptBR })}`);
     } catch (erro) {
       toast.error(erro instanceof Error ? erro.message : "Não foi possível agendar");
     }
