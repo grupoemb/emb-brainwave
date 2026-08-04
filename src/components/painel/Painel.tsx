@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Flame, Sparkles } from "lucide-react";
+import { useState } from "react";
 
 import { Revelar } from "@/components/Revelar";
 import {
@@ -8,7 +9,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { usePainel } from "@/hooks/usePainel";
+import { usePainel, type DiasOutliers } from "@/hooks/usePainel";
 import { COLUNAS, comAlfa, corDoCanal, type Canal } from "@/lib/conteudo";
 import { numero, textoFrescor } from "@/lib/metricas";
 
@@ -101,8 +102,11 @@ function BlocoVazio({ children }: { children: React.ReactNode }) {
   return <p className="text-xs text-muted">{children}</p>;
 }
 
+const JANELAS: DiasOutliers[] = [7, 14, 30];
+
 export function Painel() {
-  const { dados, carregando } = usePainel();
+  const [diasOutliers, setDiasOutliers] = useState<DiasOutliers>(7);
+  const { dados, carregando, recalculando } = usePainel(diasOutliers);
   const agora = new Date();
   const primeiroNome = (dados?.nome ?? "").trim().split(/\s+/)[0] ?? "";
   const coleta = dados?.ultimaColeta ? new Date(dados.ultimaColeta).getTime() : null;
@@ -299,18 +303,51 @@ export function Painel() {
       </div>
 
       <div className="secao-entrada cartao p-4">
-        <div className="mb-3 flex items-center justify-between gap-2">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           <h2 className="rotulo flex items-center gap-1.5">
             <Flame size={12} color="#f6bd24" />
-            Fora da curva — 7 dias
+            Fora da curva — {diasOutliers} dias
           </h2>
-          <Link to="/metricas" search={{ dias: 7, origem: "painel" }} className="text-xs text-azureClaro hover:underline">
-            ver métricas
-          </Link>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
+              {JANELAS.map((d) => {
+                const ativo = d === diasOutliers;
+                return (
+                  <button
+                    key={d}
+                    type="button"
+                    onClick={() => setDiasOutliers(d)}
+                    aria-pressed={ativo}
+                    className={
+                      "numero rounded-[.5rem] px-2 py-1 text-xs transition-colors " +
+                      (ativo
+                        ? "bg-azure/14 font-semibold text-txt"
+                        : "text-muted hover:bg-white/6 hover:text-corpo")
+                    }
+                  >
+                    {d}d
+                  </button>
+                );
+              })}
+            </div>
+            <Link
+              to="/metricas"
+              search={{ dias: diasOutliers, origem: "painel" }}
+              className="text-xs text-azureClaro hover:underline"
+            >
+              ver métricas
+            </Link>
+          </div>
         </div>
 
-        {dados.outliers.length === 0 ? (
-          <BlocoVazio>Nenhum post fora da curva nesta semana.</BlocoVazio>
+        {recalculando ? (
+          <div className="space-y-1">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="h-8 rounded-[.5rem] bg-white/6" />
+            ))}
+          </div>
+        ) : dados.outliers.length === 0 ? (
+          <BlocoVazio>Nenhum post fora da curva nesta janela.</BlocoVazio>
         ) : (
           <div className="space-y-1">
             {dados.outliers.map((o) => (
@@ -334,6 +371,7 @@ export function Painel() {
           </div>
         )}
       </div>
+
 
       <Link to="/kanban" className="secao-entrada cartao block p-4 hover:bg-white/4">
         <h2 className="rotulo mb-3">Produção agora</h2>

@@ -51,13 +51,22 @@ export type DadosPainel = {
 
 export const carregarPainel = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => z.object({ organizationId: z.string().uuid() }).parse(input))
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        organizationId: z.string().uuid(),
+        diasOutliers: z.union([z.literal(7), z.literal(14), z.literal(30)]).optional(),
+      })
+      .parse(input),
+  )
   .handler(async ({ data, context }): Promise<DadosPainel> => {
     const db = context.supabase as unknown as SupabaseClient;
     const org = data.organizationId;
+    const dias = data.diasOutliers ?? 7;
     const agora = new Date();
     const em7d = new Date(agora.getTime() + 7 * 86_400_000).toISOString();
     const ha7d = new Date(agora.getTime() - 7 * 86_400_000).toISOString();
+    const haJanela = new Date(agora.getTime() - dias * 86_400_000).toISOString();
 
     const [perfilRes, agendadosRes, todosRes, publicadosRes, sugestoesRes, insightsRes, contasRes] =
       await Promise.all([
@@ -73,10 +82,10 @@ export const carregarPainel = createServerFn({ method: "GET" })
         db.from("posts").select("id, status").eq("organization_id", org),
         db
           .from("posts")
-          .select("id, title, channel, format, meta")
+          .select("id, title, channel, format, meta, published_at")
           .eq("organization_id", org)
           .eq("status", "published")
-          .gte("published_at", ha7d),
+          .gte("published_at", haJanela),
         db
           .from("suggestions")
           .select("id, title, rationale, priority, status")
@@ -128,6 +137,7 @@ export const carregarPainel = createServerFn({ method: "GET" })
       channel: string | null;
       format: string | null;
       meta: Record<string, unknown> | null;
+      published_at: string | null;
     }[];
     const idsPublicados = publicados.map((p) => p.id);
     let alcance7d: number | null = null;
@@ -157,8 +167,10 @@ export const carregarPainel = createServerFn({ method: "GET" })
         if (!vistos.has(l.post_id)) vistos.set(l.post_id, l.reach);
         if (!ultimaColeta || l.captured_at > ultimaColeta) ultimaColeta = l.captured_at;
       }
-      const soma = [...vistos.values()].reduce<number>((t, v) => t + (v ?? 0), 0);
-      alcance7d = vistos.size ? soma : null;
+      // O KPI de alcance continua fixo em 7 dias, mesmo com janela maior de outliers.
+      const de7d = publicados.filter((p) => (p.published_at ?? "") >= ha7d && vistos.has(p.id));
+      const soma = de7d.reduce<number>((t, p) => t + (vistos.get(p.id) ?? 0), 0);
+      alcance7d = de7d.length ? soma : null;
 
       const baselines = (baseRaw ?? []) as {
         channel: string;
