@@ -1,12 +1,19 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 
 import { Revelar } from "@/components/Revelar";
+import { BarrasDimensao } from "@/components/metricas/BarrasDimensao";
 import { CartaoKpi } from "@/components/metricas/CartaoKpi";
-import { DonutFormatos } from "@/components/metricas/DonutFormatos";
+import { ComparativoContas } from "@/components/metricas/ComparativoContas";
 import { EsqueletoMetricas } from "@/components/metricas/EsqueletoMetricas";
 import { FiltrosMetricas } from "@/components/metricas/FiltrosMetricas";
+import { FunilInteracao } from "@/components/metricas/FunilInteracao";
+import { GradeTaxas } from "@/components/metricas/GradeTaxas";
 import { GraficoAlcance } from "@/components/metricas/GraficoAlcance";
+import { HeroAlcance } from "@/components/metricas/HeroAlcance";
+import { MapaDeCalor } from "@/components/metricas/MapaDeCalor";
+import { RitmoPublicacao } from "@/components/metricas/RitmoPublicacao";
+import { SubAbas, type Aba } from "@/components/metricas/SubAbas";
 import { TabelaPosts } from "@/components/metricas/TabelaPosts";
 import { FaixaDeContexto } from "@/components/painel/FaixaDeContexto";
 import { rotuloIntervalo } from "@/lib/metricas";
@@ -21,10 +28,11 @@ export function Metricas() {
     : 30;
   const m = useMetricas(diasInicial);
   const contas = useContasConectadas();
-  const { pilares } = usePilares();
+  const { pilarPorId, pilares } = usePilares();
   const [acumulado, setAcumulado] = useState(false);
   const [modo, setModo] = useState<"top" | "piores">("top");
   const [soOutliers, setSoOutliers] = useState(false);
+  const [aba, setAba] = useState<Aba>("geral");
 
   const doPainel = origem === "painel";
   const faixa = doPainel ? (
@@ -36,10 +44,20 @@ export function Metricas() {
 
   const k = m.kpis;
   const ka = m.kpisComparados;
+  const t = m.taxas;
+  const ta = m.taxasComparadas;
   const comparando = !!m.intervaloComparado;
   const semPosts = !m.carregando && m.linhas.length === 0;
   const rotuloComp = m.intervaloComparado ? rotuloIntervalo(m.intervaloComparado) : undefined;
 
+  const porPilar = useMemo(
+    () =>
+      m.porPilarBruto.map((p) => ({
+        ...p,
+        rotulo: pilarPorId.get(p.chave)?.name ?? "Sem pilar",
+      })),
+    [m.porPilarBruto, pilarPorId],
+  );
 
   // undefined = comparação desligada; null = sem base
   const anterior = (v: number | null | undefined) =>
@@ -94,113 +112,196 @@ export function Metricas() {
           ) : null}
         </div>
       ) : (
-
         <>
-          {comparando ? (
-            <div className="secao-entrada text-xs text-muted">
-              {rotuloIntervalo(m.intervalo)} <span className="text-corpo">vs</span> {rotuloComp}
-            </div>
+          <div className="secao-entrada">
+            <HeroAlcance
+              taxas={t}
+              taxasAnterior={ta}
+              serie={m.sparkAlcance}
+              intervalo={rotuloIntervalo(m.intervalo)}
+              rotuloComparacao={rotuloComp}
+              publicados={k.publicados}
+            />
+          </div>
+
+          <div className="secao-entrada flex flex-wrap items-center justify-between gap-3">
+            <SubAbas aba={aba} setAba={setAba} />
+            {comparando ? (
+              <span className="text-xs text-muted">
+                {rotuloIntervalo(m.intervalo)} <span className="text-corpo">vs</span> {rotuloComp}
+              </span>
+            ) : null}
+          </div>
+
+          {aba === "geral" ? (
+            <>
+              <div className="secao-entrada grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
+                <CartaoKpi
+                  rotulo="Alcance total"
+                  valor={k.alcance}
+                  valorAnterior={anterior(ka?.alcance)}
+                  {...extras}
+                  formula="Soma do alcance da leitura mais recente de cada post no período."
+                />
+                <CartaoKpi
+                  rotulo="Impressões"
+                  valor={t.impressoes}
+                  valorAnterior={anterior(ta?.impressoes)}
+                  {...extras}
+                  formula="Soma das impressões da leitura mais recente de cada post."
+                />
+                <CartaoKpi
+                  rotulo="Interações"
+                  valor={t.interacoes}
+                  valorAnterior={anterior(ta?.interacoes)}
+                  {...extras}
+                  formula="Curtidas + comentários + salvamentos + compartilhamentos."
+                />
+                <CartaoKpi
+                  rotulo="Salvamentos"
+                  valor={k.saves}
+                  valorAnterior={anterior(ka?.saves)}
+                  {...extras}
+                  formula="Soma dos salvamentos da leitura mais recente de cada post."
+                />
+                <CartaoKpi
+                  rotulo="Compartilhamentos"
+                  valor={k.shares}
+                  valorAnterior={anterior(ka?.shares)}
+                  {...extras}
+                  formula="Soma dos compartilhamentos da leitura mais recente de cada post."
+                />
+                <CartaoKpi
+                  rotulo="Comentários"
+                  valor={k.comments}
+                  valorAnterior={anterior(ka?.comments)}
+                  {...extras}
+                  formula="Soma dos comentários da leitura mais recente de cada post."
+                />
+                <CartaoKpi
+                  rotulo="Curtidas"
+                  valor={k.likes}
+                  valorAnterior={anterior(ka?.likes)}
+                  {...extras}
+                  formula="Soma das curtidas da leitura mais recente de cada post."
+                />
+                <CartaoKpi
+                  rotulo="Posts publicados"
+                  valor={k.publicados}
+                  valorAnterior={anterior(ka?.publicados)}
+                  {...extras}
+                  formula="Quantidade de posts publicados dentro do período e dos filtros."
+                />
+                <CartaoKpi
+                  rotulo="rx médio"
+                  valor={k.rxMedio}
+                  valorAnterior={anterior(ka?.rxMedio)}
+                  {...extras}
+                  casas={2}
+                  sufixo="×"
+                  formula="Média do rx: alcance do post ÷ mediana da baseline do canal e formato."
+                  aoClicar={() => {
+                    setSoOutliers((v) => !v);
+                    setAba("conteudo");
+                  }}
+                  ativo={soOutliers}
+                  dicaAcao="Clique para ver só os posts fora da curva (rx ≥ 2,00×)."
+                />
+                <CartaoKpi
+                  rotulo="Fora da curva"
+                  valor={t.outliers}
+                  valorAnterior={anterior(ta?.outliers)}
+                  {...extras}
+                  formula="Posts com alcance de pelo menos 2× a mediana do formato."
+                />
+              </div>
+
+              <div className="secao-entrada">
+                <GradeTaxas taxas={t} anterior={ta} rotuloComparacao={rotuloComp} />
+              </div>
+
+              <div className="secao-entrada grid gap-4 lg:grid-cols-3">
+                <GraficoAlcance
+                  dados={m.serie}
+                  acumulado={acumulado}
+                  onToggle={() => setAcumulado((v) => !v)}
+                />
+                <FunilInteracao etapas={m.funil} />
+              </div>
+            </>
           ) : null}
 
-          <div className="secao-entrada grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
-            <CartaoKpi
-              rotulo="Alcance total"
-              valor={k.alcance}
-              valorAnterior={anterior(ka?.alcance)}
-              {...extras}
-              formula="Soma do alcance da leitura mais recente de cada post no período."
-            />
-            <CartaoKpi
-              rotulo="Salvamentos"
-              valor={k.saves}
-              valorAnterior={anterior(ka?.saves)}
-              {...extras}
-              formula="Soma dos salvamentos da leitura mais recente de cada post."
-            />
-            <CartaoKpi
-              rotulo="Compartilhamentos"
-              valor={k.shares}
-              valorAnterior={anterior(ka?.shares)}
-              {...extras}
-              formula="Soma dos compartilhamentos da leitura mais recente de cada post."
-            />
-            <CartaoKpi
-              rotulo="Comentários"
-              valor={k.comments}
-              valorAnterior={anterior(ka?.comments)}
-              {...extras}
-              formula="Soma dos comentários da leitura mais recente de cada post."
-            />
-            <CartaoKpi
-              rotulo="Curtidas"
-              valor={k.likes}
-              valorAnterior={anterior(ka?.likes)}
-              {...extras}
-              formula="Soma das curtidas da leitura mais recente de cada post."
-            />
-            <CartaoKpi
-              rotulo="Engajamento médio"
-              valor={k.engajamento}
-              valorAnterior={anterior(ka?.engajamento)}
-              {...extras}
-              casas={1}
-              sufixo="%"
-              formula="(curtidas + comentários + salvamentos + compartilhamentos) ÷ alcance."
-            />
-            <CartaoKpi
-              rotulo="Posts publicados"
-              valor={k.publicados}
-              valorAnterior={anterior(ka?.publicados)}
-              {...extras}
-              formula="Quantidade de posts publicados dentro do período e dos filtros."
-            />
-            <CartaoKpi
-              rotulo="rx médio"
-              valor={k.rxMedio}
-              valorAnterior={anterior(ka?.rxMedio)}
-              {...extras}
-              casas={2}
-              sufixo="×"
-              formula="Média do rx: alcance do post ÷ mediana da baseline do canal e formato."
-              aoClicar={() => setSoOutliers((v) => !v)}
-              ativo={soOutliers}
-              dicaAcao="Clique para ver só os posts fora da curva (rx ≥ 2,00×)."
-            />
-            <CartaoKpi
-              rotulo="Melhor formato"
-              texto={k.melhorFormato ? `${k.melhorFormato.rotulo}` : null}
-              textoAnterior={anteriorTexto(ka?.melhorFormato?.rotulo)}
-              {...extras}
-              formula="Formato com maior rx médio, considerando no mínimo 3 posts."
-            />
-            <CartaoKpi
-              rotulo="Melhor horário"
-              texto={k.melhorHorario ? k.melhorHorario.faixa : null}
-              textoAnterior={anteriorTexto(ka?.melhorHorario?.faixa)}
-              {...extras}
-              formula="Faixa de hora com maior alcance médio, no fuso America/Sao_Paulo."
-            />
-          </div>
+          {aba === "conteudo" ? (
+            <>
+              <div className="secao-entrada grid gap-4 lg:grid-cols-2">
+                <BarrasDimensao
+                  titulo="Desempenho por formato"
+                  descricao="rx médio de cada formato — acima de 1,30× está performando."
+                  itens={m.porFormato}
+                />
+                <BarrasDimensao
+                  titulo="Desempenho por gancho"
+                  descricao="Qual abertura de conteúdo entrega mais alcance relativo."
+                  itens={m.porGancho}
+                  vazio="Nenhum post do período tem gancho classificado."
+                />
+                <BarrasDimensao
+                  titulo="Desempenho por pilar"
+                  descricao="Como cada pilar editorial performa contra a mediana."
+                  itens={porPilar}
+                  vazio="Nenhum post do período tem pilar definido."
+                />
+                <BarrasDimensao
+                  titulo="Desempenho por tema"
+                  descricao="Temas recorrentes ordenados por rx médio."
+                  itens={m.porTema}
+                  vazio="Nenhum post do período tem tema classificado."
+                  limite={8}
+                />
+              </div>
 
+              <div className="secao-entrada">
+                <TabelaPosts
+                  linhas={m.linhas}
+                  modo={modo}
+                  setModo={setModo}
+                  soOutliers={soOutliers}
+                  aoLimparOutliers={() => setSoOutliers((v) => !v)}
+                />
+              </div>
+            </>
+          ) : null}
 
-          <div className="secao-entrada grid gap-4 lg:grid-cols-3">
-            <GraficoAlcance
-              dados={m.serie}
-              acumulado={acumulado}
-              onToggle={() => setAcumulado((v) => !v)}
-            />
-            <DonutFormatos dados={m.formatos} />
-          </div>
+          {aba === "ritmo" ? (
+            <>
+              <div className="secao-entrada">
+                <MapaDeCalor grade={m.calor.grade} max={m.calor.max} melhor={m.calor.melhor} />
+              </div>
+              <div className="secao-entrada">
+                <RitmoPublicacao cadencia={m.cadencia} maturacao={m.maturacao} />
+              </div>
+              <div className="secao-entrada">
+                <BarrasDimensao
+                  titulo="Desempenho por intenção"
+                  descricao="Educar, vender, engajar: o que a audiência responde melhor."
+                  itens={m.porIntencao}
+                  vazio="Nenhum post do período tem intenção classificada."
+                />
+              </div>
+            </>
+          ) : null}
 
-          <div className="secao-entrada">
-            <TabelaPosts
-              linhas={m.linhas}
-              modo={modo}
-              setModo={setModo}
-              soOutliers={soOutliers}
-              aoLimparOutliers={() => setSoOutliers(false)}
-            />
-          </div>
+          {aba === "contas" ? (
+            <div className="secao-entrada space-y-4">
+              <ComparativoContas contas={m.porConta} />
+              <BarrasDimensao
+                titulo="rx médio por conta"
+                descricao="Performance relativa à mediana do formato, conta a conta."
+                itens={m.porConta}
+                vazio="Nenhuma conta identificada nos posts do período."
+              />
+            </div>
+          ) : null}
         </>
       )}
     </Revelar>
