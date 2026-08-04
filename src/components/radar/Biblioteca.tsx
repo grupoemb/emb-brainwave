@@ -210,7 +210,7 @@ export function Biblioteca() {
       {carregando ? (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="cartao animate-pulse space-y-3 p-4">
+            <div key={i} className="cartao space-y-3 p-4">
               <div className="aspect-video w-full esqueleto rounded-[.6rem]" />
               <div className="h-3 w-2/3 esqueleto rounded" />
               <div className="h-3 w-1/2 esqueleto rounded" />

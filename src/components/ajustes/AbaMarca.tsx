@@ -71,7 +71,7 @@ export function AbaMarca() {
         </p>
 
         {carregando ? (
-          <div className="mt-4 h-64 animate-pulse rounded-[.5rem] bg-white/5" />
+          <div className="mt-4 h-64 esqueleto rounded-[.5rem]" />
         ) : (
           <div className="mt-4 flex flex-col gap-3">
             <Campo rotulo="Voz" valor={voice} onChange={setVoice} editavel={podeEditarMarca} />
@@ -127,7 +127,7 @@ export function AbaMarca() {
         {carregandoPilares ? (
           <div className="mt-4 space-y-2">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="h-10 animate-pulse rounded-[.5rem] bg-white/5" />
+              <div key={i} className="h-10 esqueleto rounded-[.5rem]" />
             ))}
           </div>
         ) : pilares.length === 0 ? (

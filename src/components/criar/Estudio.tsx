@@ -55,7 +55,7 @@ function Chip({
 
 function EsqueletoResultado() {
   return (
-    <div className="cartao animate-pulse space-y-3 p-4">
+    <div className="cartao space-y-3 p-4">
       <div className="h-4 w-1/3 esqueleto rounded" />
       <div className="h-3 w-full esqueleto rounded" />
       <div className="h-3 w-11/12 esqueleto rounded" />
