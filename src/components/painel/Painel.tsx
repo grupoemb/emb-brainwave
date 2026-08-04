@@ -372,8 +372,11 @@ export function Painel() {
           <h2 className="rotulo flex items-center gap-1.5">
             <Flame size={12} color="#f6bd24" />
             Fora da curva — {diasOutliers} dias
-            <Dica texto={`${GLOSSARIO.rx} ${GLOSSARIO.foraDaCurvaBloco}`} />
+            <TooltipProvider delayDuration={200}>
+              <Dica texto={`${GLOSSARIO.rx} ${GLOSSARIO.foraDaCurvaBloco}`} />
+            </TooltipProvider>
           </h2>
+
           <div className="flex items-center gap-2">
 
             <Link
