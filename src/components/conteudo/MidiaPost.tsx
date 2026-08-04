@@ -35,6 +35,8 @@ export function MidiaPost({
   const [sobre, setSobre] = useState(false);
   const [emVoo, setEmVoo] = useState<string[]>([]);
   const [prontas, setProntas] = useState<Record<string, "ok" | "erro">>({});
+  const [grandes, setGrandes] = useState<Record<string, boolean>>({});
+
   const enviando = emVoo.length > 0;
   const input = useRef<HTMLInputElement>(null);
 
@@ -144,22 +146,49 @@ export function MidiaPost({
                   <>
                     {!prontas[a.id] && <Esqueleto className="absolute inset-0" />}
                     {a.kind === "image" ? (
-                      <img
-                        src={a.url}
-                        alt={a.storage_path.split("/").pop() ?? "Mídia do post"}
-                        loading="lazy"
-                        onLoad={() => setProntas((p) => ({ ...p, [a.id]: "ok" }))}
-                        onError={() => setProntas((p) => ({ ...p, [a.id]: "erro" }))}
-                        className={
-                          "h-28 w-full object-cover transition-opacity duration-200 " +
-                          (prontas[a.id] === "ok" ? "opacity-100" : "opacity-0")
-                        }
-                      />
+                      <>
+                        {/* miniatura leve: aparece primeiro */}
+                        {a.thumb && !grandes[a.id] && (
+                          <img
+                            src={a.thumb}
+                            alt=""
+                            aria-hidden
+                            decoding="async"
+                            onLoad={() => setProntas((p) => ({ ...p, [a.id]: "ok" }))}
+                            onError={() => setProntas((p) => p[a.id] ? p : { ...p })}
+                            className={
+                              "h-28 w-full object-cover blur-[2px] transition-opacity duration-200 " +
+                              (prontas[a.id] === "ok" ? "opacity-100" : "opacity-0")
+                            }
+                          />
+                        )}
+                        {/* preview em tamanho real: entra por cima quando carrega */}
+                        <img
+                          src={a.url}
+                          alt={a.storage_path.split("/").pop() ?? "Mídia do post"}
+                          loading="lazy"
+                          decoding="async"
+                          onLoad={() => {
+                            setProntas((p) => ({ ...p, [a.id]: "ok" }));
+                            setGrandes((g) => ({ ...g, [a.id]: true }));
+                          }}
+                          onError={() =>
+                            setProntas((p) => (p[a.id] === "ok" ? p : { ...p, [a.id]: "erro" }))
+                          }
+                          className={
+                            "h-28 w-full object-cover transition-opacity duration-200 " +
+                            (grandes[a.id] ? "opacity-100" : "opacity-0") +
+                            (a.thumb && !grandes[a.id] ? " absolute inset-0" : "")
+                          }
+                        />
+                      </>
                     ) : (
                       <video
                         src={a.url}
                         controls
+                        preload="metadata"
                         onLoadedData={() => setProntas((p) => ({ ...p, [a.id]: "ok" }))}
+                        onLoadedMetadata={() => setProntas((p) => ({ ...p, [a.id]: "ok" }))}
                         onError={() => setProntas((p) => ({ ...p, [a.id]: "erro" }))}
                         className={
                           "h-28 w-full object-cover transition-opacity duration-200 " +
@@ -169,6 +198,7 @@ export function MidiaPost({
                     )}
                   </>
                 )}
+
               {(a.kind === "pdf" ||
                 a.kind === "other" ||
                 !a.url ||
