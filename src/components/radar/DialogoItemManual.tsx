@@ -57,7 +57,10 @@ export function DialogoItemManual({
 
   function adicionarTag() {
     const t = tagAtual.trim().replace(/^#/, "");
-    if (!t || tags.includes(t)) return setTagAtual("");
+    if (!t || tags.includes(t)) {
+      setTagAtual("");
+      return;
+    }
     setTags((v) => [...v, t]);
     setTagAtual("");
   }
@@ -108,7 +111,10 @@ export function DialogoItemManual({
           className="space-y-3"
           onSubmit={(e) => {
             e.preventDefault();
-            if (!url.trim()) return toast.error("O link do reel é obrigatório.");
+            if (!url.trim()) {
+              toast.error("O link do reel é obrigatório.");
+              return;
+            }
             salvar.mutate();
           }}
         >
