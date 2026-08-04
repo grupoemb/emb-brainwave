@@ -29,6 +29,7 @@ export function Kanban() {
   const [sobre, setSobre] = useState<Status | null>(null);
   const [canal, setCanal] = useState<Canal | null>(null);
   const [pilar, setPilar] = useState<string | null>(null);
+  const [mostrarVazias, setMostrarVazias] = useState(false);
 
   const doPainel = origem === "painel";
   const colunaFoco = COLUNAS.find((c) => c.status === foco) ?? null;
@@ -85,6 +86,9 @@ export function Kanban() {
   }, [posts]);
 
 
+  const colunasVazias = filtroAtivo
+    ? COLUNAS.filter((c) => (porStatus.get(c.status) ?? []).length === 0).length
+    : 0;
   const nadaNoFiltro = !carregando && filtroAtivo && filtrados.length === 0;
   const trabalhoVazio =
     !filtroAtivo && COLUNAS.slice(0, 6).every((c) => (porStatus.get(c.status) ?? []).length === 0);
@@ -175,6 +179,18 @@ export function Kanban() {
           </button>
         ) : null}
 
+        {filtroAtivo && !carregando && colunasVazias > 0 ? (
+          <button
+            className="btn px-2.5 py-1 text-xs"
+            onClick={() => setMostrarVazias((v) => !v)}
+          >
+            {mostrarVazias
+              ? `ocultar ${colunasVazias} colunas vazias`
+              : `mostrar ${colunasVazias} colunas vazias`}
+          </button>
+        ) : null}
+
+
 
         <MenuFiltro
           rotulo="Canal"
@@ -258,6 +274,8 @@ export function Kanban() {
 
           const emFoco = colunaFoco?.status === coluna.status;
           const apagada = filtroAtivo && todos.length === 0;
+
+          if (apagada && !mostrarVazias && !emFoco) return null;
 
           return (
             <section
