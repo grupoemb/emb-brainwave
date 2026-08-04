@@ -437,11 +437,23 @@ export const listarAssets = createServerFn({ method: "GET" })
         const { data: url } = await db.storage
           .from("post-assets")
           .createSignedUrl(a.storage_path, 60 * 60);
-        return { ...a, url: url?.signedUrl ?? null };
+
+        let thumb: string | null = null;
+        if (a.kind === "image") {
+          const { data: t } = await db.storage
+            .from("post-assets")
+            .createSignedUrl(a.storage_path, 60 * 60, {
+              transform: { width: 240, height: 240, resize: "cover", quality: 40 },
+            });
+          thumb = t?.signedUrl ?? null;
+        }
+
+        return { ...a, url: url?.signedUrl ?? null, thumb };
       }),
     );
     return assinados;
   });
+
 
 export const registrarAsset = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
