@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { iniciais } from "@/lib/conteudo";
 import { useOrg } from "@/hooks/useOrg";
 import { useAprovacoes, useDecidir, useVersoes } from "@/hooks/usePost";
+import { Esqueleto, LinhaEsqueleto } from "@/components/conteudo/Esqueleto";
 
 type Decisao = "approved" | "changes_requested" | "rejected";
 
@@ -37,6 +38,7 @@ function AbaAprovacao({ postId }: { postId: string }) {
   const decidir = useDecidir(postId);
   const [nota, setNota] = useState("");
 
+  const ocupado = carregando || decidir.isPending;
   const atual = aprovacoes[0];
   const pill = atual ? PILL_DECISAO[atual.decision] : undefined;
 
@@ -54,7 +56,9 @@ function AbaAprovacao({ postId }: { postId: string }) {
     <div className="space-y-3">
       <div className="flex items-center gap-2">
         <span className="rotulo">Estado</span>
-        {pill ? (
+        {carregando ? (
+          <Esqueleto className="h-5 w-20 rounded-full" />
+        ) : pill ? (
           <span className={pill.classe}>{pill.rotulo}</span>
         ) : (
           <span className="pill bg-white/6 text-muted">Pendente</span>
@@ -71,13 +75,25 @@ function AbaAprovacao({ postId }: { postId: string }) {
             className="w-full rounded-[.55rem] border border-line bg-card2 px-3 py-2 text-sm text-corpo outline-none"
           />
           <div className="flex flex-wrap gap-2">
-            <button className="btn-primario" onClick={() => void registrar("approved")}>
+            <button
+              className="btn-primario disabled:opacity-50"
+              disabled={ocupado}
+              onClick={() => void registrar("approved")}
+            >
               Aprovar
             </button>
-            <button className="btn" onClick={() => void registrar("changes_requested")}>
+            <button
+              className="btn disabled:opacity-50"
+              disabled={ocupado}
+              onClick={() => void registrar("changes_requested")}
+            >
               Pedir alteração
             </button>
-            <button className="btn" onClick={() => void registrar("rejected")}>
+            <button
+              className="btn disabled:opacity-50"
+              disabled={ocupado}
+              onClick={() => void registrar("rejected")}
+            >
               Rejeitar
             </button>
           </div>
@@ -85,7 +101,12 @@ function AbaAprovacao({ postId }: { postId: string }) {
       )}
 
       <div className="space-y-2 border-t border-line pt-3">
-        {carregando && <p className="text-xs text-muted">Carregando trilha…</p>}
+        {carregando && (
+          <div className="space-y-2">
+            <LinhaEsqueleto />
+            <LinhaEsqueleto />
+          </div>
+        )}
         {!carregando && aprovacoes.length === 0 && (
           <p className="text-xs text-muted">Nenhuma revisão ainda.</p>
         )}
@@ -118,7 +139,13 @@ function AbaVersoes({
 
   return (
     <div className="space-y-2">
-      {carregando && <p className="text-xs text-muted">Carregando versões…</p>}
+      {carregando && (
+        <>
+          <LinhaEsqueleto />
+          <LinhaEsqueleto />
+          <LinhaEsqueleto />
+        </>
+      )}
       {!carregando && versoes.length === 0 && (
         <p className="text-xs text-muted">Nenhuma versão salva ainda.</p>
       )}

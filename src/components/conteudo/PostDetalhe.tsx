@@ -7,6 +7,7 @@ import { Revelar } from "@/components/Revelar";
 import { Frescor } from "@/components/conteudo/Frescor";
 import { MidiaPost } from "@/components/conteudo/MidiaPost";
 import { LateralPost } from "@/components/conteudo/LateralPost";
+import { PostDetalheEsqueleto } from "@/components/conteudo/Esqueleto";
 import { usePilares } from "@/hooks/useConteudo";
 import {
   usePost,
@@ -99,7 +100,7 @@ export function PostDetalhe({ id }: { id: string }) {
   }
 
   if (carregando) {
-    return <p className="text-sm text-muted">Carregando post…</p>;
+    return <PostDetalheEsqueleto />;
   }
 
   if (!post) {
