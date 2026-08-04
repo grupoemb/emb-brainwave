@@ -7,6 +7,7 @@ import { toastDesfazer } from "@/lib/toastDesfazer";
 
 import { Revelar } from "@/components/Revelar";
 import { MenuFiltro } from "@/components/filtros/MenuFiltro";
+import { VazioFiltrado } from "@/components/filtros/VazioFiltrado";
 import { CartaoPost } from "@/components/conteudo/CartaoPost";
 import { KanbanEsqueleto } from "@/components/conteudo/Esqueleto";
 import { NovoCardDialog } from "@/components/conteudo/NovoCardDialog";
@@ -41,6 +42,19 @@ export function Kanban() {
 
   const limparRecorte = () => void navigate({ to: "/kanban", search: { foco: "", origem: "" } });
 
+  const filtroAtivo = !!canal || !!pilar;
+  const limparFiltros = () => {
+    setCanal(null);
+    setPilar(null);
+  };
+
+  const descricaoRecorte = useMemo(() => {
+    const partes: string[] = [];
+    if (canal) partes.push(`Canal ${CANAIS.find((c) => c.valor === canal)?.rotulo ?? canal}`);
+    if (pilar) partes.push(`Pilar ${pilarPorId.get(pilar)?.name ?? "selecionado"}`);
+    return partes.join(" · ");
+  }, [canal, pilar, pilarPorId]);
+
   const filtrados = useMemo(
     () =>
       posts.filter(
@@ -63,10 +77,23 @@ export function Kanban() {
     return mapa;
   }, [filtrados]);
 
+  const totalPorStatus = useMemo(() => {
+    const mapa = new Map<Status, number>();
+    for (const c of COLUNAS) mapa.set(c.status, 0);
+    for (const p of posts) mapa.set(p.status, (mapa.get(p.status) ?? 0) + 1);
+    return mapa;
+  }, [posts]);
 
-  const trabalhoVazio = COLUNAS.slice(0, 6).every((c) => (porStatus.get(c.status) ?? []).length === 0);
+
+  const nadaNoFiltro = !carregando && filtroAtivo && filtrados.length === 0;
+  const trabalhoVazio =
+    !filtroAtivo && COLUNAS.slice(0, 6).every((c) => (porStatus.get(c.status) ?? []).length === 0);
   const focoVazio =
-    !!colunaFoco && !carregando && (porStatus.get(colunaFoco.status) ?? []).length === 0;
+    !!colunaFoco &&
+    !carregando &&
+    !nadaNoFiltro &&
+    (porStatus.get(colunaFoco.status) ?? []).length === 0;
+
 
 
   async function soltar(status: Status, e: React.DragEvent) {
@@ -137,10 +164,17 @@ export function Kanban() {
         <p className="text-sm text-muted">
           {carregando
             ? "Carregando…"
-            : filtrados.length === posts.length
-              ? `${posts.length} cards no fluxo`
-              : `${filtrados.length} de ${posts.length} cards`}
+            : filtroAtivo
+              ? `${filtrados.length} de ${posts.length} cards · ${descricaoRecorte}`
+              : `${posts.length} cards no fluxo`}
         </p>
+
+        {filtroAtivo && !carregando ? (
+          <button className="btn px-2.5 py-1 text-xs" onClick={limparFiltros}>
+            limpar filtros
+          </button>
+        ) : null}
+
 
         <MenuFiltro
           rotulo="Canal"
@@ -172,16 +206,35 @@ export function Kanban() {
       </div>
 
 
+      {nadaNoFiltro && (
+        <VazioFiltrado
+          mensagem="Nenhum card corresponde ao filtro."
+          detalhe={descricaoRecorte}
+          acao="limpar filtros"
+          onAcao={limparFiltros}
+        />
+      )}
+
       {focoVazio && (
         <div className="cartao secao-entrada flex flex-col items-center gap-3 p-8 text-center">
           <p className="text-sm text-muted">
-            {colunaFoco?.status === "review"
-              ? "Nenhum post aguardando aprovação."
-              : `Nenhum post na coluna ${colunaFoco?.rotulo}.`}
+            {filtroAtivo
+              ? `Nenhum post na coluna ${colunaFoco?.rotulo} com o filtro aplicado.`
+              : colunaFoco?.status === "review"
+                ? "Nenhum post aguardando aprovação."
+                : `Nenhum post na coluna ${colunaFoco?.rotulo}.`}
           </p>
-          <button className="btn px-3 py-1.5 text-xs" onClick={limparRecorte}>
-            ver todo o fluxo
-          </button>
+          {filtroAtivo ? <p className="text-xs text-muted/80">{descricaoRecorte}</p> : null}
+          <div className="flex flex-wrap justify-center gap-2">
+            {filtroAtivo ? (
+              <button className="btn px-3 py-1.5 text-xs" onClick={limparFiltros}>
+                limpar filtros
+              </button>
+            ) : null}
+            <button className="btn px-3 py-1.5 text-xs" onClick={limparRecorte}>
+              ver todo o fluxo
+            </button>
+          </div>
         </div>
       )}
 
@@ -194,14 +247,17 @@ export function Kanban() {
         </div>
       )}
 
+
       <div className="secao-entrada flex gap-3 overflow-x-auto pb-2">
 
         {COLUNAS.map((coluna) => {
           const todos = porStatus.get(coluna.status) ?? [];
+          const total = totalPorStatus.get(coluna.status) ?? 0;
           const publicado = coluna.status === "published";
           const lista = publicado && !verTodosPublicados ? todos.slice(0, 10) : todos;
 
           const emFoco = colunaFoco?.status === coluna.status;
+          const apagada = filtroAtivo && todos.length === 0;
 
           return (
             <section
@@ -214,9 +270,10 @@ export function Kanban() {
               onDragLeave={() => setSobre((s) => (s === coluna.status ? null : s))}
               onDrop={(e) => void soltar(coluna.status, e)}
               className={
-                "w-[272px] shrink-0 rounded-xl bg-bg2 p-3 transition-colors " +
+                "w-[272px] shrink-0 self-start rounded-xl bg-bg2 p-3 transition-colors " +
                 (sobre === coluna.status ? "ring-1 ring-azure/50 " : "") +
-                (emFoco ? "ring-1 ring-azure/40" : "")
+                (emFoco ? "ring-1 ring-azure/40 " : "") +
+                (apagada ? "opacity-45" : "")
               }
             >
 
@@ -226,29 +283,36 @@ export function Kanban() {
                   style={{ background: coluna.cor }}
                 />
                 <span className="rotulo flex-1">{coluna.rotulo}</span>
-                <span className="numero text-xs text-muted">{todos.length}</span>
+                <span className="numero text-xs text-muted">
+                  {filtroAtivo ? `${todos.length} de ${total}` : total}
+                </span>
               </header>
 
-              <div className="flex flex-col gap-[10px]">
-                {lista.map((p) => (
-                  <CartaoPost
-                    key={p.id}
-                    post={p}
-                    pilar={p.pillar_id ? pilarPorId.get(p.pillar_id) : undefined}
-                    onDragStart={(e) => e.dataTransfer.setData("text/post-id", p.id)}
-                    onClick={() => void navigate({ to: "/post/$id", params: { id: p.id } })}
-                  />
-                ))}
+              {apagada ? (
+                <p className="py-2 text-xs text-muted">sem cards neste recorte</p>
+              ) : (
+                <div className="flex flex-col gap-[10px]">
+                  {lista.map((p) => (
+                    <CartaoPost
+                      key={p.id}
+                      post={p}
+                      pilar={p.pillar_id ? pilarPorId.get(p.pillar_id) : undefined}
+                      onDragStart={(e) => e.dataTransfer.setData("text/post-id", p.id)}
+                      onClick={() => void navigate({ to: "/post/$id", params: { id: p.id } })}
+                    />
+                  ))}
 
-                {publicado && todos.length > 10 && (
-                  <button
-                    className="btn justify-center"
-                    onClick={() => setVerTodosPublicados((v) => !v)}
-                  >
-                    {verTodosPublicados ? "Mostrar menos" : `Ver todos (${todos.length})`}
-                  </button>
-                )}
-              </div>
+                  {publicado && todos.length > 10 && (
+                    <button
+                      className="btn justify-center"
+                      onClick={() => setVerTodosPublicados((v) => !v)}
+                    >
+                      {verTodosPublicados ? "Mostrar menos" : `Ver todos (${todos.length})`}
+                    </button>
+                  )}
+                </div>
+              )}
+
             </section>
           );
         })}
