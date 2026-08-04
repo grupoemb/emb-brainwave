@@ -44,6 +44,10 @@ export function CartaoKpi({
   casas = 0,
   formula,
   carregando,
+  valorAnterior,
+  textoAnterior,
+  comparando,
+  rotuloComparacao,
 }: {
   rotulo: string;
   /** valor numérico animado; null = sem base */
@@ -54,9 +58,19 @@ export function CartaoKpi({
   casas?: number;
   formula: string;
   carregando?: boolean;
+  /** valor do período comparado (undefined = comparação desligada) */
+  valorAnterior?: number | null;
+  textoAnterior?: string | null;
+  comparando?: boolean;
+  rotuloComparacao?: string;
 }) {
   const numerico = typeof valor === "number" ? valor : null;
   const animado = useContagem(numerico);
+  const comparaNumero = valorAnterior !== undefined;
+  const comparaTexto = textoAnterior !== undefined;
+  const delta = comparaNumero ? variacao(numerico, valorAnterior ?? null) : null;
+
+
 
   const conteudo = carregando ? null : texto !== undefined ? (
     texto === null ? (
