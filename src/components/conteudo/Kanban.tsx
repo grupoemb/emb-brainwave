@@ -35,11 +35,31 @@ export function Kanban() {
   const colunaFoco = COLUNAS.find((c) => c.status === foco) ?? null;
   const refFoco = useRef<HTMLElement | null>(null);
 
+  const [recalculando, setRecalculando] = useState(false);
+  const primeiroRecorte = useRef(true);
+
   useEffect(() => {
     if (!carregando && colunaFoco) {
       refFoco.current?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
     }
   }, [carregando, colunaFoco]);
+
+  // Skeleton curto ao trocar o recorte de canal/pilar, pra sinalizar o recálculo das colunas.
+  useEffect(() => {
+    if (primeiroRecorte.current) {
+      primeiroRecorte.current = false;
+      return;
+    }
+    const semMovimento =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (semMovimento) return;
+
+    setRecalculando(true);
+    const t = window.setTimeout(() => setRecalculando(false), 320);
+    return () => window.clearTimeout(t);
+  }, [canal, pilar]);
+
 
   const limparRecorte = () => void navigate({ to: "/kanban", search: { foco: "", origem: "" } });
 
@@ -168,10 +188,13 @@ export function Kanban() {
         <p className="text-sm text-muted">
           {carregando
             ? "Carregando…"
-            : filtroAtivo
-              ? `${filtrados.length} de ${posts.length} cards · ${descricaoRecorte}`
-              : `${posts.length} cards no fluxo`}
+            : recalculando
+              ? "Recalculando o recorte…"
+              : filtroAtivo
+                ? `${filtrados.length} de ${posts.length} cards · ${descricaoRecorte}`
+                : `${posts.length} cards no fluxo`}
         </p>
+
 
         {filtroAtivo && !carregando ? (
           <button className="btn px-2.5 py-1 text-xs" onClick={limparFiltros}>
@@ -222,7 +245,25 @@ export function Kanban() {
       </div>
 
 
+      {recalculando ? (
+        <div className="secao-entrada">
+          <KanbanEsqueleto
+            colunas={
+              filtroAtivo && !mostrarVazias
+                ? COLUNAS.filter(
+                    (c) =>
+                      (porStatus.get(c.status) ?? []).length > 0 ||
+                      colunaFoco?.status === c.status,
+                  )
+                : [...COLUNAS]
+            }
+            foco={colunaFoco?.status ?? null}
+          />
+        </div>
+      ) : (
+        <>
       {nadaNoFiltro && (
+
         <VazioFiltrado
           mensagem="Nenhum card corresponde ao filtro."
           detalhe={descricaoRecorte}
@@ -335,6 +376,9 @@ export function Kanban() {
           );
         })}
       </div>
+        </>
+      )}
+
 
       <NovoCardDialog aberto={abrirNovo} aoFechar={() => setAbrirNovo(false)} />
     </Revelar>
