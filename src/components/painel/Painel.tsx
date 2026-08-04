@@ -4,6 +4,8 @@ import { useState } from "react";
 
 import { Revelar } from "@/components/Revelar";
 import { CabecalhoTela } from "@/components/ui/CabecalhoTela";
+import { LogoB7 } from "@/components/ui/LogoB7";
+
 
 import { Dica } from "@/components/painel/Dica";
 import { ComparativoContas } from "@/components/painel/ComparativoContas";
@@ -158,7 +160,14 @@ export function Painel() {
       <CabecalhoTela
         titulo={`${saudacao(agora)}${primeiroNome ? `, ${primeiroNome}` : ""}`}
         descricao={<span className="capitalize">{dataPorExtenso(agora)}</span>}
-        acoes={<span className="text-xs text-muted">{textoFrescor(coleta)}</span>}
+        acoes={
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-muted">{textoFrescor(coleta)}</span>
+            <span aria-hidden className="hidden h-5 w-px bg-line sm:block" />
+            <LogoB7 altura={16} className="hidden opacity-70 sm:block" />
+          </div>
+        }
+
       />
 
 
