@@ -95,8 +95,31 @@ export function Kanban() {
     }
   }
 
+  if (carregando && (doPainel || colunaFoco)) {
+    return (
+      <Revelar className="space-y-4">
+        {doPainel ? (
+          <FaixaDeContexto
+            recorte={colunaFoco ? `coluna ${colunaFoco.rotulo}` : "fluxo de produção"}
+            onLimpar={limparRecorte}
+          />
+        ) : null}
+        <div className="secao-entrada">
+          <KanbanEsqueleto colunas={[...COLUNAS]} foco={colunaFoco?.status ?? null} />
+        </div>
+      </Revelar>
+    );
+  }
+
   return (
     <Revelar className="space-y-4">
+      {doPainel ? (
+        <FaixaDeContexto
+          recorte={colunaFoco ? `coluna ${colunaFoco.rotulo}` : "fluxo de produção"}
+          onLimpar={limparRecorte}
+        />
+      ) : null}
+
       <div className="secao-entrada flex items-center justify-between">
         <p className="text-sm text-muted">
           {carregando ? "Carregando…" : `${posts.length} cards no fluxo`}
@@ -106,7 +129,20 @@ export function Kanban() {
         </button>
       </div>
 
-      {trabalhoVazio && !carregando && (
+      {focoVazio && (
+        <div className="cartao secao-entrada flex flex-col items-center gap-3 p-8 text-center">
+          <p className="text-sm text-muted">
+            {colunaFoco?.status === "review"
+              ? "Nenhum post aguardando aprovação."
+              : `Nenhum post na coluna ${colunaFoco?.rotulo}.`}
+          </p>
+          <button className="btn px-3 py-1.5 text-xs" onClick={limparRecorte}>
+            ver todo o fluxo
+          </button>
+        </div>
+      )}
+
+      {trabalhoVazio && !carregando && !focoVazio && (
         <div className="cartao secao-entrada flex flex-col items-center gap-3 p-8 text-center">
           <p className="text-sm text-muted">Nenhuma ideia por aqui. Peça pautas ao cérebro.</p>
           <button className="btn-primario" onClick={() => void navigate({ to: "/pautas" })}>
@@ -116,6 +152,7 @@ export function Kanban() {
       )}
 
       <div className="secao-entrada flex gap-3 overflow-x-auto pb-2">
+
         {COLUNAS.map((coluna) => {
           const todos = porStatus.get(coluna.status) ?? [];
           const publicado = coluna.status === "published";
