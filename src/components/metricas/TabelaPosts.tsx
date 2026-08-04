@@ -106,7 +106,7 @@ export function TabelaPosts({
               {ordenadas.map((l) => (
                 <tr
                   key={l.id}
-                  onClick={() => navigate({ to: "/post/$id", params: { id: l.id } })}
+                  onClick={() => navigate({ to: "/post/$id", params: { id: l.id }, search: { origem: "metricas" } })}
                   className="cursor-pointer border-b border-line/60 transition-colors hover:bg-white/5"
                 >
                   <td className="max-w-[300px] truncate py-2.5 pr-3 text-txt">{l.title}</td>
