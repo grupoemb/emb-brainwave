@@ -133,6 +133,7 @@ export function Kanban() {
                     post={p}
                     pilar={p.pillar_id ? pilarPorId.get(p.pillar_id) : undefined}
                     onDragStart={(e) => e.dataTransfer.setData("text/post-id", p.id)}
+                    onClick={() => void navigate({ to: "/post/$id", params: { id: p.id } })}
                   />
                 ))}
 

@@ -122,7 +122,9 @@ function Usuario() {
 export function AppShell({ children }: { children: ReactNode }) {
   const [aberto, setAberto] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const titulo = NAV.find((n) => n.to === pathname)?.rotulo ?? "Painel";
+  const titulo =
+    NAV.find((n) => n.to === pathname)?.rotulo ??
+    (pathname.startsWith("/post/") ? "Post" : "Painel");
 
   useEffect(() => {
     setAberto(false);

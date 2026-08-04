@@ -11,9 +11,12 @@ export function useOrg() {
     staleTime: 5 * 60_000,
   });
 
+  const papel = data?.papel ?? null;
+
   return {
     organizationId: data?.organizationId ?? null,
-    papel: data?.papel ?? null,
+    papel,
+    canReview: ["owner", "admin", "editor", "reviewer"].includes(papel ?? ""),
     carregando: isPending,
   };
 }

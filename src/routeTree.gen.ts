@@ -20,6 +20,7 @@ import { Route as AuthenticatedCriarRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedKanbanRouteImport } from './routes/_authenticated/kanban'
 import { Route as AuthenticatedMetricasRouteImport } from './routes/_authenticated/metricas'
 import { Route as AuthenticatedPautasRouteImport } from './routes/_authenticated/pautas'
+import { Route as AuthenticatedPostIdRouteImport } from './routes/_authenticated/post.$id'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -76,6 +77,11 @@ const AuthenticatedPautasRoute = AuthenticatedPautasRouteImport.update({
   path: '/pautas',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPostIdRoute = AuthenticatedPostIdRouteImport.update({
+  id: '/post/$id',
+  path: '/post/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
@@ -88,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/kanban': typeof AuthenticatedKanbanRoute
   '/metricas': typeof AuthenticatedMetricasRoute
   '/pautas': typeof AuthenticatedPautasRoute
+  '/post/$id': typeof AuthenticatedPostIdRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
@@ -100,6 +107,7 @@ export interface FileRoutesByTo {
   '/metricas': typeof AuthenticatedMetricasRoute
   '/pautas': typeof AuthenticatedPautasRoute
   '/': typeof AuthenticatedIndexRoute
+  '/post/$id': typeof AuthenticatedPostIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -114,6 +122,7 @@ export interface FileRoutesById {
   '/_authenticated/metricas': typeof AuthenticatedMetricasRoute
   '/_authenticated/pautas': typeof AuthenticatedPautasRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/post/$id': typeof AuthenticatedPostIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -128,6 +137,7 @@ export interface FileRouteTypes {
     | '/kanban'
     | '/metricas'
     | '/pautas'
+    | '/post/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
@@ -140,6 +150,7 @@ export interface FileRouteTypes {
     | '/metricas'
     | '/pautas'
     | '/'
+    | '/post/$id'
   id:
     | '__root__'
     | '/_authenticated'
@@ -153,6 +164,7 @@ export interface FileRouteTypes {
     | '/_authenticated/metricas'
     | '/_authenticated/pautas'
     | '/_authenticated/'
+    | '/_authenticated/post/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -239,6 +251,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPautasRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/post/$id': {
+      id: '/_authenticated/post/$id'
+      path: '/post/$id'
+      fullPath: '/post/$id'
+      preLoaderRoute: typeof AuthenticatedPostIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -252,6 +271,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedMetricasRoute: typeof AuthenticatedMetricasRoute
   AuthenticatedPautasRoute: typeof AuthenticatedPautasRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedPostIdRoute: typeof AuthenticatedPostIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -264,6 +284,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMetricasRoute: AuthenticatedMetricasRoute,
   AuthenticatedPautasRoute: AuthenticatedPautasRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedPostIdRoute: AuthenticatedPostIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -276,13 +297,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
