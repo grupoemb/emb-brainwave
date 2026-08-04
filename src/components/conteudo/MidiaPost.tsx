@@ -35,6 +35,8 @@ export function MidiaPost({
   const [sobre, setSobre] = useState(false);
   const [emVoo, setEmVoo] = useState<string[]>([]);
   const [prontas, setProntas] = useState<Record<string, "ok" | "erro">>({});
+  const [grandes, setGrandes] = useState<Record<string, boolean>>({});
+
   const enviando = emVoo.length > 0;
   const input = useRef<HTMLInputElement>(null);
 
