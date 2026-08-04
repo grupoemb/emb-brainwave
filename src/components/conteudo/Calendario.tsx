@@ -192,6 +192,21 @@ export function Calendario() {
 
   const hoje = new Date();
 
+  const temFiltro = Boolean(canal || pilar || status);
+  const limparFiltros = () => {
+    setCanal(null);
+    setPilar(null);
+    setStatus(null);
+  };
+  const resumoFiltros = [
+    canal ? (CANAIS.find((c) => c.valor === canal)?.rotulo ?? canal) : null,
+    pilar ? (pilares.find((p) => p.id === pilar)?.name ?? "pilar") : null,
+    status ? (COLUNAS.find((c) => c.status === status)?.rotulo ?? status) : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+  const nadaNoFiltro = !carregando && temFiltro && filtrados.length === 0;
+
   const faixa = doPainel ? (
     <FaixaDeContexto
       recorte={foco7d ? "próximos 7 dias" : "agenda editorial"}
@@ -209,6 +224,7 @@ export function Calendario() {
       </Revelar>
     );
   }
+
 
   return (
     <Revelar className="space-y-4">
