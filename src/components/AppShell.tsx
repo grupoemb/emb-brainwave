@@ -9,7 +9,7 @@ import {
   BarChart3,
   Lightbulb,
   Brain,
-  Swords,
+  Radar,
   Settings,
   Menu,
   X,
@@ -28,7 +28,7 @@ const NAV = [
   { rotulo: "Métricas", to: "/metricas", icone: BarChart3 },
   { rotulo: "Pautas", to: "/pautas", icone: Lightbulb },
   { rotulo: "Cérebro", to: "/cerebro", icone: Brain },
-  { rotulo: "Concorrentes", to: "/concorrentes", icone: Swords, desativado: true },
+  { rotulo: "Reels Radar", to: "/radar", icone: Radar },
   { rotulo: "Ajustes", to: "/ajustes", icone: Settings },
 ] as const;
 
