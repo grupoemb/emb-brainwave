@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
+import { entrarNaOrganizacao } from "@/lib/organizacao";
 
 function traduzirErro(mensagem: string) {
   const m = mensagem.toLowerCase();
@@ -23,6 +24,7 @@ function Acesso() {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
+  const [codigo, setCodigo] = useState("");
   const [erro, setErro] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
 
@@ -49,7 +51,7 @@ function Acesso() {
           email,
           password: senha,
           options: {
-            data: { nome: nome.trim() },
+            data: { full_name: nome.trim(), nome: nome.trim() },
             emailRedirectTo: window.location.origin,
           },
         });
@@ -60,6 +62,17 @@ function Acesso() {
         });
         if (erroLogin) throw erroLogin;
       }
+      const entrada = await entrarNaOrganizacao(codigo);
+      if (!entrada.ok) {
+        await supabase.auth.signOut();
+        setErro(
+          entrada.error?.toLowerCase().includes("código")
+            ? "Código de acesso inválido. Peça o código à equipe."
+            : entrada.error || "Não foi possível liberar seu acesso à equipe.",
+        );
+        return;
+      }
+
       navigate({ to: "/", replace: true });
     } catch (e) {
       setErro(traduzirErro(e instanceof Error ? e.message : ""));
@@ -130,6 +143,17 @@ function Acesso() {
               required
               minLength={6}
               autoComplete={aba === "entrar" ? "current-password" : "new-password"}
+              className="rounded-[.5rem] border border-line bg-bg2 px-3 py-2 text-sm outline-none focus:border-azure"
+            />
+          </label>
+
+          <label className="flex flex-col gap-1 text-sm">
+            Código de acesso da equipe
+            <input
+              value={codigo}
+              onChange={(e) => setCodigo(e.target.value)}
+              placeholder="Somente para novos integrantes"
+              autoComplete="off"
               className="rounded-[.5rem] border border-line bg-bg2 px-3 py-2 text-sm outline-none focus:border-azure"
             />
           </label>
