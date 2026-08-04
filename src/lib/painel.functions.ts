@@ -25,6 +25,13 @@ export type InsightPainel = {
   strength: number;
 };
 
+export type OutlierPainel = {
+  id: string;
+  title: string;
+  conta: string | null;
+  rx: number;
+};
+
 export type DadosPainel = {
   nome: string | null;
   ultimaColeta: string | null;
@@ -38,6 +45,7 @@ export type DadosPainel = {
   agendados: AgendadoPainel[];
   pautas: PautaPainel[];
   insights: InsightPainel[];
+  outliers: OutlierPainel[];
   producao: Record<string, number>;
 };
 
@@ -65,7 +73,7 @@ export const carregarPainel = createServerFn({ method: "GET" })
         db.from("posts").select("id, status").eq("organization_id", org),
         db
           .from("posts")
-          .select("id")
+          .select("id, title, channel, format, meta")
           .eq("organization_id", org)
           .eq("status", "published")
           .gte("published_at", ha7d),
@@ -114,16 +122,31 @@ export const carregarPainel = createServerFn({ method: "GET" })
     }
 
     // Alcance dos últimos 7 dias: última leitura por post publicado no período.
-    const idsPublicados = ((publicadosRes.data ?? []) as { id: string }[]).map((p) => p.id);
+    const publicados = (publicadosRes.data ?? []) as {
+      id: string;
+      title: string;
+      channel: string | null;
+      format: string | null;
+      meta: Record<string, unknown> | null;
+    }[];
+    const idsPublicados = publicados.map((p) => p.id);
     let alcance7d: number | null = null;
     let ultimaColeta: string | null = null;
+    const outliers: OutlierPainel[] = [];
 
     if (idsPublicados.length) {
-      const { data: leituras } = await db
-        .from("post_metrics")
-        .select("post_id, reach, captured_at")
-        .in("post_id", idsPublicados)
-        .order("captured_at", { ascending: false });
+      const [{ data: leituras }, { data: baseRaw }] = await Promise.all([
+        db
+          .from("post_metrics")
+          .select("post_id, reach, captured_at")
+          .in("post_id", idsPublicados)
+          .order("captured_at", { ascending: false }),
+        db
+          .from("metric_baselines")
+          .select("channel, format, metric, median_value")
+          .eq("organization_id", org)
+          .eq("metric", "reach"),
+      ]);
 
       const vistos = new Map<string, number | null>();
       for (const l of (leituras ?? []) as {
@@ -136,6 +159,29 @@ export const carregarPainel = createServerFn({ method: "GET" })
       }
       const soma = [...vistos.values()].reduce<number>((t, v) => t + (v ?? 0), 0);
       alcance7d = vistos.size ? soma : null;
+
+      const baselines = (baseRaw ?? []) as {
+        channel: string;
+        format: string;
+        median_value: number | null;
+      }[];
+
+      for (const p of publicados) {
+        const reach = vistos.get(p.id) ?? null;
+        const base = baselines.find((b) => b.channel === p.channel && b.format === p.format);
+        const mediana = base?.median_value && base.median_value > 0 ? base.median_value : null;
+        if (reach === null || mediana === null) continue;
+        const rx = Number((reach / mediana).toFixed(2));
+        if (rx >= 2) {
+          outliers.push({
+            id: p.id,
+            title: p.title,
+            conta: (p.meta?.["source_handle"] ?? null) as string | null,
+            rx,
+          });
+        }
+      }
+      outliers.sort((a, b) => b.rx - a.rx);
     }
 
     const producao: Record<string, number> = {};
@@ -180,6 +226,7 @@ export const carregarPainel = createServerFn({ method: "GET" })
         statement: string;
         strength: number | null;
       }[]).map((i) => ({ id: i.id, statement: i.statement, strength: Number(i.strength ?? 0) })),
+      outliers: outliers.slice(0, 5),
       producao,
     };
   });
