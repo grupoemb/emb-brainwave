@@ -204,8 +204,9 @@ function BlocoUsuario() {
       <Avatar nome={data?.nome ?? "EM"} />
       <div className="min-w-0">
         <p className="truncate text-xs font-semibold text-txt">{data?.nome ?? "Minha conta"}</p>
-        <p className="truncate text-[.7rem] text-muted">{data?.email ?? "—"}</p>
+        <p className="truncate text-[.7rem] text-muted">Conta conectada</p>
       </div>
+
       <button
         className="btn-fantasma min-h-11 min-w-11 justify-center"
         onClick={() => void sair()}
