@@ -7,6 +7,7 @@ import { Revelar } from "@/components/Revelar";
 import { CartaoPost } from "@/components/conteudo/CartaoPost";
 import { NovoCardDialog } from "@/components/conteudo/NovoCardDialog";
 import { usePilares, usePosts, useMoverStatus } from "@/hooks/useConteudo";
+import { useRealtimePosts } from "@/hooks/useRealtimePosts";
 import { COLUNAS, type Status } from "@/lib/conteudo";
 
 export function Kanban() {
