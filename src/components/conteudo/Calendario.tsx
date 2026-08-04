@@ -98,17 +98,24 @@ function Pill({
 
 export function Calendario() {
   useRealtimePosts();
+  const { foco, origem } = useSearch({ from: "/_authenticated/calendario" });
   const { posts, carregando } = usePosts();
   const { pilares, pilarPorId } = usePilares();
   const agendar = useAgendar();
 
-  const [visao, setVisao] = useState<"mes" | "semana">("mes");
+  const doPainel = origem === "painel";
+  const foco7d = foco === "7d";
+
+  const [visao, setVisao] = useState<"mes" | "semana">(foco7d ? "semana" : "mes");
   const [referencia, setReferencia] = useState(new Date());
   const [canal, setCanal] = useState<Canal | null>(null);
   const [pilar, setPilar] = useState<string | null>(null);
   const [status, setStatus] = useState<Status | null>(null);
   const navigate = useNavigate();
   const [diaSobre, setDiaSobre] = useState<string | null>(null);
+
+  const limparRecorte = () =>
+    void navigate({ to: "/calendario", search: { foco: "", origem: "" } });
 
   const filtrados = useMemo(
     () =>
@@ -136,6 +143,16 @@ export function Calendario() {
   const semData = filtrados.filter(
     (p) => !p.scheduled_for && SEM_DATA_STATUS.includes(p.status),
   );
+
+  const proximos7d = useMemo(() => {
+    const agora = Date.now();
+    const limite = agora + 7 * 86_400_000;
+    return agendados.filter((p) => {
+      const t = new Date(p.scheduled_for!).getTime();
+      return t >= agora && t <= limite;
+    });
+  }, [agendados]);
+
 
   function doDia(dia: Date) {
     return agendados.filter((p) => isSameDay(new Date(p.scheduled_for!), dia));
