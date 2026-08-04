@@ -1,10 +1,11 @@
-export type Aba = "geral" | "conteudo" | "ritmo" | "contas";
+export type Aba = "geral" | "conteudo" | "ritmo" | "contas" | "benchmark";
 
 export const ABAS: { valor: Aba; rotulo: string }[] = [
   { valor: "geral", rotulo: "Visão geral" },
   { valor: "conteudo", rotulo: "Conteúdo" },
   { valor: "ritmo", rotulo: "Ritmo & horários" },
   { valor: "contas", rotulo: "Contas" },
+  { valor: "benchmark", rotulo: "Benchmark" },
 ];
 
 export function SubAbas({ aba, setAba }: { aba: Aba; setAba: (a: Aba) => void }) {

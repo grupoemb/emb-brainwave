@@ -106,7 +106,7 @@ export const carregarMetricas = createServerFn({ method: "GET" })
 
     const { data: linhasB, error: erroB } = await db
       .from("metric_baselines")
-      .select("channel, format, metric, median_value")
+      .select("channel, format, metric, median_value, p25, p75")
       .eq("organization_id", data.organizationId);
 
     if (erroB) throw new Error(erroB.message);
@@ -127,6 +127,8 @@ export const carregarMetricas = createServerFn({ method: "GET" })
         format: string;
         metric: string;
         median_value: number | null;
+        p25: number | null;
+        p75: number | null;
       }[],
       houveColeta: ((qualquer ?? []) as unknown[]).length > 0,
     };

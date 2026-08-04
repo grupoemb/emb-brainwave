@@ -131,6 +131,7 @@ export function useMetricas(diasInicial: Periodo = 30) {
 
     return {
       linhas,
+      baselines: f.baselines,
       kpis: calcularKpis(linhas),
       taxas: calcularTaxas(linhas),
       serie: serieDiaria(linhas, dias),
