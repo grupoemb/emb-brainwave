@@ -7,6 +7,7 @@ import { toastDesfazer } from "@/lib/toastDesfazer";
 
 import { Revelar } from "@/components/Revelar";
 import { MenuFiltro } from "@/components/filtros/MenuFiltro";
+import { VazioFiltrado } from "@/components/filtros/VazioFiltrado";
 import { CartaoPost } from "@/components/conteudo/CartaoPost";
 import { KanbanEsqueleto } from "@/components/conteudo/Esqueleto";
 import { NovoCardDialog } from "@/components/conteudo/NovoCardDialog";
