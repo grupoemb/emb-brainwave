@@ -155,14 +155,12 @@ export function FiltrosMetricas({
         {/* Período */}
         <Popover open={abrePeriodo} onOpenChange={setAbrePeriodo}>
           <PopoverTrigger asChild>
-            <span className="contents">
-              <GatilhoFiltro
+            <GatilhoFiltro
                 rotulo="Período"
                 valor={`${dias} dias`}
                 destacado={dias !== 30}
                 aberto={abrePeriodo}
-              />
-            </span>
+            />
           </PopoverTrigger>
           <Painel largura="w-44">
             {([7, 30, 90] as Periodo[]).map((d) => (
@@ -183,14 +181,12 @@ export function FiltrosMetricas({
         {/* Conta */}
         <Popover open={abreConta} onOpenChange={setAbreConta}>
           <PopoverTrigger asChild>
-            <span className="contents">
-              <GatilhoFiltro
+            <GatilhoFiltro
                 rotulo="Conta"
                 valor={conta === "todas" ? "Todas" : `@${conta}`}
                 destacado={conta !== "todas"}
                 aberto={abreConta}
-              />
-            </span>
+            />
           </PopoverTrigger>
           <Painel largura="w-64">
             {contas.length > 6 ? (
@@ -241,14 +237,12 @@ export function FiltrosMetricas({
         {/* Pilar */}
         <Popover open={abrePilar} onOpenChange={setAbrePilar}>
           <PopoverTrigger asChild>
-            <span className="contents">
-              <GatilhoFiltro
+            <GatilhoFiltro
                 rotulo="Pilar"
                 valor={pilarAtivo ? pilarAtivo.name : "Todos"}
                 destacado={pilar !== "todos"}
                 aberto={abrePilar}
-              />
-            </span>
+            />
           </PopoverTrigger>
           <Painel largura="w-60">
             <ItemOpcao
@@ -293,14 +287,12 @@ export function FiltrosMetricas({
         {/* Comparar */}
         <Popover open={abreComparar} onOpenChange={setAbreComparar}>
           <PopoverTrigger asChild>
-            <span className="contents">
-              <GatilhoFiltro
+            <GatilhoFiltro
                 rotulo="Comparar"
                 valor={ROTULO_COMPARACAO[comparacao]}
                 destacado={comparacao !== "off"}
                 aberto={abreComparar}
-              />
-            </span>
+            />
           </PopoverTrigger>
           <Painel largura="w-64">
             {(["off", "anterior", "custom"] as ModoComparacao[]).map((m) => (
