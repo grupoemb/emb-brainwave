@@ -122,14 +122,12 @@ export function TabelaPosts({
                         {l.rx === null ? "—" : `${numero(l.rx, 2)}×`}
                       </span>
                       {ehOutlier(l.rx) ? (
-                        <Flame
-                          size={12}
-                          color="#f6bd24"
-                          aria-label="fora da curva"
-                          className="shrink-0"
+                        <span
+                          className="inline-flex shrink-0"
+                          title={`Fora da curva: ${numero(l.rx, 1)}x a mediana do formato`}
                         >
-                          <title>{`Fora da curva: ${numero(l.rx, 1)}x a mediana do formato`}</title>
-                        </Flame>
+                          <Flame size={12} color="#f6bd24" aria-label="fora da curva" />
+                        </span>
                       ) : null}
                     </span>
                   </td>
