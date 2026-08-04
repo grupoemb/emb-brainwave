@@ -1,96 +1,17 @@
-import { forwardRef, useEffect, useMemo, useState } from "react";
-import { Check, ChevronDown, RefreshCw, Search } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { RefreshCw, Search } from "lucide-react";
 
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Popover, PopoverTrigger } from "@/components/ui/popover";
+import {
+  GatilhoFiltro,
+  ItemOpcao,
+  MenuFiltro,
+  PainelFiltro,
+  type OpcaoFiltro,
+} from "@/components/filtros/MenuFiltro";
 import { textoFrescor } from "@/lib/metricas";
 import type { ModoComparacao, Periodo } from "@/hooks/useMetricas";
 import type { Pilar } from "@/lib/conteudo";
-
-type PropsGatilho = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  rotulo: string;
-  valor: string;
-  destacado: boolean;
-  aberto: boolean;
-};
-
-const GatilhoFiltro = forwardRef<HTMLButtonElement, PropsGatilho>(function GatilhoFiltro(
-  { rotulo, valor, destacado, aberto, className, ...resto },
-  ref,
-) {
-  return (
-    <button
-      ref={ref}
-      type="button"
-      {...resto}
-      className={
-        "flex min-w-[8.5rem] flex-1 items-center gap-2 rounded-[.6rem] border px-3 py-1.5 text-left transition-colors sm:flex-none " +
-        (destacado
-          ? "border-azure/40 bg-azure/14 "
-          : "border-line bg-card hover:border-lineForte ") +
-        (aberto ? "border-azure/50 " : "") +
-        (className ?? "")
-      }
-    >
-      <span className="min-w-0 flex-1">
-        <span className="rotulo block leading-none">{rotulo}</span>
-        <span
-          className={
-            "mt-1 block truncate text-xs font-medium leading-none " +
-            (destacado ? "text-txt" : "text-corpo")
-          }
-        >
-          {valor}
-        </span>
-      </span>
-      <ChevronDown
-        size={14}
-        className={
-          "shrink-0 text-muted transition-transform duration-200 " + (aberto ? "rotate-180" : "")
-        }
-      />
-    </button>
-  );
-});
-
-
-function ItemOpcao({
-  ativo,
-  onClick,
-  children,
-}: {
-  ativo: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={
-        "flex w-full items-center gap-2 rounded-[.45rem] px-2.5 py-2 text-left text-xs transition-colors " +
-        (ativo ? "bg-azure/14 font-semibold text-white" : "text-corpo hover:bg-white/[.06]")
-      }
-    >
-      <span className="min-w-0 flex-1 truncate">{children}</span>
-      {ativo ? <Check size={13} className="shrink-0 text-azureClaro" /> : null}
-    </button>
-  );
-}
-
-function Painel({ children, largura = "w-56" }: { children: React.ReactNode; largura?: string }) {
-  return (
-    <PopoverContent
-      align="start"
-      sideOffset={6}
-      className={
-        largura +
-        " rounded-[.7rem] border-line bg-card p-1.5 shadow-[0_10px_34px_-18px_rgb(0_0_0/.6)]"
-      }
-    >
-      {children}
-    </PopoverContent>
-  );
-}
 
 const ROTULO_COMPARACAO: Record<ModoComparacao, string> = {
   off: "Desligado",
@@ -135,9 +56,7 @@ export function FiltrosMetricas({
   customAte: string;
   setCustomAte: (v: string) => void;
 }) {
-  const [abrePeriodo, setAbrePeriodo] = useState(false);
   const [abreConta, setAbreConta] = useState(false);
-  const [abrePilar, setAbrePilar] = useState(false);
   const [abreComparar, setAbreComparar] = useState(false);
   const [busca, setBusca] = useState("");
 
@@ -147,48 +66,38 @@ export function FiltrosMetricas({
     return contas.filter((c) => c.handle.toLowerCase().includes(termo));
   }, [contas, busca]);
 
-  const pilarAtivo = pilares.find((p) => p.id === pilar);
+  const opcoesPeriodo: OpcaoFiltro<string>[] = [7, 30, 90].map((d) => ({
+    valor: String(d),
+    rotulo: `${d} dias`,
+  }));
+
+  const opcoesPilar: OpcaoFiltro<string>[] = [
+    { valor: "todos", rotulo: "Todos os pilares" },
+    ...pilares.map((p) => ({ valor: p.id, rotulo: p.name, cor: p.color })),
+  ];
 
   return (
     <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
       <div className="flex flex-wrap gap-2">
-        {/* Período */}
-        <Popover open={abrePeriodo} onOpenChange={setAbrePeriodo}>
-          <PopoverTrigger asChild>
-            <GatilhoFiltro
-                rotulo="Período"
-                valor={`${dias} dias`}
-                destacado={dias !== 30}
-                aberto={abrePeriodo}
-            />
-          </PopoverTrigger>
-          <Painel largura="w-44">
-            {([7, 30, 90] as Periodo[]).map((d) => (
-              <ItemOpcao
-                key={d}
-                ativo={dias === d}
-                onClick={() => {
-                  setDias(d);
-                  setAbrePeriodo(false);
-                }}
-              >
-                {d} dias
-              </ItemOpcao>
-            ))}
-          </Painel>
-        </Popover>
+        <MenuFiltro
+          rotulo="Período"
+          valor={String(dias)}
+          padrao="30"
+          largura="w-44"
+          opcoes={opcoesPeriodo}
+          onEscolher={(v) => setDias(Number(v) as Periodo)}
+        />
 
-        {/* Conta */}
         <Popover open={abreConta} onOpenChange={setAbreConta}>
           <PopoverTrigger asChild>
             <GatilhoFiltro
-                rotulo="Conta"
-                valor={conta === "todas" ? "Todas" : `@${conta}`}
-                destacado={conta !== "todas"}
-                aberto={abreConta}
+              rotulo="Conta"
+              valor={conta === "todas" ? "Todas" : `@${conta.replace(/^@/, "")}`}
+              destacado={conta !== "todas"}
+              aberto={abreConta}
             />
           </PopoverTrigger>
-          <Painel largura="w-64">
+          <PainelFiltro largura="w-64">
             {contas.length > 6 ? (
               <div className="mb-1 flex items-center gap-2 rounded-[.45rem] border border-line bg-bg2 px-2.5 py-1.5">
                 <Search size={13} className="shrink-0 text-muted" />
@@ -231,70 +140,28 @@ export function FiltrosMetricas({
                 ))
               )}
             </div>
-          </Painel>
+          </PainelFiltro>
         </Popover>
 
-        {/* Pilar */}
-        <Popover open={abrePilar} onOpenChange={setAbrePilar}>
-          <PopoverTrigger asChild>
-            <GatilhoFiltro
-                rotulo="Pilar"
-                valor={pilarAtivo ? pilarAtivo.name : "Todos"}
-                destacado={pilar !== "todos"}
-                aberto={abrePilar}
-            />
-          </PopoverTrigger>
-          <Painel largura="w-60">
-            <ItemOpcao
-              ativo={pilar === "todos"}
-              onClick={() => {
-                setPilar("todos");
-                setAbrePilar(false);
-              }}
-            >
-              Todos os pilares
-            </ItemOpcao>
+        <MenuFiltro
+          rotulo="Pilar"
+          valor={pilar}
+          padrao="todos"
+          largura="w-60"
+          opcoes={opcoesPilar}
+          onEscolher={setPilar}
+        />
 
-            <div className="my-1 h-px bg-line" />
-
-            <div className="max-h-64 overflow-y-auto">
-              {pilares.length === 0 ? (
-                <p className="px-2.5 py-3 text-xs text-muted">Nenhum pilar cadastrado.</p>
-              ) : (
-                pilares.map((p) => (
-                  <ItemOpcao
-                    key={p.id}
-                    ativo={pilar === p.id}
-                    onClick={() => {
-                      setPilar(p.id);
-                      setAbrePilar(false);
-                    }}
-                  >
-                    <span className="flex items-center gap-2">
-                      <span
-                        className="h-2 w-2 shrink-0 rounded-full"
-                        style={{ background: p.color ?? "#8294ab" }}
-                      />
-                      <span className="truncate">{p.name}</span>
-                    </span>
-                  </ItemOpcao>
-                ))
-              )}
-            </div>
-          </Painel>
-        </Popover>
-
-        {/* Comparar */}
         <Popover open={abreComparar} onOpenChange={setAbreComparar}>
           <PopoverTrigger asChild>
             <GatilhoFiltro
-                rotulo="Comparar"
-                valor={ROTULO_COMPARACAO[comparacao]}
-                destacado={comparacao !== "off"}
-                aberto={abreComparar}
+              rotulo="Comparar"
+              valor={ROTULO_COMPARACAO[comparacao]}
+              destacado={comparacao !== "off"}
+              aberto={abreComparar}
             />
           </PopoverTrigger>
-          <Painel largura="w-64">
+          <PainelFiltro largura="w-64">
             {(["off", "anterior", "custom"] as ModoComparacao[]).map((m) => (
               <ItemOpcao
                 key={m}
@@ -329,7 +196,7 @@ export function FiltrosMetricas({
                 </div>
               </div>
             ) : null}
-          </Painel>
+          </PainelFiltro>
         </Popover>
       </div>
 
