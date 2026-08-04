@@ -205,16 +205,35 @@ export function Kanban() {
       </div>
 
 
+      {nadaNoFiltro && (
+        <VazioFiltrado
+          mensagem="Nenhum card corresponde ao filtro."
+          detalhe={descricaoRecorte}
+          acao="limpar filtros"
+          onAcao={limparFiltros}
+        />
+      )}
+
       {focoVazio && (
         <div className="cartao secao-entrada flex flex-col items-center gap-3 p-8 text-center">
           <p className="text-sm text-muted">
-            {colunaFoco?.status === "review"
-              ? "Nenhum post aguardando aprovação."
-              : `Nenhum post na coluna ${colunaFoco?.rotulo}.`}
+            {filtroAtivo
+              ? `Nenhum post na coluna ${colunaFoco?.rotulo} com o filtro aplicado.`
+              : colunaFoco?.status === "review"
+                ? "Nenhum post aguardando aprovação."
+                : `Nenhum post na coluna ${colunaFoco?.rotulo}.`}
           </p>
-          <button className="btn px-3 py-1.5 text-xs" onClick={limparRecorte}>
-            ver todo o fluxo
-          </button>
+          {filtroAtivo ? <p className="text-xs text-muted/80">{descricaoRecorte}</p> : null}
+          <div className="flex flex-wrap justify-center gap-2">
+            {filtroAtivo ? (
+              <button className="btn px-3 py-1.5 text-xs" onClick={limparFiltros}>
+                limpar filtros
+              </button>
+            ) : null}
+            <button className="btn px-3 py-1.5 text-xs" onClick={limparRecorte}>
+              ver todo o fluxo
+            </button>
+          </div>
         </div>
       )}
 
@@ -226,6 +245,7 @@ export function Kanban() {
           </button>
         </div>
       )}
+
 
       <div className="secao-entrada flex gap-3 overflow-x-auto pb-2">
 
