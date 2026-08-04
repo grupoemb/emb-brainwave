@@ -1,8 +1,12 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { AlertCircle, KeyRound, Loader2, Lock, Mail, ShieldCheck, User } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import { CampoAcesso } from "@/components/acesso/CampoAcesso";
+import { VitrineFundo } from "@/components/acesso/VitrineFundo";
 import { supabase } from "@/integrations/supabase/client";
 import { entrarNaOrganizacao } from "@/lib/organizacao";
+
 
 function traduzirErro(mensagem: string) {
   const m = mensagem.toLowerCase();
