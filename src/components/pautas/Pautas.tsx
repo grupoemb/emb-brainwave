@@ -3,9 +3,12 @@ import { toast } from "sonner";
 
 import { Revelar } from "@/components/Revelar";
 import { CartaoPauta, haQuanto } from "@/components/pautas/CartaoPauta";
-import { FiltrosPautas } from "@/components/pautas/FiltrosPautas";
+import { FiltrosPautas, TIPOS_FILTRO } from "@/components/pautas/FiltrosPautas";
+import { VazioFiltrado } from "@/components/filtros/VazioFiltrado";
+import { PautasEsqueleto } from "@/components/conteudo/Esqueleto";
 import { FaixaDeContexto } from "@/components/painel/FaixaDeContexto";
 import { usePautas } from "@/hooks/useInteligencia";
+
 
 
 export function Pautas() {
