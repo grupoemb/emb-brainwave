@@ -3,6 +3,7 @@ import { Flame, Sparkles } from "lucide-react";
 import { useState } from "react";
 
 import { Revelar } from "@/components/Revelar";
+import { Dica } from "@/components/painel/Dica";
 import { ComparativoContas } from "@/components/painel/ComparativoContas";
 import { DestaquesPeriodo } from "@/components/painel/DestaquesPeriodo";
 
@@ -15,6 +16,7 @@ import {
 import { usePainel, type DiasOutliers } from "@/hooks/usePainel";
 import { COLUNAS, comAlfa, corDoCanal, type Canal } from "@/lib/conteudo";
 import { numero, textoFrescor } from "@/lib/metricas";
+import { GLOSSARIO } from "@/lib/glossario";
 
 function ComDica({ dica, children }: { dica: string; children: React.ReactNode }) {
   return (
@@ -89,16 +91,28 @@ function Cartao({
   );
 }
 
-function MiniKpi({ rotulo, valor }: { rotulo: string; valor: number | null }) {
+function MiniKpi({
+  rotulo,
+  valor,
+  dica,
+}: {
+  rotulo: string;
+  valor: number | null;
+  dica: string;
+}) {
   return (
     <div className="cartao flex min-h-[5.9rem] flex-col justify-between p-4 transition-colors hover:bg-white/4">
-      <span className="rotulo">{rotulo}</span>
+      <span className="rotulo flex items-center gap-1">
+        {rotulo}
+        <Dica texto={dica} />
+      </span>
       <span className={"numero text-2xl " + (valor === null ? "text-muted" : "")}>
         {valor === null ? "—" : numero(valor)}
       </span>
     </div>
   );
 }
+
 
 
 function BlocoVazio({ children }: { children: React.ReactNode }) {
@@ -159,7 +173,7 @@ export function Painel() {
             }
           >
             <Link to="/calendario" search={{ foco: "7d", origem: "painel" }}>
-              <MiniKpi rotulo="Agendados" valor={dados.kpis.agendados} />
+              <MiniKpi rotulo="Agendados" valor={dados.kpis.agendados} dica={GLOSSARIO.agendados} />
             </Link>
           </ComDica>
 
@@ -170,7 +184,7 @@ export function Painel() {
             }
           >
             <Link to="/kanban" search={{ foco: "review", origem: "painel" }}>
-              <MiniKpi rotulo="Aguardando aprovação" valor={dados.kpis.aguardandoAprovacao} />
+              <MiniKpi rotulo="Aguardando aprovação" valor={dados.kpis.aguardandoAprovacao} dica={GLOSSARIO.aguardandoAprovacao} />
             </Link>
           </ComDica>
 
@@ -184,7 +198,7 @@ export function Painel() {
               to="/pautas"
               search={{ q: "", status: "new", tipo: "todos", pilar: "todos", origem: "painel" }}
             >
-              <MiniKpi rotulo="Pautas novas" valor={dados.kpis.pautasNovas} />
+              <MiniKpi rotulo="Pautas novas" valor={dados.kpis.pautasNovas} dica={GLOSSARIO.pautasNovas} />
             </Link>
           </ComDica>
 
@@ -197,7 +211,7 @@ export function Painel() {
             }
           >
             <Link to="/metricas" search={{ dias: 7, origem: "painel" }}>
-              <MiniKpi rotulo="Alcance 7d" valor={dados.kpis.alcance7d} />
+              <MiniKpi rotulo="Alcance 7d" valor={dados.kpis.alcance7d} dica={GLOSSARIO.alcance7d} />
             </Link>
           </ComDica>
 
@@ -208,7 +222,7 @@ export function Painel() {
             }
           >
             <Link to="/ajustes" search={{ secao: "contas", origem: "painel" }}>
-              <MiniKpi rotulo="Contas conectadas" valor={dados.kpis.contasConectadas} />
+              <MiniKpi rotulo="Contas conectadas" valor={dados.kpis.contasConectadas} dica={GLOSSARIO.contasConectadas} />
             </Link>
           </ComDica>
         </div>
@@ -358,7 +372,11 @@ export function Painel() {
           <h2 className="rotulo flex items-center gap-1.5">
             <Flame size={12} color="#f6bd24" />
             Fora da curva — {diasOutliers} dias
+            <TooltipProvider delayDuration={200}>
+              <Dica texto={`${GLOSSARIO.rx} ${GLOSSARIO.foraDaCurvaBloco}`} />
+            </TooltipProvider>
           </h2>
+
           <div className="flex items-center gap-2">
 
             <Link
