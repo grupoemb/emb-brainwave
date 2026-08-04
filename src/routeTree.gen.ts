@@ -10,33 +10,141 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AjustesRouteImport } from './routes/ajustes'
+import { Route as CalendarioRouteImport } from './routes/calendario'
+import { Route as CerebroRouteImport } from './routes/cerebro'
+import { Route as ConcorrentesRouteImport } from './routes/concorrentes'
+import { Route as CriarRouteImport } from './routes/criar'
+import { Route as KanbanRouteImport } from './routes/kanban'
+import { Route as MetricasRouteImport } from './routes/metricas'
+import { Route as PautasRouteImport } from './routes/pautas'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AjustesRoute = AjustesRouteImport.update({
+  id: '/ajustes',
+  path: '/ajustes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CalendarioRoute = CalendarioRouteImport.update({
+  id: '/calendario',
+  path: '/calendario',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CerebroRoute = CerebroRouteImport.update({
+  id: '/cerebro',
+  path: '/cerebro',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConcorrentesRoute = ConcorrentesRouteImport.update({
+  id: '/concorrentes',
+  path: '/concorrentes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CriarRoute = CriarRouteImport.update({
+  id: '/criar',
+  path: '/criar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KanbanRoute = KanbanRouteImport.update({
+  id: '/kanban',
+  path: '/kanban',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MetricasRoute = MetricasRouteImport.update({
+  id: '/metricas',
+  path: '/metricas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PautasRoute = PautasRouteImport.update({
+  id: '/pautas',
+  path: '/pautas',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/ajustes': typeof AjustesRoute
+  '/calendario': typeof CalendarioRoute
+  '/cerebro': typeof CerebroRoute
+  '/concorrentes': typeof ConcorrentesRoute
+  '/criar': typeof CriarRoute
+  '/kanban': typeof KanbanRoute
+  '/metricas': typeof MetricasRoute
+  '/pautas': typeof PautasRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/ajustes': typeof AjustesRoute
+  '/calendario': typeof CalendarioRoute
+  '/cerebro': typeof CerebroRoute
+  '/concorrentes': typeof ConcorrentesRoute
+  '/criar': typeof CriarRoute
+  '/kanban': typeof KanbanRoute
+  '/metricas': typeof MetricasRoute
+  '/pautas': typeof PautasRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/ajustes': typeof AjustesRoute
+  '/calendario': typeof CalendarioRoute
+  '/cerebro': typeof CerebroRoute
+  '/concorrentes': typeof ConcorrentesRoute
+  '/criar': typeof CriarRoute
+  '/kanban': typeof KanbanRoute
+  '/metricas': typeof MetricasRoute
+  '/pautas': typeof PautasRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/ajustes'
+    | '/calendario'
+    | '/cerebro'
+    | '/concorrentes'
+    | '/criar'
+    | '/kanban'
+    | '/metricas'
+    | '/pautas'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/ajustes'
+    | '/calendario'
+    | '/cerebro'
+    | '/concorrentes'
+    | '/criar'
+    | '/kanban'
+    | '/metricas'
+    | '/pautas'
+  id:
+    | '__root__'
+    | '/'
+    | '/ajustes'
+    | '/calendario'
+    | '/cerebro'
+    | '/concorrentes'
+    | '/criar'
+    | '/kanban'
+    | '/metricas'
+    | '/pautas'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AjustesRoute: typeof AjustesRoute
+  CalendarioRoute: typeof CalendarioRoute
+  CerebroRoute: typeof CerebroRoute
+  ConcorrentesRoute: typeof ConcorrentesRoute
+  CriarRoute: typeof CriarRoute
+  KanbanRoute: typeof KanbanRoute
+  MetricasRoute: typeof MetricasRoute
+  PautasRoute: typeof PautasRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +156,75 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ajustes': {
+      id: '/ajustes'
+      path: '/ajustes'
+      fullPath: '/ajustes'
+      preLoaderRoute: typeof AjustesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/calendario': {
+      id: '/calendario'
+      path: '/calendario'
+      fullPath: '/calendario'
+      preLoaderRoute: typeof CalendarioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cerebro': {
+      id: '/cerebro'
+      path: '/cerebro'
+      fullPath: '/cerebro'
+      preLoaderRoute: typeof CerebroRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/concorrentes': {
+      id: '/concorrentes'
+      path: '/concorrentes'
+      fullPath: '/concorrentes'
+      preLoaderRoute: typeof ConcorrentesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/criar': {
+      id: '/criar'
+      path: '/criar'
+      fullPath: '/criar'
+      preLoaderRoute: typeof CriarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kanban': {
+      id: '/kanban'
+      path: '/kanban'
+      fullPath: '/kanban'
+      preLoaderRoute: typeof KanbanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/metricas': {
+      id: '/metricas'
+      path: '/metricas'
+      fullPath: '/metricas'
+      preLoaderRoute: typeof MetricasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pautas': {
+      id: '/pautas'
+      path: '/pautas'
+      fullPath: '/pautas'
+      preLoaderRoute: typeof PautasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AjustesRoute: AjustesRoute,
+  CalendarioRoute: CalendarioRoute,
+  CerebroRoute: CerebroRoute,
+  ConcorrentesRoute: ConcorrentesRoute,
+  CriarRoute: CriarRoute,
+  KanbanRoute: KanbanRoute,
+  MetricasRoute: MetricasRoute,
+  PautasRoute: PautasRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
