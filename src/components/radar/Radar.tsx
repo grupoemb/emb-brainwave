@@ -20,7 +20,12 @@ export function Radar() {
 
   return (
     <Revelar className="space-y-4">
-      <h1 className="secao-entrada text-lg font-bold">Reels Radar</h1>
+      <CabecalhoTela
+        icone={<IconeRadar size={17} />}
+        titulo="Reels Radar"
+        descricao="Referências de mercado, leitura dos perfis observados e a biblioteca de ideias salvas."
+      />
+
 
       <div className="secao-entrada flex gap-2">
         {ABAS.map((a) => (
