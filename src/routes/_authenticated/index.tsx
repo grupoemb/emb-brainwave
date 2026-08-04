@@ -13,5 +13,5 @@ export const Route = createFileRoute("/_authenticated/")({
       },
     ],
   }),
-  component: () => <ModuloEmConstrucao titulo="Painel" />,
+  component: Painel,
 });
