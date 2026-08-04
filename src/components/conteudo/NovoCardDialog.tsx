@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { toastDesfazer } from "@/lib/toastDesfazer";
+
 import {
   Dialog,
   DialogContent,
@@ -40,21 +42,13 @@ export function NovoCardDialog({ aberto, aoFechar }: { aberto: boolean; aoFechar
       setFormato("");
       setPilar("");
       aoFechar();
-      toast.success("Card criado", {
-        duration: 7000,
-        action: {
-          label: "Desfazer",
-          onClick: () => {
-            void (async () => {
-              try {
-                await excluir.mutateAsync({ id: criado.id });
-                toast("Criação desfeita");
-              } catch {
-                toast.error("Não foi possível desfazer");
-              }
-            })();
-          },
-        },
+      toastDesfazer("Card criado", async () => {
+        try {
+          await excluir.mutateAsync({ id: criado.id });
+          toast("Criação desfeita");
+        } catch {
+          toast.error("Não foi possível desfazer");
+        }
       });
     } catch (erro) {
       toast.error(erro instanceof Error ? erro.message : "Não foi possível criar o card");

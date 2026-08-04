@@ -15,6 +15,8 @@ import { ptBR } from "date-fns/locale";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 
+import { toastDesfazer } from "@/lib/toastDesfazer";
+
 import { Revelar } from "@/components/Revelar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -151,21 +153,13 @@ export function Calendario() {
     try {
       await agendar.mutateAsync({ id, scheduled_for: iso });
       const anterior = post.scheduled_for;
-      toast.success(`Agendado para ${format(dia, "dd/MM", { locale: ptBR })}`, {
-        duration: 7000,
-        action: {
-          label: "Desfazer",
-          onClick: () => {
-            void (async () => {
-              try {
-                await agendar.mutateAsync({ id, scheduled_for: anterior });
-                toast("Agendamento desfeito");
-              } catch {
-                toast.error("Não foi possível desfazer");
-              }
-            })();
-          },
-        },
+      toastDesfazer(`Agendado para ${format(dia, "dd/MM", { locale: ptBR })}`, async () => {
+        try {
+          await agendar.mutateAsync({ id, scheduled_for: anterior });
+          toast("Agendamento desfeito");
+        } catch {
+          toast.error("Não foi possível desfazer");
+        }
       });
     } catch (erro) {
       toast.error(erro instanceof Error ? erro.message : "Não foi possível agendar");
