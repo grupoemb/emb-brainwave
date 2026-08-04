@@ -1,19 +1,23 @@
 import { createServerFn } from "@tanstack/react-start";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
+export type Perfil = { id: string; nome: string; avatar_url: string | null };
+
 export const obterMeuPerfil = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
-    const { data, error } = await context.supabase
+  .handler(async ({ context }): Promise<Perfil> => {
+    const db = context.supabase as unknown as SupabaseClient;
+    const { data, error } = await db
       .from("profiles")
       .select("id, nome, avatar_url")
       .eq("id", context.userId)
       .maybeSingle();
 
     if (error) throw new Error(error.message);
-    return data ?? { id: context.userId, nome: "", avatar_url: null };
+    return (data as Perfil | null) ?? { id: context.userId, nome: "", avatar_url: null };
   });
 
 const esquemaPerfil = z.object({
@@ -25,7 +29,8 @@ export const atualizarMeuPerfil = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => esquemaPerfil.parse(input))
   .handler(async ({ data, context }) => {
-    const { error } = await context.supabase
+    const db = context.supabase as unknown as SupabaseClient;
+    const { error } = await db
       .from("profiles")
       .update({ nome: data.nome, avatar_url: data.avatar_url || null })
       .eq("id", context.userId);
