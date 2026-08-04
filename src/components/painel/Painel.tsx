@@ -3,6 +3,8 @@ import { Flame, Sparkles } from "lucide-react";
 import { useState } from "react";
 
 import { Revelar } from "@/components/Revelar";
+import { CabecalhoTela } from "@/components/ui/CabecalhoTela";
+
 import { Dica } from "@/components/painel/Dica";
 import { ComparativoContas } from "@/components/painel/ComparativoContas";
 import { DestaquesPeriodo } from "@/components/painel/DestaquesPeriodo";
@@ -131,19 +133,19 @@ export function Painel() {
   if (carregando || !dados) {
     return (
       <Revelar className="space-y-4">
-        <div className="secao-entrada h-12 w-72 rounded bg-white/6" />
+        <div className="secao-entrada h-12 w-72 esqueleto rounded" />
         <div className="secao-entrada grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
           {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="cartao min-h-[5.9rem] p-4">
-              <div className="h-3 w-20 rounded bg-white/6" />
-              <div className="mt-6 h-6 w-16 rounded bg-white/6" />
+              <div className="h-3 w-20 esqueleto rounded" />
+              <div className="mt-6 h-6 w-16 esqueleto rounded" />
             </div>
           ))}
         </div>
         <div className="secao-entrada grid gap-3 lg:grid-cols-3">
           {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="cartao h-52 p-4">
-              <div className="h-3 w-28 rounded bg-white/6" />
+              <div className="h-3 w-28 esqueleto rounded" />
             </div>
           ))}
         </div>
@@ -153,16 +155,12 @@ export function Painel() {
 
   return (
     <Revelar className="space-y-4">
-      <div className="secao-entrada flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="text-lg font-bold">
-            {saudacao(agora)}
-            {primeiroNome ? `, ${primeiroNome}` : ""}
-          </h1>
-          <p className="mt-1 text-xs capitalize text-muted">{dataPorExtenso(agora)}</p>
-        </div>
-        <span className="text-xs text-muted">{textoFrescor(coleta)}</span>
-      </div>
+      <CabecalhoTela
+        titulo={`${saudacao(agora)}${primeiroNome ? `, ${primeiroNome}` : ""}`}
+        descricao={<span className="capitalize">{dataPorExtenso(agora)}</span>}
+        acoes={<span className="text-xs text-muted">{textoFrescor(coleta)}</span>}
+      />
+
 
       <TooltipProvider delayDuration={200}>
         <div className="secao-entrada grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
@@ -260,8 +258,8 @@ export function Painel() {
           <div className="grid gap-3 lg:grid-cols-3">
             {Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="cartao h-72 p-4">
-                <div className="h-3 w-24 rounded bg-white/6" />
-                <div className="mt-6 h-7 w-28 rounded bg-white/6" />
+                <div className="h-3 w-24 esqueleto rounded" />
+                <div className="mt-6 h-7 w-28 esqueleto rounded" />
               </div>
             ))}
           </div>

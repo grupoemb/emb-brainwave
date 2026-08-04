@@ -12,13 +12,15 @@ import {
   startOfWeek,
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 import { toastDesfazer } from "@/lib/toastDesfazer";
 
 import { Revelar } from "@/components/Revelar";
+import { CabecalhoTela } from "@/components/ui/CabecalhoTela";
+
 import { MenuFiltro } from "@/components/filtros/MenuFiltro";
 import { VazioFiltrado } from "@/components/filtros/VazioFiltrado";
 import { SemanaEsqueleto, CalendarioEsqueleto } from "@/components/conteudo/Esqueleto";
@@ -228,7 +230,13 @@ export function Calendario() {
 
   return (
     <Revelar className="space-y-4">
+      <CabecalhoTela
+        icone={<CalendarDays size={17} />}
+        titulo="Calendário"
+        descricao="Agenda das publicações. Arraste um card para outro dia para reagendar."
+      />
       {faixa}
+
 
       {foco7d && !carregando && proximos7d.length === 0 && (
         <div className="cartao secao-entrada flex flex-col items-center gap-3 p-8 text-center">

@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
-import { Plus } from "lucide-react";
+import { KanbanSquare, Plus } from "lucide-react";
 import { toast } from "sonner";
 
 import { toastDesfazer } from "@/lib/toastDesfazer";
 
 import { Revelar } from "@/components/Revelar";
+import { CabecalhoTela } from "@/components/ui/CabecalhoTela";
+
 import { MenuFiltro } from "@/components/filtros/MenuFiltro";
 import { VazioFiltrado } from "@/components/filtros/VazioFiltrado";
 import { CartaoPost } from "@/components/conteudo/CartaoPost";
@@ -177,12 +179,19 @@ export function Kanban() {
 
   return (
     <Revelar className="space-y-4">
+      <CabecalhoTela
+        icone={<KanbanSquare size={17} />}
+        titulo="Kanban"
+        descricao="Arraste os cards entre as etapas para acompanhar a produção."
+      />
+
       {doPainel ? (
         <FaixaDeContexto
           recorte={colunaFoco ? `coluna ${colunaFoco.rotulo}` : "fluxo de produção"}
           onLimpar={limparRecorte}
         />
       ) : null}
+
 
       <div className="secao-entrada flex flex-wrap items-center gap-2">
         <p className="text-sm text-muted">

@@ -1,5 +1,5 @@
 export function Esqueleto({ className = "" }: { className?: string }) {
-  return <div aria-hidden className={"bg-white/6 " + className} />;
+  return <div aria-hidden className={"esqueleto " + className} />;
 }
 
 export function LinhaEsqueleto() {

@@ -140,7 +140,7 @@ export function Biblioteca() {
     <div className="space-y-4">
       {insights && insights.total > 0 ? <PainelInsights insights={insights} /> : null}
 
-      <div className="cartao space-y-3 p-4">
+      <div className="cartao interativo space-y-3 p-4">
         <div className="flex flex-wrap items-center gap-2">
           <div className="relative min-w-[12rem] flex-1">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
@@ -210,10 +210,10 @@ export function Biblioteca() {
       {carregando ? (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="cartao animate-pulse space-y-3 p-4">
-              <div className="aspect-video w-full rounded-[.6rem] bg-white/6" />
-              <div className="h-3 w-2/3 rounded bg-white/6" />
-              <div className="h-3 w-1/2 rounded bg-white/6" />
+            <div key={i} className="cartao space-y-3 p-4">
+              <div className="aspect-video w-full esqueleto rounded-[.6rem]" />
+              <div className="h-3 w-2/3 esqueleto rounded" />
+              <div className="h-3 w-1/2 esqueleto rounded" />
             </div>
           ))}
         </div>

@@ -32,9 +32,9 @@ export function AudienciaPede() {
 
       {carregando ? (
         <div className="space-y-2">
-          <div className="h-3 w-11/12 rounded bg-white/6" />
-          <div className="h-3 w-3/4 rounded bg-white/6" />
-          <div className="h-3 w-2/3 rounded bg-white/6" />
+          <div className="h-3 w-11/12 esqueleto rounded" />
+          <div className="h-3 w-3/4 esqueleto rounded" />
+          <div className="h-3 w-2/3 esqueleto rounded" />
         </div>
       ) : vazio ? (
         <p className="text-sm text-muted">

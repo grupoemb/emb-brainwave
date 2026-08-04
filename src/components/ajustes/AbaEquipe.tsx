@@ -45,7 +45,7 @@ export function AbaEquipe() {
         {carregando ? (
           <div className="space-y-2 p-2">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="h-12 animate-pulse rounded-[.5rem] bg-white/5" />
+              <div key={i} className="h-12 esqueleto rounded-[.5rem]" />
             ))}
           </div>
         ) : membros.length === 0 ? (

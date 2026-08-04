@@ -2,11 +2,13 @@ import { useMemo, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { getRouteApi, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Loader2, Sparkles } from "lucide-react";
+import { Loader2, PenLine, Sparkles } from "lucide-react";
 import Markdown from "react-markdown";
 import { toast } from "sonner";
 
 import { Revelar } from "@/components/Revelar";
+import { CabecalhoTela } from "@/components/ui/CabecalhoTela";
+
 import { supabase } from "@/integrations/supabase/client";
 import { salvarPostGerado } from "@/lib/conteudo.functions";
 import { useOrg } from "@/hooks/useOrg";
@@ -53,13 +55,13 @@ function Chip({
 
 function EsqueletoResultado() {
   return (
-    <div className="cartao animate-pulse space-y-3 p-4">
-      <div className="h-4 w-1/3 rounded bg-white/6" />
-      <div className="h-3 w-full rounded bg-white/6" />
-      <div className="h-3 w-11/12 rounded bg-white/6" />
-      <div className="h-3 w-4/5 rounded bg-white/6" />
-      <div className="h-3 w-full rounded bg-white/6" />
-      <div className="h-3 w-2/3 rounded bg-white/6" />
+    <div className="cartao space-y-3 p-4">
+      <div className="h-4 w-1/3 esqueleto rounded" />
+      <div className="h-3 w-full esqueleto rounded" />
+      <div className="h-3 w-11/12 esqueleto rounded" />
+      <div className="h-3 w-4/5 esqueleto rounded" />
+      <div className="h-3 w-full esqueleto rounded" />
+      <div className="h-3 w-2/3 esqueleto rounded" />
     </div>
   );
 }
@@ -174,7 +176,12 @@ export function Estudio() {
 
   return (
     <Revelar className="space-y-4">
-      <h1 className="secao-entrada text-lg font-bold">Criar</h1>
+      <CabecalhoTela
+        icone={<PenLine size={17} />}
+        titulo="Criar"
+        descricao="Estúdio de geração: escolha o tipo de peça, dê o contexto e transforme o resultado em post."
+      />
+
 
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">

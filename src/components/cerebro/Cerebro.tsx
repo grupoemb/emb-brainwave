@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { Brain, ChevronDown } from "lucide-react";
+import { CabecalhoTela } from "@/components/ui/CabecalhoTela";
+
 import Markdown from "react-markdown";
 
 import { Revelar } from "@/components/Revelar";
@@ -14,10 +16,13 @@ export function Cerebro() {
 
   return (
     <Revelar className="space-y-4">
-      <div className="secao-entrada flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-lg font-bold">Cérebro</h1>
-        <span className="text-xs text-muted">última análise {haQuanto(ultimaAnalise)}</span>
-      </div>
+      <CabecalhoTela
+        icone={<Brain size={17} />}
+        titulo="Cérebro"
+        descricao="O playbook vivo da marca e o que a análise semanal aprendeu."
+        acoes={<span className="text-xs text-muted">última análise {haQuanto(ultimaAnalise)}</span>}
+      />
+
 
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="secao-entrada space-y-4">
@@ -25,9 +30,9 @@ export function Cerebro() {
           <h2 className="text-sm font-bold text-txt">O que os dados dizem</h2>
           {carregando ? (
             <div className="space-y-2">
-              <div className="h-3 w-full rounded bg-white/6" />
-              <div className="h-3 w-11/12 rounded bg-white/6" />
-              <div className="h-3 w-2/3 rounded bg-white/6" />
+              <div className="h-3 w-full esqueleto rounded" />
+              <div className="h-3 w-11/12 esqueleto rounded" />
+              <div className="h-3 w-2/3 esqueleto rounded" />
             </div>
           ) : playbook ? (
             <div className="prosa">
@@ -50,9 +55,9 @@ export function Cerebro() {
           {carregando ? (
             Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="cartao space-y-2 p-4">
-                <div className="h-4 w-3/4 rounded bg-white/6" />
-                <div className="h-1 w-full rounded bg-white/6" />
-                <div className="h-3 w-2/3 rounded bg-white/6" />
+                <div className="h-4 w-3/4 esqueleto rounded" />
+                <div className="h-1 w-full esqueleto rounded" />
+                <div className="h-3 w-2/3 esqueleto rounded" />
               </div>
             ))
           ) : ativos.length === 0 && historico.length === 0 ? (

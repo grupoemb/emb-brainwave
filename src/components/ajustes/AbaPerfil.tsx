@@ -60,7 +60,7 @@ export function AbaPerfil() {
   }
 
   if (isPending) {
-    return <div className="cartao secao-entrada h-56 max-w-md animate-pulse p-6" />;
+    return <div className="cartao secao-entrada esqueleto h-56 max-w-md p-6" />;
   }
 
   return (

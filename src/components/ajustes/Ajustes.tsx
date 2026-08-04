@@ -1,6 +1,9 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
+import { Settings } from "lucide-react";
 
 import { Revelar } from "@/components/Revelar";
+import { CabecalhoTela } from "@/components/ui/CabecalhoTela";
+
 import { AbaContas } from "@/components/ajustes/AbaContas";
 import { AbaEquipe } from "@/components/ajustes/AbaEquipe";
 import { AbaMarca } from "@/components/ajustes/AbaMarca";
@@ -35,7 +38,12 @@ export function Ajustes() {
 
   return (
     <Revelar className="space-y-4">
-      <h1 className="secao-entrada text-lg font-bold">Ajustes</h1>
+      <CabecalhoTela
+        icone={<Settings size={17} />}
+        titulo="Ajustes"
+        descricao="Perfil, equipe, contas conectadas, marca e templates de IA."
+      />
+
 
       {doPainel ? (
         <div className="secao-entrada">

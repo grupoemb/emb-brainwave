@@ -81,7 +81,7 @@ export function CartaoPauta({
 
   return (
     <article
-      className="cartao space-y-2.5 p-4"
+      className="cartao interativo space-y-2.5 p-4"
       style={{ borderLeft: "2px solid rgba(0, 164, 255, .6)" }}
     >
       <div className="flex items-start justify-between gap-3">
