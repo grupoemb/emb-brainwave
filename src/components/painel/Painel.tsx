@@ -360,27 +360,7 @@ export function Painel() {
             Fora da curva — {diasOutliers} dias
           </h2>
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1">
-              {JANELAS.map((d) => {
-                const ativo = d === diasOutliers;
-                return (
-                  <button
-                    key={d}
-                    type="button"
-                    onClick={() => setDiasOutliers(d)}
-                    aria-pressed={ativo}
-                    className={
-                      "numero rounded-[.5rem] px-2 py-1 text-xs transition-colors " +
-                      (ativo
-                        ? "bg-azure/14 font-semibold text-txt"
-                        : "text-muted hover:bg-white/6 hover:text-corpo")
-                    }
-                  >
-                    {d}d
-                  </button>
-                );
-              })}
-            </div>
+
             <Link
               to="/metricas"
               search={{ dias: diasOutliers, origem: "painel" }}
