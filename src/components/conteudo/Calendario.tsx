@@ -230,7 +230,13 @@ export function Calendario() {
 
   return (
     <Revelar className="space-y-4">
+      <CabecalhoTela
+        icone={<CalendarDays size={17} />}
+        titulo="Calendário"
+        descricao="Agenda das publicações. Arraste um card para outro dia para reagendar."
+      />
       {faixa}
+
 
       {foco7d && !carregando && proximos7d.length === 0 && (
         <div className="cartao secao-entrada flex flex-col items-center gap-3 p-8 text-center">
