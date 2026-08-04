@@ -113,6 +113,60 @@ export type Database = {
           },
         ]
       }
+      audience_notes: {
+        Row: {
+          analyzed_at: string
+          comment_count: number | null
+          id: string
+          objections: Json | null
+          organization_id: string
+          post_id: string
+          questions: Json | null
+          sentiment: string | null
+          summary: string | null
+          themes: Json | null
+        }
+        Insert: {
+          analyzed_at?: string
+          comment_count?: number | null
+          id?: string
+          objections?: Json | null
+          organization_id: string
+          post_id: string
+          questions?: Json | null
+          sentiment?: string | null
+          summary?: string | null
+          themes?: Json | null
+        }
+        Update: {
+          analyzed_at?: string
+          comment_count?: number | null
+          id?: string
+          objections?: Json | null
+          organization_id?: string
+          post_id?: string
+          questions?: Json | null
+          sentiment?: string | null
+          summary?: string | null
+          themes?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audience_notes_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "audience_notes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: true
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       brand_profiles: {
         Row: {
           audience: string | null
