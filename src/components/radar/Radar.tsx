@@ -1,6 +1,9 @@
 import { getRouteApi, useNavigate } from "@tanstack/react-router";
+import { Radar as IconeRadar } from "lucide-react";
 
 import { Revelar } from "@/components/Revelar";
+import { CabecalhoTela } from "@/components/ui/CabecalhoTela";
+
 import { Biblioteca } from "@/components/radar/Biblioteca";
 import { RadarColeta } from "@/components/radar/RadarColeta";
 
