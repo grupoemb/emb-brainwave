@@ -19,6 +19,9 @@ import { toast } from "sonner";
 import { toastDesfazer } from "@/lib/toastDesfazer";
 
 import { Revelar } from "@/components/Revelar";
+import { SemanaEsqueleto } from "@/components/conteudo/Esqueleto";
+import { FaixaDeContexto } from "@/components/painel/FaixaDeContexto";
+
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { usePilares, usePosts, useAgendar } from "@/hooks/useConteudo";
 import { useRealtimePosts } from "@/hooks/useRealtimePosts";
