@@ -32,6 +32,36 @@ export type OutlierPainel = {
   rx: number;
 };
 
+export type MelhorPost = {
+  id: string;
+  title: string;
+  conta: string | null;
+  alcance: number | null;
+  rx: number | null;
+  engajamento: number | null;
+};
+
+export type ContaPainel = {
+  conta: string;
+  channel: string | null;
+  posts: number;
+  alcance: number | null;
+  alcanceMedio: number | null;
+  engajamento: number | null;
+  rxMedio: number | null;
+  outliers: number;
+  consistencia: number | null;
+  variacaoAlcance: number | null;
+  melhorPost: MelhorPost | null;
+};
+
+export type DestaquesPainel = {
+  melhorAlcance: MelhorPost | null;
+  melhorEngajamento: MelhorPost | null;
+  maiorRx: MelhorPost | null;
+  contaConsistente: { conta: string; consistencia: number } | null;
+};
+
 export type DadosPainel = {
   nome: string | null;
   ultimaColeta: string | null;
@@ -46,8 +76,11 @@ export type DadosPainel = {
   pautas: PautaPainel[];
   insights: InsightPainel[];
   outliers: OutlierPainel[];
+  contas: ContaPainel[];
+  destaques: DestaquesPainel;
   producao: Record<string, number>;
 };
+
 
 export const carregarPainel = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
