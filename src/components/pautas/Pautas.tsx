@@ -1,5 +1,9 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
+import { Lightbulb } from "lucide-react";
 import { toast } from "sonner";
+
+import { CabecalhoTela } from "@/components/ui/CabecalhoTela";
+
 
 import { Revelar } from "@/components/Revelar";
 import { CartaoPauta, haQuanto } from "@/components/pautas/CartaoPauta";
