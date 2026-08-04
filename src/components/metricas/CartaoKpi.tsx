@@ -61,10 +61,10 @@ export function CartaoKpi({
   formula: string;
   carregando?: boolean;
   /** valor do período comparado (undefined = comparação desligada) */
-  valorAnterior?: number | null;
-  textoAnterior?: string | null;
-  comparando?: boolean;
-  rotuloComparacao?: string;
+  valorAnterior?: number | null | undefined;
+  textoAnterior?: string | null | undefined;
+  comparando?: boolean | undefined;
+  rotuloComparacao?: string | undefined;
 }) {
   const numerico = typeof valor === "number" ? valor : null;
   const animado = useContagem(numerico);

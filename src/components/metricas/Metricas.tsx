@@ -7,6 +7,7 @@ import { EsqueletoMetricas } from "@/components/metricas/EsqueletoMetricas";
 import { FiltrosMetricas } from "@/components/metricas/FiltrosMetricas";
 import { GraficoAlcance } from "@/components/metricas/GraficoAlcance";
 import { TabelaPosts } from "@/components/metricas/TabelaPosts";
+import { rotuloIntervalo } from "@/lib/metricas";
 import { usePilares } from "@/hooks/useConteudo";
 import { useContasConectadas, useMetricas } from "@/hooks/useMetricas";
 
