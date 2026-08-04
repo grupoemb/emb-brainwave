@@ -275,6 +275,8 @@ export function Kanban() {
           const emFoco = colunaFoco?.status === coluna.status;
           const apagada = filtroAtivo && todos.length === 0;
 
+          if (apagada && !mostrarVazias && !emFoco) return null;
+
           return (
             <section
               key={coluna.status}
