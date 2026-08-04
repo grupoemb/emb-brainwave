@@ -121,12 +121,18 @@ export function montarLinhas(
       title: p.title,
       conta: p.source_handle,
       format: (p.format ?? null) as Formato | null,
+      hook: p.hook ?? null,
+      pillar_id: p.pillar_id,
+      theme: p.theme ?? null,
+      intent: p.intent ?? null,
       published_at: p.published_at,
       reach,
+      impressions: l?.impressions ?? null,
       saves: l?.saves ?? null,
       shares: l?.shares ?? null,
       comments: l?.comments ?? null,
       likes: l?.likes ?? null,
+
       rx: reach !== null && mediana !== null ? Number((reach / mediana).toFixed(2)) : null,
     };
   });
