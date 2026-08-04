@@ -35,11 +35,31 @@ export function Kanban() {
   const colunaFoco = COLUNAS.find((c) => c.status === foco) ?? null;
   const refFoco = useRef<HTMLElement | null>(null);
 
+  const [recalculando, setRecalculando] = useState(false);
+  const primeiroRecorte = useRef(true);
+
   useEffect(() => {
     if (!carregando && colunaFoco) {
       refFoco.current?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
     }
   }, [carregando, colunaFoco]);
+
+  // Skeleton curto ao trocar o recorte de canal/pilar, pra sinalizar o recálculo das colunas.
+  useEffect(() => {
+    if (primeiroRecorte.current) {
+      primeiroRecorte.current = false;
+      return;
+    }
+    const semMovimento =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (semMovimento) return;
+
+    setRecalculando(true);
+    const t = window.setTimeout(() => setRecalculando(false), 320);
+    return () => window.clearTimeout(t);
+  }, [canal, pilar]);
+
 
   const limparRecorte = () => void navigate({ to: "/kanban", search: { foco: "", origem: "" } });
 
