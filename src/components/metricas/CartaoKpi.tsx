@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { HelpCircle } from "lucide-react";
 
 import { Esqueleto } from "@/components/conteudo/Esqueleto";
+import { classeVariacao, numero, textoVariacao, variacao } from "@/lib/metricas";
+
 
 function reduzido() {
   return typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -44,6 +46,10 @@ export function CartaoKpi({
   casas = 0,
   formula,
   carregando,
+  valorAnterior,
+  textoAnterior,
+  comparando,
+  rotuloComparacao,
 }: {
   rotulo: string;
   /** valor numérico animado; null = sem base */
@@ -54,9 +60,19 @@ export function CartaoKpi({
   casas?: number;
   formula: string;
   carregando?: boolean;
+  /** valor do período comparado (undefined = comparação desligada) */
+  valorAnterior?: number | null | undefined;
+  textoAnterior?: string | null | undefined;
+  comparando?: boolean | undefined;
+  rotuloComparacao?: string | undefined;
 }) {
   const numerico = typeof valor === "number" ? valor : null;
   const animado = useContagem(numerico);
+  const comparaNumero = valorAnterior !== undefined;
+  const comparaTexto = textoAnterior !== undefined;
+  const delta = comparaNumero ? variacao(numerico, valorAnterior ?? null) : null;
+
+
 
   const conteudo = carregando ? null : texto !== undefined ? (
     texto === null ? (
@@ -93,12 +109,34 @@ export function CartaoKpi({
         <div className="numero text-2xl text-txt">{conteudo}</div>
       )}
 
+      {comparaNumero || comparaTexto ? (
+        <div className="mt-1 flex items-center gap-1.5 text-[.7rem]">
+          {comparando ? (
+            <Esqueleto className="h-3.5 w-24 rounded" />
+          ) : comparaNumero ? (
+            <>
+              <span className={"pill " + classeVariacao(delta)}>{textoVariacao(delta)}</span>
+              <span className="text-muted">
+                antes {numero(valorAnterior ?? null, casas)}
+                {valorAnterior !== null && sufixo ? sufixo : ""}
+              </span>
+            </>
+          ) : textoAnterior && textoAnterior !== texto ? (
+            <span className="text-muted">antes {textoAnterior}</span>
+          ) : (
+            <span className="text-muted">sem mudança</span>
+          )}
+        </div>
+      ) : null}
+
       <span
         role="tooltip"
         className="pointer-events-none absolute inset-x-2 bottom-2 z-10 rounded-[.5rem] border border-line-forte bg-card2 px-2.5 py-1.5 text-[.7rem] leading-snug text-corpo opacity-0 shadow-lg transition-opacity group-hover:opacity-100"
       >
         {formula}
+        {rotuloComparacao ? ` Comparado com ${rotuloComparacao}.` : ""}
       </span>
     </div>
+
   );
 }

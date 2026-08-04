@@ -248,3 +248,61 @@ export function textoFrescor(ultimo: number | null) {
   if (s < 86_400) return `coletado há ${Math.round(s / 3600)}h`;
   return `coletado há ${Math.round(s / 86_400)}d`;
 }
+
+/* ---------- Comparação de períodos ---------- */
+
+export type Intervalo = { desde: string; ate: string };
+
+/** Intervalo do período atual (últimos N dias até agora). */
+export function intervaloAtual(dias: number): Intervalo {
+  const agora = Date.now();
+  return {
+    desde: new Date(agora - dias * 86_400_000).toISOString(),
+    ate: new Date(agora).toISOString(),
+  };
+}
+
+/** Intervalo imediatamente anterior, com a mesma duração. */
+export function intervaloAnterior(dias: number): Intervalo {
+  const agora = Date.now();
+  const inicioAtual = agora - dias * 86_400_000;
+  return {
+    desde: new Date(inicioAtual - dias * 86_400_000).toISOString(),
+    ate: new Date(inicioAtual).toISOString(),
+  };
+}
+
+/** Variação percentual; null quando falta base. */
+export function variacao(atual: number | null, anterior: number | null) {
+  if (atual === null || anterior === null || !Number.isFinite(atual) || !Number.isFinite(anterior))
+    return null;
+  if (anterior === 0) return null;
+  return ((atual - anterior) / Math.abs(anterior)) * 100;
+}
+
+/** Faixa neutra de ±2%. */
+export function classeVariacao(v: number | null) {
+  if (v === null) return "text-muted";
+  if (v > 2) return "pill-bom";
+  if (v < -2) return "pill-ruim";
+  return "text-muted";
+}
+
+export function textoVariacao(v: number | null) {
+  if (v === null) return "—";
+  const sinal = v > 0 ? "+" : "";
+  return `${sinal}${v.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%`;
+}
+
+/** Rótulo curto de um intervalo: "02–31 mar". */
+export function rotuloIntervalo({ desde, ate }: Intervalo) {
+  const f = (iso: string, comMes: boolean) =>
+    new Intl.DateTimeFormat("pt-BR", {
+      timeZone: "America/Sao_Paulo",
+      day: "2-digit",
+      ...(comMes ? { month: "short" as const } : {}),
+    })
+      .format(new Date(iso))
+      .replace(".", "");
+  return `${f(desde, false)}–${f(ate, true)}`;
+}

@@ -7,7 +7,11 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 const entrada = z.object({
   organizationId: z.string().uuid(),
   dias: z.union([z.literal(7), z.literal(30), z.literal(90)]),
+  /** Intervalo explícito (usado no modo de comparação). */
+  desde: z.string().optional(),
+  ate: z.string().optional(),
 });
+
 
 /** Contas sociais já conectadas (connected_at preenchido). */
 export const listarContasConectadas = createServerFn({ method: "GET" })
@@ -40,17 +44,22 @@ export const carregarMetricas = createServerFn({ method: "GET" })
   .inputValidator((input: unknown) => entrada.parse(input))
   .handler(async ({ data, context }) => {
     const db = context.supabase as unknown as SupabaseClient;
-    const desde = new Date(Date.now() - data.dias * 86_400_000).toISOString();
+    const desde = data.desde ?? new Date(Date.now() - data.dias * 86_400_000).toISOString();
 
-    const { data: linhasPosts, error: erroPosts } = await db
+    let consulta = db
       .from("posts")
       .select("id, title, channel, format, pillar_id, published_at, meta")
       .eq("organization_id", data.organizationId)
       .eq("status", "published")
       .eq("channel", "instagram")
-      .gte("published_at", desde)
+      .gte("published_at", desde);
+
+    if (data.ate) consulta = consulta.lte("published_at", data.ate);
+
+    const { data: linhasPosts, error: erroPosts } = await consulta
       .order("published_at", { ascending: false })
       .limit(1000);
+
 
     if (erroPosts) throw new Error(erroPosts.message);
 
