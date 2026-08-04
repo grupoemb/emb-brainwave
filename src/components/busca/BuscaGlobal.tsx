@@ -138,7 +138,10 @@ function PainelBusca({ aoFechar }: { aoFechar: () => void }) {
       detalhe: s.converted_post_id ? "Virou post" : "Pauta " + s.status,
       icone: Lightbulb,
       ir: () =>
+        s.converted_post_id
+          ? navigate({ to: "/post/$id", params: { id: s.converted_post_id } })
           : navigate({ to: "/pautas", search: { q: s.title, status: "todos" } as never }),
+
 
     }));
 
