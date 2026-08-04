@@ -20,8 +20,10 @@ import { toastDesfazer } from "@/lib/toastDesfazer";
 
 import { Revelar } from "@/components/Revelar";
 import { MenuFiltro } from "@/components/filtros/MenuFiltro";
-import { SemanaEsqueleto } from "@/components/conteudo/Esqueleto";
+import { VazioFiltrado } from "@/components/filtros/VazioFiltrado";
+import { SemanaEsqueleto, CalendarioEsqueleto } from "@/components/conteudo/Esqueleto";
 import { FaixaDeContexto } from "@/components/painel/FaixaDeContexto";
+
 
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
