@@ -447,3 +447,11 @@
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .esqueleto::after {
+    animation: none !important;
+  }
+  .interativo:hover {
+    transform: none !important;
+  }
+}
