@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ModuloEmConstrucao } from "@/components/ModuloEmConstrucao";
 
-export const Route = createFileRoute("/metricas")({
+export const Route = createFileRoute("/_authenticated/metricas")({
   head: () => ({
     meta: [
       { title: "Métricas — Central de Conteúdo EMB" },

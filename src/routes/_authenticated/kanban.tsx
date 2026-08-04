@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ModuloEmConstrucao } from "@/components/ModuloEmConstrucao";
 
-export const Route = createFileRoute("/kanban")({
+export const Route = createFileRoute("/_authenticated/kanban")({
   head: () => ({
     meta: [
       { title: "Kanban — Central de Conteúdo EMB" },
