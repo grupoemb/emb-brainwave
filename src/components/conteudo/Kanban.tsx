@@ -41,6 +41,19 @@ export function Kanban() {
 
   const limparRecorte = () => void navigate({ to: "/kanban", search: { foco: "", origem: "" } });
 
+  const filtroAtivo = !!canal || !!pilar;
+  const limparFiltros = () => {
+    setCanal(null);
+    setPilar(null);
+  };
+
+  const descricaoRecorte = useMemo(() => {
+    const partes: string[] = [];
+    if (canal) partes.push(`Canal ${CANAIS.find((c) => c.valor === canal)?.rotulo ?? canal}`);
+    if (pilar) partes.push(`Pilar ${pilarPorId.get(pilar)?.name ?? "selecionado"}`);
+    return partes.join(" · ");
+  }, [canal, pilar, pilarPorId]);
+
   const filtrados = useMemo(
     () =>
       posts.filter(
@@ -63,10 +76,23 @@ export function Kanban() {
     return mapa;
   }, [filtrados]);
 
+  const totalPorStatus = useMemo(() => {
+    const mapa = new Map<Status, number>();
+    for (const c of COLUNAS) mapa.set(c.status, 0);
+    for (const p of posts) mapa.set(p.status, (mapa.get(p.status) ?? 0) + 1);
+    return mapa;
+  }, [posts]);
 
-  const trabalhoVazio = COLUNAS.slice(0, 6).every((c) => (porStatus.get(c.status) ?? []).length === 0);
+
+  const nadaNoFiltro = !carregando && filtroAtivo && filtrados.length === 0;
+  const trabalhoVazio =
+    !filtroAtivo && COLUNAS.slice(0, 6).every((c) => (porStatus.get(c.status) ?? []).length === 0);
   const focoVazio =
-    !!colunaFoco && !carregando && (porStatus.get(colunaFoco.status) ?? []).length === 0;
+    !!colunaFoco &&
+    !carregando &&
+    !nadaNoFiltro &&
+    (porStatus.get(colunaFoco.status) ?? []).length === 0;
+
 
 
   async function soltar(status: Status, e: React.DragEvent) {
