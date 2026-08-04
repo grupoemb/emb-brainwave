@@ -29,6 +29,7 @@ export function Kanban() {
   const [sobre, setSobre] = useState<Status | null>(null);
   const [canal, setCanal] = useState<Canal | null>(null);
   const [pilar, setPilar] = useState<string | null>(null);
+  const [mostrarVazias, setMostrarVazias] = useState(false);
 
   const doPainel = origem === "painel";
   const colunaFoco = COLUNAS.find((c) => c.status === foco) ?? null;
