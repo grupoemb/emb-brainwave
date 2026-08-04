@@ -50,7 +50,7 @@ export function Revelar({ children, className }: { children: ReactNode; classNam
         opacity: 1,
         y: 0,
         duration: 0.42,
-        ease: "cubic-bezier(.23,1,.32,1)",
+        ease: suave,
         stagger: 0.045,
         overwrite: true,
       },
