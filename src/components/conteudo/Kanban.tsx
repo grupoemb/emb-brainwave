@@ -6,24 +6,28 @@ import { toast } from "sonner";
 import { toastDesfazer } from "@/lib/toastDesfazer";
 
 import { Revelar } from "@/components/Revelar";
+import { MenuFiltro } from "@/components/filtros/MenuFiltro";
 import { CartaoPost } from "@/components/conteudo/CartaoPost";
 import { KanbanEsqueleto } from "@/components/conteudo/Esqueleto";
 import { NovoCardDialog } from "@/components/conteudo/NovoCardDialog";
 import { FaixaDeContexto } from "@/components/painel/FaixaDeContexto";
 import { usePilares, usePosts, useMoverStatus } from "@/hooks/useConteudo";
 import { useRealtimePosts } from "@/hooks/useRealtimePosts";
-import { COLUNAS, type Status } from "@/lib/conteudo";
+import { CANAIS, COLUNAS, type Canal, type Status } from "@/lib/conteudo";
+
 
 export function Kanban() {
   useRealtimePosts();
   const navigate = useNavigate();
   const { foco, origem } = useSearch({ from: "/_authenticated/kanban" });
   const { posts, carregando } = usePosts();
-  const { pilarPorId } = usePilares();
+  const { pilares, pilarPorId } = usePilares();
   const mover = useMoverStatus();
   const [abrirNovo, setAbrirNovo] = useState(false);
   const [verTodosPublicados, setVerTodosPublicados] = useState(false);
   const [sobre, setSobre] = useState<Status | null>(null);
+  const [canal, setCanal] = useState<Canal | null>(null);
+  const [pilar, setPilar] = useState<string | null>(null);
 
   const doPainel = origem === "painel";
   const colunaFoco = COLUNAS.find((c) => c.status === foco) ?? null;
@@ -37,10 +41,18 @@ export function Kanban() {
 
   const limparRecorte = () => void navigate({ to: "/kanban", search: { foco: "", origem: "" } });
 
+  const filtrados = useMemo(
+    () =>
+      posts.filter(
+        (p) => (!canal || p.channel === canal) && (!pilar || p.pillar_id === pilar),
+      ),
+    [posts, canal, pilar],
+  );
+
   const porStatus = useMemo(() => {
     const mapa = new Map<Status, typeof posts>();
     for (const c of COLUNAS) mapa.set(c.status, []);
-    for (const p of posts) mapa.get(p.status)?.push(p);
+    for (const p of filtrados) mapa.get(p.status)?.push(p);
     mapa.set(
       "published",
       [...(mapa.get("published") ?? [])].sort(
@@ -49,7 +61,8 @@ export function Kanban() {
       ),
     );
     return mapa;
-  }, [posts]);
+  }, [filtrados]);
+
 
   const trabalhoVazio = COLUNAS.slice(0, 6).every((c) => (porStatus.get(c.status) ?? []).length === 0);
   const focoVazio =
@@ -120,14 +133,44 @@ export function Kanban() {
         />
       ) : null}
 
-      <div className="secao-entrada flex items-center justify-between">
+      <div className="secao-entrada flex flex-wrap items-center gap-2">
         <p className="text-sm text-muted">
-          {carregando ? "Carregando…" : `${posts.length} cards no fluxo`}
+          {carregando
+            ? "Carregando…"
+            : filtrados.length === posts.length
+              ? `${posts.length} cards no fluxo`
+              : `${filtrados.length} de ${posts.length} cards`}
         </p>
-        <button className="btn-primario" onClick={() => setAbrirNovo(true)}>
+
+        <MenuFiltro
+          rotulo="Canal"
+          valor={canal ?? "todos"}
+          padrao="todos"
+          largura="w-52"
+          opcoes={[
+            { valor: "todos", rotulo: "Todos os canais" },
+            ...CANAIS.map((c) => ({ valor: c.valor, rotulo: c.rotulo })),
+          ]}
+          onEscolher={(v) => setCanal(v === "todos" ? null : (v as Canal))}
+        />
+
+        <MenuFiltro
+          rotulo="Pilar"
+          valor={pilar ?? "todos"}
+          padrao="todos"
+          largura="w-60"
+          opcoes={[
+            { valor: "todos", rotulo: "Todos os pilares" },
+            ...pilares.map((p) => ({ valor: p.id, rotulo: p.name, cor: p.color })),
+          ]}
+          onEscolher={(v) => setPilar(v === "todos" ? null : v)}
+        />
+
+        <button className="btn-primario ml-auto" onClick={() => setAbrirNovo(true)}>
           <Plus size={15} /> Novo card
         </button>
       </div>
+
 
       {focoVazio && (
         <div className="cartao secao-entrada flex flex-col items-center gap-3 p-8 text-center">

@@ -19,8 +19,10 @@ import { toast } from "sonner";
 import { toastDesfazer } from "@/lib/toastDesfazer";
 
 import { Revelar } from "@/components/Revelar";
+import { MenuFiltro } from "@/components/filtros/MenuFiltro";
 import { SemanaEsqueleto } from "@/components/conteudo/Esqueleto";
 import { FaixaDeContexto } from "@/components/painel/FaixaDeContexto";
+
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { usePilares, usePosts, useAgendar } from "@/hooks/useConteudo";
@@ -263,34 +265,58 @@ export function Calendario() {
         </div>
       </div>
 
-      <div className="secao-entrada flex gap-2 overflow-x-auto pb-1">
-        <Chip ativo={!canal && !pilar && !status} onClick={() => {
-          setCanal(null);
-          setPilar(null);
-          setStatus(null);
-        }}>
-          Tudo
-        </Chip>
-        {CANAIS.map((c) => (
-          <Chip key={c.valor} ativo={canal === c.valor} onClick={() => setCanal(canal === c.valor ? null : c.valor)}>
-            {c.rotulo}
-          </Chip>
-        ))}
-        {pilares.map((p) => (
-          <Chip key={p.id} ativo={pilar === p.id} onClick={() => setPilar(pilar === p.id ? null : p.id)}>
-            {p.name}
-          </Chip>
-        ))}
-        {COLUNAS.map((c) => (
-          <Chip
-            key={c.status}
-            ativo={status === c.status}
-            onClick={() => setStatus(status === c.status ? null : c.status)}
+      <div className="secao-entrada flex flex-wrap items-center gap-2">
+        <MenuFiltro
+          rotulo="Canal"
+          valor={canal ?? "todos"}
+          padrao="todos"
+          largura="w-52"
+          opcoes={[
+            { valor: "todos", rotulo: "Todos os canais" },
+            ...CANAIS.map((c) => ({ valor: c.valor, rotulo: c.rotulo })),
+          ]}
+          onEscolher={(v) => setCanal(v === "todos" ? null : (v as Canal))}
+        />
+
+        <MenuFiltro
+          rotulo="Pilar"
+          valor={pilar ?? "todos"}
+          padrao="todos"
+          largura="w-60"
+          opcoes={[
+            { valor: "todos", rotulo: "Todos os pilares" },
+            ...pilares.map((p) => ({ valor: p.id, rotulo: p.name, cor: p.color })),
+          ]}
+          onEscolher={(v) => setPilar(v === "todos" ? null : v)}
+        />
+
+        <MenuFiltro
+          rotulo="Etapa"
+          valor={status ?? "todas"}
+          padrao="todas"
+          largura="w-52"
+          opcoes={[
+            { valor: "todas", rotulo: "Todas as etapas" },
+            ...COLUNAS.map((c) => ({ valor: c.status, rotulo: c.rotulo })),
+          ]}
+          onEscolher={(v) => setStatus(v === "todas" ? null : (v as Status))}
+        />
+
+        {canal || pilar || status ? (
+          <button
+            type="button"
+            className="text-xs text-corpo hover:text-txt"
+            onClick={() => {
+              setCanal(null);
+              setPilar(null);
+              setStatus(null);
+            }}
           >
-            {c.rotulo}
-          </Chip>
-        ))}
+            Limpar filtros
+          </button>
+        ) : null}
       </div>
+
 
       <div className="secao-entrada grid gap-4 lg:grid-cols-[1fr_260px]">
         <div className="cartao overflow-hidden p-3">
