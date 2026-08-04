@@ -49,8 +49,9 @@ export function useEquipe() {
   const invalidar = () => qc.invalidateQueries({ queryKey: ["equipe", organizationId] });
 
   const mudarPapel = useMutation({
-    mutationFn: (v: { userId: string; papel: Parameters<typeof definirPapel>[0]["data"]["papel"] }) =>
+    mutationFn: (v: { userId: string; papel: Papel }) =>
       definirPapel({ data: { organizationId: organizationId!, ...v } }),
+
     onSuccess: async () => {
       await invalidar();
       toast.success("Papel atualizado");
