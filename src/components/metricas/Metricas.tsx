@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 
 import { Revelar } from "@/components/Revelar";
 import { CartaoKpi } from "@/components/metricas/CartaoKpi";
@@ -7,22 +8,37 @@ import { EsqueletoMetricas } from "@/components/metricas/EsqueletoMetricas";
 import { FiltrosMetricas } from "@/components/metricas/FiltrosMetricas";
 import { GraficoAlcance } from "@/components/metricas/GraficoAlcance";
 import { TabelaPosts } from "@/components/metricas/TabelaPosts";
+import { FaixaDeContexto } from "@/components/painel/FaixaDeContexto";
 import { rotuloIntervalo } from "@/lib/metricas";
 import { usePilares } from "@/hooks/useConteudo";
-import { useContasConectadas, useMetricas } from "@/hooks/useMetricas";
+import { useContasConectadas, useMetricas, type Periodo } from "@/hooks/useMetricas";
 
 export function Metricas() {
-  const m = useMetricas();
+  const { dias: diasUrl, origem } = useSearch({ from: "/_authenticated/metricas" });
+  const navigate = useNavigate();
+  const diasInicial: Periodo = ([7, 30, 90] as const).includes(diasUrl as Periodo)
+    ? (diasUrl as Periodo)
+    : 30;
+  const m = useMetricas(diasInicial);
   const contas = useContasConectadas();
   const { pilares } = usePilares();
   const [acumulado, setAcumulado] = useState(false);
   const [modo, setModo] = useState<"top" | "piores">("top");
+
+  const doPainel = origem === "painel";
+  const faixa = doPainel ? (
+    <FaixaDeContexto
+      recorte={`últimos ${m.dias} dias`}
+      onLimpar={() => void navigate({ to: "/metricas", search: { dias: 30, origem: "" } })}
+    />
+  ) : null;
 
   const k = m.kpis;
   const ka = m.kpisComparados;
   const comparando = !!m.intervaloComparado;
   const semPosts = !m.carregando && m.linhas.length === 0;
   const rotuloComp = m.intervaloComparado ? rotuloIntervalo(m.intervaloComparado) : undefined;
+
 
   // undefined = comparação desligada; null = sem base
   const anterior = (v: number | null | undefined) =>
