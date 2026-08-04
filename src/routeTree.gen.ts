@@ -20,6 +20,7 @@ import { Route as AuthenticatedCriarRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedKanbanRouteImport } from './routes/_authenticated/kanban'
 import { Route as AuthenticatedMetricasRouteImport } from './routes/_authenticated/metricas'
 import { Route as AuthenticatedPautasRouteImport } from './routes/_authenticated/pautas'
+import { Route as AuthenticatedRadarRouteImport } from './routes/_authenticated/radar'
 import { Route as AuthenticatedPostIdRouteImport } from './routes/_authenticated/post.$id'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
@@ -77,6 +78,11 @@ const AuthenticatedPautasRoute = AuthenticatedPautasRouteImport.update({
   path: '/pautas',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedRadarRoute = AuthenticatedRadarRouteImport.update({
+  id: '/radar',
+  path: '/radar',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedPostIdRoute = AuthenticatedPostIdRouteImport.update({
   id: '/post/$id',
   path: '/post/$id',
@@ -94,6 +100,7 @@ export interface FileRoutesByFullPath {
   '/kanban': typeof AuthenticatedKanbanRoute
   '/metricas': typeof AuthenticatedMetricasRoute
   '/pautas': typeof AuthenticatedPautasRoute
+  '/radar': typeof AuthenticatedRadarRoute
   '/post/$id': typeof AuthenticatedPostIdRoute
 }
 export interface FileRoutesByTo {
@@ -106,6 +113,7 @@ export interface FileRoutesByTo {
   '/kanban': typeof AuthenticatedKanbanRoute
   '/metricas': typeof AuthenticatedMetricasRoute
   '/pautas': typeof AuthenticatedPautasRoute
+  '/radar': typeof AuthenticatedRadarRoute
   '/': typeof AuthenticatedIndexRoute
   '/post/$id': typeof AuthenticatedPostIdRoute
 }
@@ -121,6 +129,7 @@ export interface FileRoutesById {
   '/_authenticated/kanban': typeof AuthenticatedKanbanRoute
   '/_authenticated/metricas': typeof AuthenticatedMetricasRoute
   '/_authenticated/pautas': typeof AuthenticatedPautasRoute
+  '/_authenticated/radar': typeof AuthenticatedRadarRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/post/$id': typeof AuthenticatedPostIdRoute
 }
@@ -137,6 +146,7 @@ export interface FileRouteTypes {
     | '/kanban'
     | '/metricas'
     | '/pautas'
+    | '/radar'
     | '/post/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -149,6 +159,7 @@ export interface FileRouteTypes {
     | '/kanban'
     | '/metricas'
     | '/pautas'
+    | '/radar'
     | '/'
     | '/post/$id'
   id:
@@ -163,6 +174,7 @@ export interface FileRouteTypes {
     | '/_authenticated/kanban'
     | '/_authenticated/metricas'
     | '/_authenticated/pautas'
+    | '/_authenticated/radar'
     | '/_authenticated/'
     | '/_authenticated/post/$id'
   fileRoutesById: FileRoutesById
@@ -251,6 +263,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPautasRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/radar': {
+      id: '/_authenticated/radar'
+      path: '/radar'
+      fullPath: '/radar'
+      preLoaderRoute: typeof AuthenticatedRadarRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/post/$id': {
       id: '/_authenticated/post/$id'
       path: '/post/$id'
@@ -270,6 +289,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedKanbanRoute: typeof AuthenticatedKanbanRoute
   AuthenticatedMetricasRoute: typeof AuthenticatedMetricasRoute
   AuthenticatedPautasRoute: typeof AuthenticatedPautasRoute
+  AuthenticatedRadarRoute: typeof AuthenticatedRadarRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedPostIdRoute: typeof AuthenticatedPostIdRoute
 }
@@ -283,6 +303,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedKanbanRoute: AuthenticatedKanbanRoute,
   AuthenticatedMetricasRoute: AuthenticatedMetricasRoute,
   AuthenticatedPautasRoute: AuthenticatedPautasRoute,
+  AuthenticatedRadarRoute: AuthenticatedRadarRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedPostIdRoute: AuthenticatedPostIdRoute,
 }
