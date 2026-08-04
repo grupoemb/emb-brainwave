@@ -12,6 +12,8 @@ import { salvarPostGerado } from "@/lib/conteudo.functions";
 import { useOrg } from "@/hooks/useOrg";
 import type { Formato } from "@/lib/conteudo";
 
+const rotaCriar = getRouteApi("/_authenticated/criar");
+
 type Tipo = "carousel" | "headline" | "news_card" | "caption" | "improvement";
 
 const TIPOS: { valor: Tipo; rotulo: string; formato: Formato | null }[] = [
