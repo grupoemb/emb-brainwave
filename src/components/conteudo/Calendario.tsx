@@ -19,6 +19,7 @@ import { Revelar } from "@/components/Revelar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { usePilares, usePosts, useAgendar } from "@/hooks/useConteudo";
+import { useRealtimePosts } from "@/hooks/useRealtimePosts";
 import {
   CANAIS,
   COLUNAS,
