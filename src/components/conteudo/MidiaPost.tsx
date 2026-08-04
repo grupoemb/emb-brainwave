@@ -4,6 +4,7 @@ import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
 import { useAssets, useAssetsMutations } from "@/hooks/usePost";
+import { Esqueleto } from "@/components/conteudo/Esqueleto";
 
 function tipoDoMime(mime: string): "image" | "video" | "pdf" | "other" {
   if (mime.startsWith("image/")) return "image";
@@ -32,13 +33,16 @@ export function MidiaPost({
   const { assets, carregando } = useAssets(postId);
   const { registrar, remover } = useAssetsMutations(postId);
   const [sobre, setSobre] = useState(false);
-  const [enviando, setEnviando] = useState(false);
+  const [emVoo, setEmVoo] = useState<string[]>([]);
+  const [prontas, setProntas] = useState<Record<string, "ok" | "erro">>({});
+  const enviando = emVoo.length > 0;
   const input = useRef<HTMLInputElement>(null);
 
   async function enviar(arquivos: FileList | null) {
     if (!arquivos?.length || somenteLeitura) return;
-    setEnviando(true);
-    for (const arquivo of Array.from(arquivos)) {
+    const lista = Array.from(arquivos);
+    setEmVoo((a) => [...a, ...lista.map((f) => f.name)]);
+    for (const arquivo of lista) {
       const caminho = `${organizationId}/${postId}/${nomeSeguro(arquivo.name)}`;
       const { error } = await supabase.storage
         .from("post-assets")
@@ -53,9 +57,13 @@ export function MidiaPost({
         await registrar.mutateAsync({ storage_path: caminho, kind: tipoDoMime(arquivo.type) });
       } catch (erro) {
         toast.error(erro instanceof Error ? erro.message : "Falha ao registrar o arquivo");
+      } finally {
+        setEmVoo((a) => {
+          const i = a.indexOf(arquivo.name);
+          return i < 0 ? a : [...a.slice(0, i), ...a.slice(i + 1)];
+        });
       }
     }
-    setEnviando(false);
   }
 
   async function apagar(id: string, caminho: string) {
@@ -111,31 +119,60 @@ export function MidiaPost({
         </div>
       )}
 
-      {carregando && <p className="mt-3 text-xs text-muted">Carregando mídia…</p>}
+      {carregando && (
+        <div className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Esqueleto key={i} className="h-28 w-full rounded-[.6rem]" />
+          ))}
+        </div>
+      )}
 
-      {!carregando && assets.length === 0 && (
+      {!carregando && assets.length === 0 && !enviando && (
         <p className="mt-3 text-xs text-muted">Nenhum arquivo por aqui.</p>
       )}
 
-      {assets.length > 0 && (
+      {(assets.length > 0 || enviando) && (
         <div className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-3">
           {assets.map((a) => (
             <figure
               key={a.id}
               className="group relative overflow-hidden rounded-[.6rem] border border-line bg-card2"
             >
-              {a.kind === "image" && a.url && (
-                <img
-                  src={a.url}
-                  alt={a.storage_path.split("/").pop() ?? "Mídia do post"}
-                  loading="lazy"
-                  className="h-28 w-full object-cover"
-                />
-              )}
-              {a.kind === "video" && a.url && (
-                <video src={a.url} controls className="h-28 w-full object-cover" />
-              )}
-              {(a.kind === "pdf" || a.kind === "other" || !a.url) && (
+              {(a.kind === "image" || a.kind === "video") &&
+                a.url &&
+                prontas[a.id] !== "erro" && (
+                  <>
+                    {!prontas[a.id] && <Esqueleto className="absolute inset-0" />}
+                    {a.kind === "image" ? (
+                      <img
+                        src={a.url}
+                        alt={a.storage_path.split("/").pop() ?? "Mídia do post"}
+                        loading="lazy"
+                        onLoad={() => setProntas((p) => ({ ...p, [a.id]: "ok" }))}
+                        onError={() => setProntas((p) => ({ ...p, [a.id]: "erro" }))}
+                        className={
+                          "h-28 w-full object-cover transition-opacity duration-200 " +
+                          (prontas[a.id] === "ok" ? "opacity-100" : "opacity-0")
+                        }
+                      />
+                    ) : (
+                      <video
+                        src={a.url}
+                        controls
+                        onLoadedData={() => setProntas((p) => ({ ...p, [a.id]: "ok" }))}
+                        onError={() => setProntas((p) => ({ ...p, [a.id]: "erro" }))}
+                        className={
+                          "h-28 w-full object-cover transition-opacity duration-200 " +
+                          (prontas[a.id] === "ok" ? "opacity-100" : "opacity-0")
+                        }
+                      />
+                    )}
+                  </>
+                )}
+              {(a.kind === "pdf" ||
+                a.kind === "other" ||
+                !a.url ||
+                prontas[a.id] === "erro") && (
                 <div className="flex h-28 flex-col items-center justify-center gap-1 p-2 text-center">
                   <FileText size={16} className="text-muted" />
                   <span className="line-clamp-2 text-[.68rem] text-muted">
@@ -153,6 +190,17 @@ export function MidiaPost({
                   <Trash2 size={13} />
                 </button>
               )}
+            </figure>
+          ))}
+
+          {emVoo.map((nome, i) => (
+            <figure
+              key={`voo-${i}-${nome}`}
+              className="relative flex h-28 flex-col items-center justify-center gap-1 overflow-hidden rounded-[.6rem] border border-line bg-card2 p-2 text-center"
+            >
+              <Esqueleto className="absolute inset-0" />
+              <span className="relative line-clamp-2 text-[.68rem] text-muted">{nome}</span>
+              <span className="relative text-[.62rem] text-muted">Enviando…</span>
             </figure>
           ))}
         </div>
