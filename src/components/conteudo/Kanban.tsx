@@ -252,10 +252,12 @@ export function Kanban() {
 
         {COLUNAS.map((coluna) => {
           const todos = porStatus.get(coluna.status) ?? [];
+          const total = totalPorStatus.get(coluna.status) ?? 0;
           const publicado = coluna.status === "published";
           const lista = publicado && !verTodosPublicados ? todos.slice(0, 10) : todos;
 
           const emFoco = colunaFoco?.status === coluna.status;
+          const apagada = filtroAtivo && todos.length === 0;
 
           return (
             <section
@@ -268,9 +270,10 @@ export function Kanban() {
               onDragLeave={() => setSobre((s) => (s === coluna.status ? null : s))}
               onDrop={(e) => void soltar(coluna.status, e)}
               className={
-                "w-[272px] shrink-0 rounded-xl bg-bg2 p-3 transition-colors " +
+                "w-[272px] shrink-0 self-start rounded-xl bg-bg2 p-3 transition-colors " +
                 (sobre === coluna.status ? "ring-1 ring-azure/50 " : "") +
-                (emFoco ? "ring-1 ring-azure/40" : "")
+                (emFoco ? "ring-1 ring-azure/40 " : "") +
+                (apagada ? "opacity-45" : "")
               }
             >
 
@@ -280,29 +283,36 @@ export function Kanban() {
                   style={{ background: coluna.cor }}
                 />
                 <span className="rotulo flex-1">{coluna.rotulo}</span>
-                <span className="numero text-xs text-muted">{todos.length}</span>
+                <span className="numero text-xs text-muted">
+                  {filtroAtivo ? `${todos.length} de ${total}` : total}
+                </span>
               </header>
 
-              <div className="flex flex-col gap-[10px]">
-                {lista.map((p) => (
-                  <CartaoPost
-                    key={p.id}
-                    post={p}
-                    pilar={p.pillar_id ? pilarPorId.get(p.pillar_id) : undefined}
-                    onDragStart={(e) => e.dataTransfer.setData("text/post-id", p.id)}
-                    onClick={() => void navigate({ to: "/post/$id", params: { id: p.id } })}
-                  />
-                ))}
+              {apagada ? (
+                <p className="py-2 text-xs text-muted">sem cards neste recorte</p>
+              ) : (
+                <div className="flex flex-col gap-[10px]">
+                  {lista.map((p) => (
+                    <CartaoPost
+                      key={p.id}
+                      post={p}
+                      pilar={p.pillar_id ? pilarPorId.get(p.pillar_id) : undefined}
+                      onDragStart={(e) => e.dataTransfer.setData("text/post-id", p.id)}
+                      onClick={() => void navigate({ to: "/post/$id", params: { id: p.id } })}
+                    />
+                  ))}
 
-                {publicado && todos.length > 10 && (
-                  <button
-                    className="btn justify-center"
-                    onClick={() => setVerTodosPublicados((v) => !v)}
-                  >
-                    {verTodosPublicados ? "Mostrar menos" : `Ver todos (${todos.length})`}
-                  </button>
-                )}
-              </div>
+                  {publicado && todos.length > 10 && (
+                    <button
+                      className="btn justify-center"
+                      onClick={() => setVerTodosPublicados((v) => !v)}
+                    >
+                      {verTodosPublicados ? "Mostrar menos" : `Ver todos (${todos.length})`}
+                    </button>
+                  )}
+                </div>
+              )}
+
             </section>
           );
         })}
