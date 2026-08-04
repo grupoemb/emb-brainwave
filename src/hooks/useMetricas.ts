@@ -179,6 +179,8 @@ export function useMetricas(diasInicial: Periodo = 30) {
     intervalo,
     intervaloComparado,
     kpisComparados,
+    taxasComparadas,
+
     comparando: qc.isFetching,
     carregando: q.isPending,
     atualizando: q.isFetching || qc.isFetching,
