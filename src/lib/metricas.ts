@@ -45,6 +45,13 @@ export type LinhaMetrica = {
 
 export const PALETA = ["#00a4ff", "#00e7ff", "#3ecf8e", "#f6bd24", "#a78bfa", "#ff7a6b"];
 
+/** Limite do radar interno: alcance ≥ 2× a mediana do formato. */
+export const LIMITE_OUTLIER = 2;
+
+export function ehOutlier(rx: number | null | undefined) {
+  return typeof rx === "number" && rx >= LIMITE_OUTLIER;
+}
+
 /** Limiares fixos de performance relativa. */
 export function classeRx(rx: number | null) {
   if (rx === null) return "";
@@ -52,6 +59,7 @@ export function classeRx(rx: number | null) {
   if (rx < 0.7) return "pill-ruim";
   return "";
 }
+
 
 export function rotuloFormato(f: string | null) {
   return FORMATOS.find((x) => x.valor === f)?.rotulo ?? "—";
