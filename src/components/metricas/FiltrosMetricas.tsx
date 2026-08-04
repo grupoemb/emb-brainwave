@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { RefreshCw } from "lucide-react";
 
 import { textoFrescor } from "@/lib/metricas";
-import type { Periodo } from "@/hooks/useMetricas";
+import type { ModoComparacao, Periodo } from "@/hooks/useMetricas";
 import type { Pilar } from "@/lib/conteudo";
 
 function Chip({
