@@ -222,7 +222,27 @@ export const obterPost = createServerFn({ method: "GET" })
 
     if (error) throw new Error(error.message);
     if (!linha) return null;
-    return linha as Record<string, unknown>;
+    const p = linha as Record<string, unknown>;
+    return {
+      id: p['id'] as string,
+      organization_id: p['organization_id'] as string,
+      title: p['title'] as string,
+      status: p['status'] as (typeof STATUS)[number],
+      channel: (p['channel'] ?? null) as (typeof CANAIS)[number] | null,
+      format: (p['format'] ?? null) as (typeof FORMATOS)[number] | null,
+      hook: (p['hook'] ?? null) as (typeof HOOKS)[number] | null,
+      pillar_id: (p['pillar_id'] ?? null) as string | null,
+      body: (p['body'] ?? null) as string | null,
+      author_id: (p['author_id'] ?? null) as string | null,
+      suggestion_id: (p['suggestion_id'] ?? null) as string | null,
+      scheduled_for: (p['scheduled_for'] ?? null) as string | null,
+      published_at: (p['published_at'] ?? null) as string | null,
+      cta: (((p['meta'] ?? {}) as Record<string, unknown>)['cta'] ?? null) as string | null,
+      source_handle: (((p['meta'] ?? {}) as Record<string, unknown>)['source_handle'] ?? null) as
+        | string
+        | null,
+      updated_at: (p['updated_at'] ?? null) as string | null,
+    };
   });
 
 export const atualizarPost = createServerFn({ method: "POST" })
