@@ -288,15 +288,6 @@ export const atualizarPost = createServerFn({ method: "POST" })
     return { ok: true as const };
   });
 
-async function nomesDePerfis(db: SupabaseClient, ids: (string | null)[]) {
-  const unicos = Array.from(new Set(ids.filter(Boolean) as string[]));
-  if (!unicos.length) return new Map<string, string | null>();
-  const { data } = await db.from("profiles").select("id, full_name").in("id", unicos);
-  return new Map(
-    ((data ?? []) as { id: string; full_name: string | null }[]).map((p) => [p.id, p.full_name]),
-  );
-}
-
 export const listarVersoes = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => z.object({ postId: z.string().uuid() }).parse(input))
@@ -316,7 +307,19 @@ export const listarVersoes = createServerFn({ method: "GET" })
       created_by: string | null;
       created_at: string;
     }[];
-    const nomes = await nomesDePerfis(db, lista.map((v) => v.created_by));
+    const idsPerfis = Array.from(
+      new Set(lista.map((x) => x.created_by).filter(Boolean) as string[]),
+    );
+    let nomes = new Map<string, string | null>();
+    if (idsPerfis.length) {
+      const { data: perfis } = await db.from("profiles").select("id, full_name").in("id", idsPerfis);
+      nomes = new Map(
+        ((perfis ?? []) as { id: string; full_name: string | null }[]).map((x) => [
+          x.id,
+          x.full_name,
+        ]),
+      );
+    }
     return lista.map((v) => ({ ...v, autor_nome: nomes.get(v.created_by ?? "") ?? null }));
   });
 
@@ -371,7 +374,19 @@ export const listarAprovacoes = createServerFn({ method: "GET" })
       reviewer_id: string | null;
       created_at: string;
     }[];
-    const nomes = await nomesDePerfis(db, lista.map((a) => a.reviewer_id));
+    const idsPerfis = Array.from(
+      new Set(lista.map((x) => x.reviewer_id).filter(Boolean) as string[]),
+    );
+    let nomes = new Map<string, string | null>();
+    if (idsPerfis.length) {
+      const { data: perfis } = await db.from("profiles").select("id, full_name").in("id", idsPerfis);
+      nomes = new Map(
+        ((perfis ?? []) as { id: string; full_name: string | null }[]).map((x) => [
+          x.id,
+          x.full_name,
+        ]),
+      );
+    }
     return lista.map((a) => ({ ...a, revisor_nome: nomes.get(a.reviewer_id ?? "") ?? null }));
   });
 
