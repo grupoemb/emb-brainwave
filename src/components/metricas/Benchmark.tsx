@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 
 import { MetasSugeridas } from "@/components/metricas/MetasSugeridas";
+import { Recomendacoes } from "@/components/metricas/Recomendacoes";
 import { TabelaMercado } from "@/components/metricas/TabelaMercado";
 import { TermometroFaixa } from "@/components/metricas/TermometroFaixa";
 import {
@@ -11,9 +12,11 @@ import {
   faixaRx,
   faixaTaxa,
   metasSugeridas,
+  recomendacoes,
   termometros,
 } from "@/lib/benchmark";
 import { numero, type Baseline, type ItemDimensao, type LinhaMetrica, type Taxas } from "@/lib/metricas";
+
 
 function Pill({ nome }: { nome: ReturnType<typeof faixaRx> }) {
   if (!nome) return <span className="text-muted">—</span>;
@@ -41,6 +44,11 @@ export function Benchmark({
     () => metasSugeridas({ linhas, taxas, baselines, publicados, porSemana }),
     [linhas, taxas, baselines, publicados, porSemana],
   );
+  const recs = useMemo(
+    () => recomendacoes({ linhas, taxas, baselines, porSemana }),
+    [linhas, taxas, baselines, porSemana],
+  );
+
 
   return (
     <div className="space-y-4">
@@ -66,6 +74,11 @@ export function Benchmark({
           />
         ))}
       </div>
+
+      <div className="secao-entrada">
+        <Recomendacoes itens={recs} />
+      </div>
+
 
       <div className="secao-entrada">
         <TabelaMercado linhas={mercado} />
