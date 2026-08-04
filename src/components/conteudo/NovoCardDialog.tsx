@@ -39,6 +39,7 @@ export function NovoCardDialog({ aberto, aoFechar }: { aberto: boolean; aoFechar
       setFormato("");
       setPilar("");
       aoFechar();
+      toast.success("Card criado");
     } catch (erro) {
       toast.error(erro instanceof Error ? erro.message : "Não foi possível criar o card");
     }
