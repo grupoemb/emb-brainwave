@@ -2,11 +2,13 @@ import { useMemo, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { getRouteApi, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Loader2, Sparkles } from "lucide-react";
+import { Loader2, PenLine, Sparkles } from "lucide-react";
 import Markdown from "react-markdown";
 import { toast } from "sonner";
 
 import { Revelar } from "@/components/Revelar";
+import { CabecalhoTela } from "@/components/ui/CabecalhoTela";
+
 import { supabase } from "@/integrations/supabase/client";
 import { salvarPostGerado } from "@/lib/conteudo.functions";
 import { useOrg } from "@/hooks/useOrg";
