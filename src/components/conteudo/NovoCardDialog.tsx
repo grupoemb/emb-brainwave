@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { usePilares, useCriarPost } from "@/hooks/useConteudo";
+import { usePilares, useCriarPost, useExcluirPost } from "@/hooks/useConteudo";
 import { useOrg } from "@/hooks/useOrg";
 import { CANAIS, FORMATOS, type Canal, type Formato } from "@/lib/conteudo";
 
@@ -16,6 +16,7 @@ export function NovoCardDialog({ aberto, aoFechar }: { aberto: boolean; aoFechar
   const { organizationId } = useOrg();
   const { pilares } = usePilares();
   const criar = useCriarPost();
+  const excluir = useExcluirPost();
 
   const [titulo, setTitulo] = useState("");
   const [canal, setCanal] = useState<Canal | "">("");
@@ -27,7 +28,7 @@ export function NovoCardDialog({ aberto, aoFechar }: { aberto: boolean; aoFechar
     if (!organizationId || !titulo.trim()) return;
 
     try {
-      await criar.mutateAsync({
+      const criado = await criar.mutateAsync({
         organizationId,
         title: titulo.trim(),
         channel: canal || null,
@@ -39,7 +40,22 @@ export function NovoCardDialog({ aberto, aoFechar }: { aberto: boolean; aoFechar
       setFormato("");
       setPilar("");
       aoFechar();
-      toast.success("Card criado");
+      toast.success("Card criado", {
+        duration: 7000,
+        action: {
+          label: "Desfazer",
+          onClick: () => {
+            void (async () => {
+              try {
+                await excluir.mutateAsync({ id: criado.id });
+                toast("Criação desfeita");
+              } catch {
+                toast.error("Não foi possível desfazer");
+              }
+            })();
+          },
+        },
+      });
     } catch (erro) {
       toast.error(erro instanceof Error ? erro.message : "Não foi possível criar o card");
     }
