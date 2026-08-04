@@ -175,6 +175,18 @@ export function Kanban() {
           </button>
         ) : null}
 
+        {filtroAtivo && !carregando && colunasVazias > 0 ? (
+          <button
+            className="btn px-2.5 py-1 text-xs"
+            onClick={() => setMostrarVazias((v) => !v)}
+          >
+            {mostrarVazias
+              ? `ocultar ${colunasVazias} colunas vazias`
+              : `mostrar ${colunasVazias} colunas vazias`}
+          </button>
+        ) : null}
+
+
 
         <MenuFiltro
           rotulo="Canal"
