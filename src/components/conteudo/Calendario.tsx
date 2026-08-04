@@ -12,13 +12,15 @@ import {
   startOfWeek,
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 import { toastDesfazer } from "@/lib/toastDesfazer";
 
 import { Revelar } from "@/components/Revelar";
+import { CabecalhoTela } from "@/components/ui/CabecalhoTela";
+
 import { MenuFiltro } from "@/components/filtros/MenuFiltro";
 import { VazioFiltrado } from "@/components/filtros/VazioFiltrado";
 import { SemanaEsqueleto, CalendarioEsqueleto } from "@/components/conteudo/Esqueleto";
