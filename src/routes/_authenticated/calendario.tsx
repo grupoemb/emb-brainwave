@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ModuloEmConstrucao } from "@/components/ModuloEmConstrucao";
+import { Calendario } from "@/components/conteudo/Calendario";
 
 export const Route = createFileRoute("/_authenticated/calendario")({
   head: () => ({
@@ -10,5 +10,5 @@ export const Route = createFileRoute("/_authenticated/calendario")({
       { property: "og:description", content: "Agenda editorial de publicações da EMB." },
     ],
   }),
-  component: () => <ModuloEmConstrucao titulo="Calendário" />,
+  component: Calendario,
 });
