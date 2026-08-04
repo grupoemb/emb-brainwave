@@ -89,16 +89,28 @@ function Cartao({
   );
 }
 
-function MiniKpi({ rotulo, valor }: { rotulo: string; valor: number | null }) {
+function MiniKpi({
+  rotulo,
+  valor,
+  dica,
+}: {
+  rotulo: string;
+  valor: number | null;
+  dica: string;
+}) {
   return (
     <div className="cartao flex min-h-[5.9rem] flex-col justify-between p-4 transition-colors hover:bg-white/4">
-      <span className="rotulo">{rotulo}</span>
+      <span className="rotulo flex items-center gap-1">
+        {rotulo}
+        <Dica texto={dica} />
+      </span>
       <span className={"numero text-2xl " + (valor === null ? "text-muted" : "")}>
         {valor === null ? "—" : numero(valor)}
       </span>
     </div>
   );
 }
+
 
 
 function BlocoVazio({ children }: { children: React.ReactNode }) {
