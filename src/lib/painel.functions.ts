@@ -82,10 +82,10 @@ export const carregarPainel = createServerFn({ method: "GET" })
         db.from("posts").select("id, status").eq("organization_id", org),
         db
           .from("posts")
-          .select("id, title, channel, format, meta")
+          .select("id, title, channel, format, meta, published_at")
           .eq("organization_id", org)
           .eq("status", "published")
-          .gte("published_at", ha7d),
+          .gte("published_at", haJanela),
         db
           .from("suggestions")
           .select("id, title, rationale, priority, status")
