@@ -140,7 +140,7 @@ export function Biblioteca() {
     <div className="space-y-4">
       {insights && insights.total > 0 ? <PainelInsights insights={insights} /> : null}
 
-      <div className="cartao space-y-3 p-4">
+      <div className="cartao interativo space-y-3 p-4">
         <div className="flex flex-wrap items-center gap-2">
           <div className="relative min-w-[12rem] flex-1">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
