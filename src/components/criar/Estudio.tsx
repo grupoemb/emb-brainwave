@@ -174,7 +174,12 @@ export function Estudio() {
 
   return (
     <Revelar className="space-y-4">
-      <h1 className="secao-entrada text-lg font-bold">Criar</h1>
+      <CabecalhoTela
+        icone={<PenLine size={17} />}
+        titulo="Criar"
+        descricao="Estúdio de geração: escolha o tipo de peça, dê o contexto e transforme o resultado em post."
+      />
+
 
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
