@@ -1,7 +1,11 @@
 import { useMemo, useState } from "react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 
+import { BarChart3 } from "lucide-react";
+
 import { Revelar } from "@/components/Revelar";
+import { CabecalhoTela } from "@/components/ui/CabecalhoTela";
+
 import { BarrasDimensao } from "@/components/metricas/BarrasDimensao";
 import { Benchmark } from "@/components/metricas/Benchmark";
 import { CartaoKpi } from "@/components/metricas/CartaoKpi";
