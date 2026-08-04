@@ -123,27 +123,70 @@ export function Painel() {
         <span className="text-xs text-muted">{textoFrescor(coleta)}</span>
       </div>
 
-      <div className="secao-entrada grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
-        <Link to="/calendario" title="Ver no calendário">
-          <MiniKpi rotulo="Agendados" valor={dados.kpis.agendados} />
-        </Link>
-        <Link to="/kanban" title="Ver na coluna de aprovação">
-          <MiniKpi rotulo="Aguardando aprovação" valor={dados.kpis.aguardandoAprovacao} />
-        </Link>
-        <Link
-          to="/pautas"
-          search={{ q: "", status: "new", tipo: "todos", pilar: "todos" }}
-          title="Ver pautas novas"
-        >
-          <MiniKpi rotulo="Pautas novas" valor={dados.kpis.pautasNovas} />
-        </Link>
-        <Link to="/metricas" title="Ver métricas">
-          <MiniKpi rotulo="Alcance 7d" valor={dados.kpis.alcance7d} />
-        </Link>
-        <Link to="/ajustes" title="Gerenciar contas conectadas">
-          <MiniKpi rotulo="Contas conectadas" valor={dados.kpis.contasConectadas} />
-        </Link>
-      </div>
+      <TooltipProvider delayDuration={200}>
+        <div className="secao-entrada grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
+          <ComDica
+            dica={
+              "Abrir o calendário nos próximos 7 dias" +
+              (dados.kpis.agendados === 0 ? " — nada agendado pros próximos 7 dias" : "")
+            }
+          >
+            <Link to="/calendario" search={{ foco: "7d", origem: "painel" }}>
+              <MiniKpi rotulo="Agendados" valor={dados.kpis.agendados} />
+            </Link>
+          </ComDica>
+
+          <ComDica
+            dica={
+              "Abrir o kanban na coluna Revisão" +
+              (dados.kpis.aguardandoAprovacao === 0 ? " — nada aguardando aprovação" : "")
+            }
+          >
+            <Link to="/kanban" search={{ foco: "review", origem: "painel" }}>
+              <MiniKpi rotulo="Aguardando aprovação" valor={dados.kpis.aguardandoAprovacao} />
+            </Link>
+          </ComDica>
+
+          <ComDica
+            dica={
+              "Abrir as pautas com status Nova" +
+              (dados.kpis.pautasNovas === 0 ? " — nenhuma pauta aberta agora" : "")
+            }
+          >
+            <Link
+              to="/pautas"
+              search={{ q: "", status: "new", tipo: "todos", pilar: "todos", origem: "painel" }}
+            >
+              <MiniKpi rotulo="Pautas novas" valor={dados.kpis.pautasNovas} />
+            </Link>
+          </ComDica>
+
+          <ComDica
+            dica={
+              "Abrir métricas no período de 7 dias" +
+              (dados.kpis.alcance7d === null
+                ? " — nenhuma leitura de métricas nos últimos 7 dias"
+                : "")
+            }
+          >
+            <Link to="/metricas" search={{ dias: 7, origem: "painel" }}>
+              <MiniKpi rotulo="Alcance 7d" valor={dados.kpis.alcance7d} />
+            </Link>
+          </ComDica>
+
+          <ComDica
+            dica={
+              "Abrir ajustes na seção de contas conectadas" +
+              (dados.kpis.contasConectadas === 0 ? " — nenhuma conta conectada ainda" : "")
+            }
+          >
+            <Link to="/ajustes" search={{ secao: "contas", origem: "painel" }}>
+              <MiniKpi rotulo="Contas conectadas" valor={dados.kpis.contasConectadas} />
+            </Link>
+          </ComDica>
+        </div>
+      </TooltipProvider>
+
 
 
       <div className="secao-entrada grid gap-3 lg:grid-cols-3">
