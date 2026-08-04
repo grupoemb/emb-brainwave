@@ -113,7 +113,7 @@ function Acesso() {
           </div>
 
 
-          <div className="mt-3 flex flex-wrap gap-1.5">
+          <div className="mt-4 flex flex-wrap justify-center gap-1.5">
             {["Instagram", "LinkedIn", "TikTok"].map((c) => (
               <span key={c} className="pill border border-line text-[.68rem] text-corpo">
                 {c}
