@@ -48,7 +48,7 @@ export const carregarMetricas = createServerFn({ method: "GET" })
 
     let consulta = db
       .from("posts")
-      .select("id, title, channel, format, pillar_id, published_at, meta")
+      .select("id, title, channel, format, hook, pillar_id, published_at, meta")
       .eq("organization_id", data.organizationId)
       .eq("status", "published")
       .eq("channel", "instagram")
@@ -63,16 +63,22 @@ export const carregarMetricas = createServerFn({ method: "GET" })
 
     if (erroPosts) throw new Error(erroPosts.message);
 
-    const posts = ((linhasPosts ?? []) as Record<string, unknown>[]).map((p) => ({
-      id: p['id'] as string,
-      title: (p['title'] ?? "") as string,
-      channel: (p['channel'] ?? null) as string | null,
-      format: (p['format'] ?? null) as string | null,
-      pillar_id: (p['pillar_id'] ?? null) as string | null,
-      published_at: (p['published_at'] ?? null) as string | null,
-      source_handle:
-        ((p['meta'] as Record<string, unknown> | null)?.['source_handle'] ?? null) as string | null,
-    }));
+    const posts = ((linhasPosts ?? []) as Record<string, unknown>[]).map((p) => {
+      const meta = (p['meta'] ?? null) as Record<string, unknown> | null;
+      return {
+        id: p['id'] as string,
+        title: (p['title'] ?? "") as string,
+        channel: (p['channel'] ?? null) as string | null,
+        format: (p['format'] ?? null) as string | null,
+        hook: (p['hook'] ?? null) as string | null,
+        pillar_id: (p['pillar_id'] ?? null) as string | null,
+        published_at: (p['published_at'] ?? null) as string | null,
+        source_handle: (meta?.['source_handle'] ?? null) as string | null,
+        theme: (meta?.['theme'] ?? null) as string | null,
+        intent: (meta?.['intent'] ?? null) as string | null,
+      };
+    });
+
 
     const ids = posts.map((p) => p.id);
     let leituras: {

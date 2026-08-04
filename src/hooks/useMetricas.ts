@@ -5,18 +5,26 @@ import { useServerFn } from "@tanstack/react-start";
 import { useOrg } from "@/hooks/useOrg";
 import { carregarMetricas, listarContasConectadas } from "@/lib/metricas.functions";
 import {
+  cadencia,
   calcularKpis,
+  calcularTaxas,
   distribuicaoFormatos,
+  funilInteracao,
   intervaloAnterior,
   intervaloAtual,
+  mapaDeCalor,
+  maturacao,
   montarLinhas,
+  porDimensao,
   serieDiaria,
+  serieIndicador,
   ultimaColeta,
   type Baseline,
   type Intervalo,
   type Leitura,
   type PostBruto,
 } from "@/lib/metricas";
+
 
 export type Periodo = 7 | 30 | 90;
 export type ModoComparacao = "off" | "anterior" | "custom";
@@ -52,7 +60,7 @@ export function useMetricas(diasInicial: Periodo = 30) {
 
   const [conta, setConta] = useState<string>("todas");
   const [pilar, setPilar] = useState<string>("todos");
-  const [comparacao, setComparacao] = useState<ModoComparacao>("off");
+  const [comparacao, setComparacao] = useState<ModoComparacao>("anterior");
   const [customDesde, setCustomDesde] = useState<string>(() =>
     soData(intervaloAnterior(30).desde),
   );
@@ -93,7 +101,7 @@ export function useMetricas(diasInicial: Periodo = 30) {
   const bruto = q.data as Bruto | undefined;
   const brutoComparado = qc.data as Bruto | undefined;
 
-  const filtrar = useMemo(
+  const filtrarBruto = useMemo(
     () => (base: Bruto | undefined) => {
       const posts = (base?.posts ?? []).filter(
         (p) =>
@@ -102,27 +110,57 @@ export function useMetricas(diasInicial: Periodo = 30) {
       );
       const ids = new Set(posts.map((p) => p.id));
       const leituras = (base?.leituras ?? []).filter((l) => ids.has(l.post_id));
-      return montarLinhas(posts, leituras, base?.baselines ?? []);
+      return { posts, leituras, baselines: base?.baselines ?? [] };
     },
     [conta, pilar],
   );
 
+  const filtrar = useMemo(
+    () => (base: Bruto | undefined) => {
+      const f = filtrarBruto(base);
+      return montarLinhas(f.posts, f.leituras, f.baselines);
+    },
+    [filtrarBruto],
+  );
+
   const dados = useMemo(() => {
-    const linhas = filtrar(bruto);
+    const f = filtrarBruto(bruto);
+    const linhas = montarLinhas(f.posts, f.leituras, f.baselines);
+    const nomePilar = (id: string) =>
+      bruto?.posts.find((p) => p.pillar_id === id) ? id : id;
+
     return {
       linhas,
       kpis: calcularKpis(linhas),
+      taxas: calcularTaxas(linhas),
       serie: serieDiaria(linhas, dias),
+      sparkAlcance: serieIndicador(linhas, dias, "reach"),
+      sparkInteracoes: serieIndicador(linhas, dias, "likes"),
       formatos: distribuicaoFormatos(linhas),
+      porFormato: porDimensao(linhas, "format"),
+      porGancho: porDimensao(linhas, "hook"),
+      porTema: porDimensao(linhas, "theme"),
+      porIntencao: porDimensao(linhas, "intent"),
+      porPilarBruto: porDimensao(linhas, "pillar_id", nomePilar),
+      porConta: porDimensao(linhas, "conta"),
+      funil: funilInteracao(linhas),
+      calor: mapaDeCalor(linhas),
+      cadencia: cadencia(linhas, dias),
+      maturacao: maturacao(f.leituras),
       ultimaColeta: ultimaColeta(bruto?.leituras ?? []),
       houveColeta: bruto?.houveColeta ?? false,
     };
-  }, [bruto, filtrar, dias]);
+  }, [bruto, filtrarBruto, dias]);
 
-  const kpisComparados = useMemo(() => {
+  const comparados = useMemo(() => {
     if (!intervaloComparado || !brutoComparado) return null;
-    return calcularKpis(filtrar(brutoComparado));
+    const linhas = filtrar(brutoComparado);
+    return { kpis: calcularKpis(linhas), taxas: calcularTaxas(linhas) };
   }, [intervaloComparado, brutoComparado, filtrar]);
+
+  const kpisComparados = comparados?.kpis ?? null;
+  const taxasComparadas = comparados?.taxas ?? null;
+
 
   return {
     ...dados,
@@ -141,6 +179,8 @@ export function useMetricas(diasInicial: Periodo = 30) {
     intervalo,
     intervaloComparado,
     kpisComparados,
+    taxasComparadas,
+
     comparando: qc.isFetching,
     carregando: q.isPending,
     atualizando: q.isFetching || qc.isFetching,

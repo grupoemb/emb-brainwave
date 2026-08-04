@@ -17,9 +17,12 @@ export type PostBruto = {
   title: string;
   channel: string | null;
   format: string | null;
+  hook?: string | null;
   pillar_id: string | null;
   published_at: string | null;
   source_handle: string | null;
+  theme?: string | null;
+  intent?: string | null;
 };
 
 export type Baseline = {
@@ -34,14 +37,20 @@ export type LinhaMetrica = {
   title: string;
   conta: string | null;
   format: Formato | null;
+  hook: string | null;
+  pillar_id: string | null;
+  theme: string | null;
+  intent: string | null;
   published_at: string | null;
   reach: number | null;
+  impressions: number | null;
   saves: number | null;
   shares: number | null;
   comments: number | null;
   likes: number | null;
   rx: number | null;
 };
+
 
 export const PALETA = ["#00a4ff", "#00e7ff", "#3ecf8e", "#f6bd24", "#a78bfa", "#ff7a6b"];
 
@@ -112,12 +121,18 @@ export function montarLinhas(
       title: p.title,
       conta: p.source_handle,
       format: (p.format ?? null) as Formato | null,
+      hook: p.hook ?? null,
+      pillar_id: p.pillar_id,
+      theme: p.theme ?? null,
+      intent: p.intent ?? null,
       published_at: p.published_at,
       reach,
+      impressions: l?.impressions ?? null,
       saves: l?.saves ?? null,
       shares: l?.shares ?? null,
       comments: l?.comments ?? null,
       likes: l?.likes ?? null,
+
       rx: reach !== null && mediana !== null ? Number((reach / mediana).toFixed(2)) : null,
     };
   });
@@ -314,3 +329,289 @@ export function rotuloIntervalo({ desde, ate }: Intervalo) {
       .replace(".", "");
   return `${f(desde, false)}–${f(ate, true)}`;
 }
+
+/* ---------- Métricas 2.0: taxas, dimensões, ritmo ---------- */
+
+const media = (vs: number[]) => (vs.length ? vs.reduce((a, b) => a + b, 0) / vs.length : null);
+
+function taxa(parte: number | null, base: number | null) {
+  if (parte === null || base === null || base <= 0) return null;
+  return (parte / base) * 100;
+}
+
+export type Taxas = ReturnType<typeof calcularTaxas>;
+
+/** Taxas relativas ao alcance + médias por post. */
+export function calcularTaxas(linhas: LinhaMetrica[]) {
+  const alcance = soma(linhas, "reach");
+  const impressoes = soma(linhas, "impressions");
+  const saves = soma(linhas, "saves");
+  const shares = soma(linhas, "shares");
+  const comments = soma(linhas, "comments");
+  const likes = soma(linhas, "likes");
+  const interacoes =
+    likes === null && comments === null && saves === null && shares === null
+      ? null
+      : (likes ?? 0) + (comments ?? 0) + (saves ?? 0) + (shares ?? 0);
+  const n = linhas.length;
+
+  return {
+    alcance,
+    impressoes,
+    interacoes,
+    frequencia: impressoes !== null && alcance && alcance > 0 ? impressoes / alcance : null,
+    taxaSalvamento: taxa(saves, alcance),
+    taxaCompartilhamento: taxa(shares, alcance),
+    taxaComentario: taxa(comments, alcance),
+    taxaCurtida: taxa(likes, alcance),
+    engajamento: taxa(interacoes, alcance),
+    alcanceMedio: alcance !== null && n ? alcance / n : null,
+    impressoesMedia: impressoes !== null && n ? impressoes / n : null,
+    interacoesPorPost: interacoes !== null && n ? interacoes / n : null,
+    /** % de posts com rx ≥ 1 (acima da mediana do formato). */
+    taxaAcerto: (() => {
+      const comRx = linhas.filter((l) => l.rx !== null);
+      if (!comRx.length) return null;
+      return (comRx.filter((l) => (l.rx as number) >= 1).length / comRx.length) * 100;
+    })(),
+    /** Dispersão do rx (desvio padrão) — quanto o resultado oscila. */
+    consistencia: (() => {
+      const vs = linhas.filter((l) => l.rx !== null).map((l) => l.rx as number);
+      if (vs.length < 2) return null;
+      const m = vs.reduce((a, b) => a + b, 0) / vs.length;
+      return Math.sqrt(vs.reduce((s, v) => s + (v - m) ** 2, 0) / vs.length);
+    })(),
+    outliers: linhas.filter((l) => ehOutlier(l.rx)).length,
+  };
+}
+
+export type Dimensao = "format" | "hook" | "pillar_id" | "theme" | "intent" | "conta";
+
+export type ItemDimensao = {
+  chave: string;
+  rotulo: string;
+  n: number;
+  rxMedio: number | null;
+  alcance: number;
+  alcanceMedio: number | null;
+  engajamento: number | null;
+};
+
+export const ROTULO_GANCHO: Record<string, string> = {
+  question: "Pergunta",
+  bold_claim: "Afirmação forte",
+  story: "História",
+  stat: "Dado",
+  contrarian: "Contra-intuitivo",
+  list: "Lista",
+  news: "Notícia",
+  how_to: "Passo a passo",
+  other: "Outro",
+};
+
+export const ROTULO_INTENCAO: Record<string, string> = {
+  educar: "Educar",
+  vender: "Vender",
+  engajar: "Engajar",
+  autoridade: "Autoridade",
+  entreter: "Entreter",
+};
+
+/** Agrega as linhas por uma dimensão, ordenando por rx médio (fallback alcance). */
+export function porDimensao(
+  linhas: LinhaMetrica[],
+  dimensao: Dimensao,
+  rotular?: (chave: string) => string,
+): ItemDimensao[] {
+  const grupos = new Map<string, LinhaMetrica[]>();
+  for (const l of linhas) {
+    const bruto = l[dimensao] as string | null;
+    if (!bruto) continue;
+    grupos.set(bruto, [...(grupos.get(bruto) ?? []), l]);
+  }
+
+  const padrao = (c: string) => {
+    if (dimensao === "format") return rotuloFormato(c);
+    if (dimensao === "hook") return ROTULO_GANCHO[c] ?? c;
+    if (dimensao === "intent") return ROTULO_INTENCAO[c] ?? c;
+    if (dimensao === "conta") return `@${c}`;
+    return c;
+  };
+
+  return [...grupos.entries()]
+    .map(([chave, ls]) => {
+      const alcance = soma(ls, "reach") ?? 0;
+      const t = calcularTaxas(ls);
+      return {
+        chave,
+        rotulo: (rotular ?? padrao)(chave),
+        n: ls.length,
+        rxMedio: (() => {
+          const vs = ls.filter((l) => l.rx !== null).map((l) => l.rx as number);
+          const m = media(vs);
+          return m === null ? null : Number(m.toFixed(2));
+        })(),
+        alcance,
+        alcanceMedio: ls.length ? alcance / ls.length : null,
+        engajamento: t.engajamento,
+      };
+    })
+    .sort((a, b) => (b.rxMedio ?? -1) - (a.rxMedio ?? -1) || b.alcance - a.alcance);
+}
+
+/* ---------- Ritmo e horários ---------- */
+
+export const DIAS_SEMANA = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+export const FAIXAS_HORA = ["0-3", "3-6", "6-9", "9-12", "12-15", "15-18", "18-21", "21-24"];
+
+function partesSaoPaulo(iso: string) {
+  const f = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Sao_Paulo",
+    weekday: "short",
+    hour: "2-digit",
+    hour12: false,
+  });
+  const partes = f.formatToParts(new Date(iso));
+  const wd = partes.find((p) => p.type === "weekday")?.value ?? "Sun";
+  const hora = Number(partes.find((p) => p.type === "hour")?.value ?? "0") % 24;
+  const idx = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(wd);
+  return { dia: idx < 0 ? 0 : idx, faixa: Math.floor(hora / 3) };
+}
+
+export type CelulaCalor = { dia: number; faixa: number; n: number; alcanceMedio: number | null };
+
+/** Grade 7 dias × 8 faixas de 3h com alcance médio por publicação. */
+export function mapaDeCalor(linhas: LinhaMetrica[]) {
+  const grade: CelulaCalor[] = [];
+  const acumulado = new Map<string, number[]>();
+
+  for (const l of linhas) {
+    if (!l.published_at || l.reach === null) continue;
+    const { dia, faixa } = partesSaoPaulo(l.published_at);
+    const k = `${dia}:${faixa}`;
+    acumulado.set(k, [...(acumulado.get(k) ?? []), l.reach]);
+  }
+
+  for (let dia = 0; dia < 7; dia++) {
+    for (let faixa = 0; faixa < 8; faixa++) {
+      const vs = acumulado.get(`${dia}:${faixa}`) ?? [];
+      grade.push({ dia, faixa, n: vs.length, alcanceMedio: media(vs) });
+    }
+  }
+
+  const max = grade.reduce((m, c) => Math.max(m, c.alcanceMedio ?? 0), 0);
+  const melhor = [...grade].sort((a, b) => (b.alcanceMedio ?? -1) - (a.alcanceMedio ?? -1))[0];
+  return { grade, max, melhor: melhor && melhor.n > 0 ? melhor : null };
+}
+
+/** Ritmo de publicação no período. */
+export function cadencia(linhas: LinhaMetrica[], dias: number) {
+  const datas = linhas
+    .map((l) => l.published_at)
+    .filter((d): d is string => !!d)
+    .map((d) => new Date(d).getTime())
+    .sort((a, b) => a - b);
+
+  const porSemana = dias > 0 ? (linhas.length / dias) * 7 : null;
+
+  let intervaloMedio: number | null = null;
+  if (datas.length > 1) {
+    let total = 0;
+    for (let i = 1; i < datas.length; i++) total += datas[i]! - datas[i - 1]!;
+    intervaloMedio = total / (datas.length - 1) / 86_400_000;
+  }
+
+  const diasComPost = new Set(
+    linhas
+      .map((l) => l.published_at?.slice(0, 10))
+      .filter((d): d is string => !!d),
+  ).size;
+
+  return {
+    posts: linhas.length,
+    porSemana,
+    intervaloMedio,
+    diasComPost,
+    diasSemPost: Math.max(0, dias - diasComPost),
+    ultimoPost: datas.length ? datas[datas.length - 1]! : null,
+  };
+}
+
+/**
+ * Curva de maturação: quanto do alcance da última leitura já existia na primeira,
+ * usando o histórico completo de post_metrics.
+ */
+export function maturacao(leituras: Leitura[]) {
+  const porPost = new Map<string, Leitura[]>();
+  for (const l of leituras) porPost.set(l.post_id, [...(porPost.get(l.post_id) ?? []), l]);
+
+  const razoes: number[] = [];
+  let crescimentoTotal = 0;
+  let comHistorico = 0;
+
+  for (const ls of porPost.values()) {
+    const ordenadas = [...ls].sort(
+      (a, b) => new Date(a.captured_at).getTime() - new Date(b.captured_at).getTime(),
+    );
+    const primeira = ordenadas[0];
+    const ultima = ordenadas[ordenadas.length - 1];
+    if (!primeira || !ultima || ordenadas.length < 2) continue;
+    if (primeira.reach === null || ultima.reach === null || ultima.reach <= 0) continue;
+    comHistorico++;
+    razoes.push((primeira.reach / ultima.reach) * 100);
+    crescimentoTotal += ultima.reach - primeira.reach;
+  }
+
+  return {
+    comHistorico,
+    pctNaPrimeiraLeitura: media(razoes),
+    crescimentoTotal: comHistorico ? crescimentoTotal : null,
+  };
+}
+
+/** Série diária de um indicador qualquer (para sparklines). */
+export function serieIndicador(
+  linhas: LinhaMetrica[],
+  dias: number,
+  campo: "reach" | "impressions" | "saves" | "shares" | "comments" | "likes",
+) {
+  const mapa = new Map<string, number>();
+  const chaves: string[] = [];
+  const hoje = new Date();
+  for (let i = dias - 1; i >= 0; i--) {
+    const k = new Date(hoje.getTime() - i * 86_400_000).toISOString().slice(0, 10);
+    chaves.push(k);
+    mapa.set(k, 0);
+  }
+  for (const l of linhas) {
+    const v = l[campo];
+    if (!l.published_at || typeof v !== "number") continue;
+    const k = l.published_at.slice(0, 10);
+    if (mapa.has(k)) mapa.set(k, (mapa.get(k) ?? 0) + v);
+  }
+  return chaves.map((k) => ({ dia: k, valor: mapa.get(k) ?? 0 }));
+}
+
+/** Etapas proporcionais: alcance → interações → salvamentos + compartilhamentos. */
+export function funilInteracao(linhas: LinhaMetrica[]) {
+  const t = calcularTaxas(linhas);
+  const propagacao =
+    t.alcance === null
+      ? null
+      : (soma(linhas, "saves") ?? 0) + (soma(linhas, "shares") ?? 0);
+
+  return [
+    { rotulo: "Alcance", valor: t.alcance, pct: 100 },
+    {
+      rotulo: "Interações",
+      valor: t.interacoes,
+      pct: t.engajamento ?? 0,
+    },
+    {
+      rotulo: "Salvos + compartilhados",
+      valor: propagacao,
+      pct: taxa(propagacao, t.alcance) ?? 0,
+    },
+  ];
+}
+
