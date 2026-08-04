@@ -3,7 +3,7 @@ import { toast } from "sonner";
 
 import { iniciais } from "@/lib/conteudo";
 import { useOrg } from "@/hooks/useOrg";
-import { useAprovacoes, useDecidir, useVersoes, useCriarVersao } from "@/hooks/usePost";
+import { useAprovacoes, useDecidir, useVersoes } from "@/hooks/usePost";
 
 type Decisao = "approved" | "changes_requested" | "rejected";
 
@@ -198,5 +198,3 @@ export function LateralPost({
     </aside>
   );
 }
-
-export { useCriarVersao };

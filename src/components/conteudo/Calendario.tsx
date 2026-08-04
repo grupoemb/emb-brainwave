@@ -107,7 +107,7 @@ export function Calendario() {
   const [canal, setCanal] = useState<Canal | null>(null);
   const [pilar, setPilar] = useState<string | null>(null);
   const [status, setStatus] = useState<Status | null>(null);
-  const [aberto, setAberto] = useState<Post | null>(null);
+  const navigate = useNavigate();
   const [diaSobre, setDiaSobre] = useState<string | null>(null);
 
   const filtrados = useMemo(
