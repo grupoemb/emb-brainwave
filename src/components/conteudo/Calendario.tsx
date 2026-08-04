@@ -13,12 +13,15 @@ import {
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 import { toastDesfazer } from "@/lib/toastDesfazer";
 
 import { Revelar } from "@/components/Revelar";
+import { SemanaEsqueleto } from "@/components/conteudo/Esqueleto";
+import { FaixaDeContexto } from "@/components/painel/FaixaDeContexto";
+
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { usePilares, usePosts, useAgendar } from "@/hooks/useConteudo";
 import { useRealtimePosts } from "@/hooks/useRealtimePosts";
@@ -98,17 +101,24 @@ function Pill({
 
 export function Calendario() {
   useRealtimePosts();
+  const { foco, origem } = useSearch({ from: "/_authenticated/calendario" });
   const { posts, carregando } = usePosts();
   const { pilares, pilarPorId } = usePilares();
   const agendar = useAgendar();
 
-  const [visao, setVisao] = useState<"mes" | "semana">("mes");
+  const doPainel = origem === "painel";
+  const foco7d = foco === "7d";
+
+  const [visao, setVisao] = useState<"mes" | "semana">(foco7d ? "semana" : "mes");
   const [referencia, setReferencia] = useState(new Date());
   const [canal, setCanal] = useState<Canal | null>(null);
   const [pilar, setPilar] = useState<string | null>(null);
   const [status, setStatus] = useState<Status | null>(null);
   const navigate = useNavigate();
   const [diaSobre, setDiaSobre] = useState<string | null>(null);
+
+  const limparRecorte = () =>
+    void navigate({ to: "/calendario", search: { foco: "", origem: "" } });
 
   const filtrados = useMemo(
     () =>
@@ -136,6 +146,16 @@ export function Calendario() {
   const semData = filtrados.filter(
     (p) => !p.scheduled_for && SEM_DATA_STATUS.includes(p.status),
   );
+
+  const proximos7d = useMemo(() => {
+    const agora = Date.now();
+    const limite = agora + 7 * 86_400_000;
+    return agendados.filter((p) => {
+      const t = new Date(p.scheduled_for!).getTime();
+      return t >= agora && t <= limite;
+    });
+  }, [agendados]);
+
 
   function doDia(dia: Date) {
     return agendados.filter((p) => isSameDay(new Date(p.scheduled_for!), dia));
@@ -168,9 +188,45 @@ export function Calendario() {
 
   const hoje = new Date();
 
+  const faixa = doPainel ? (
+    <FaixaDeContexto
+      recorte={foco7d ? "próximos 7 dias" : "agenda editorial"}
+      onLimpar={limparRecorte}
+    />
+  ) : null;
+
+  if (carregando && doPainel) {
+    return (
+      <Revelar className="space-y-4">
+        {faixa}
+        <div className="secao-entrada">
+          <SemanaEsqueleto />
+        </div>
+      </Revelar>
+    );
+  }
+
   return (
     <Revelar className="space-y-4">
+      {faixa}
+
+      {foco7d && !carregando && proximos7d.length === 0 && (
+        <div className="cartao secao-entrada flex flex-col items-center gap-3 p-8 text-center">
+          <p className="text-sm text-muted">Nada agendado pros próximos 7 dias.</p>
+          <button
+            className="btn px-3 py-1.5 text-xs"
+            onClick={() => {
+              setVisao("mes");
+              limparRecorte();
+            }}
+          >
+            ver o mês inteiro
+          </button>
+        </div>
+      )}
+
       <div className="secao-entrada flex flex-wrap items-center gap-2">
+
         <div className="flex gap-2">
           <Chip ativo={visao === "mes"} onClick={() => setVisao("mes")}>
             Mês

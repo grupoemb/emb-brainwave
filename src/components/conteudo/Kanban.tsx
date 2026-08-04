@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 
@@ -7,7 +7,9 @@ import { toastDesfazer } from "@/lib/toastDesfazer";
 
 import { Revelar } from "@/components/Revelar";
 import { CartaoPost } from "@/components/conteudo/CartaoPost";
+import { KanbanEsqueleto } from "@/components/conteudo/Esqueleto";
 import { NovoCardDialog } from "@/components/conteudo/NovoCardDialog";
+import { FaixaDeContexto } from "@/components/painel/FaixaDeContexto";
 import { usePilares, usePosts, useMoverStatus } from "@/hooks/useConteudo";
 import { useRealtimePosts } from "@/hooks/useRealtimePosts";
 import { COLUNAS, type Status } from "@/lib/conteudo";
@@ -15,12 +17,25 @@ import { COLUNAS, type Status } from "@/lib/conteudo";
 export function Kanban() {
   useRealtimePosts();
   const navigate = useNavigate();
+  const { foco, origem } = useSearch({ from: "/_authenticated/kanban" });
   const { posts, carregando } = usePosts();
   const { pilarPorId } = usePilares();
   const mover = useMoverStatus();
   const [abrirNovo, setAbrirNovo] = useState(false);
   const [verTodosPublicados, setVerTodosPublicados] = useState(false);
   const [sobre, setSobre] = useState<Status | null>(null);
+
+  const doPainel = origem === "painel";
+  const colunaFoco = COLUNAS.find((c) => c.status === foco) ?? null;
+  const refFoco = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (!carregando && colunaFoco) {
+      refFoco.current?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+    }
+  }, [carregando, colunaFoco]);
+
+  const limparRecorte = () => void navigate({ to: "/kanban", search: { foco: "", origem: "" } });
 
   const porStatus = useMemo(() => {
     const mapa = new Map<Status, typeof posts>();
@@ -37,6 +52,9 @@ export function Kanban() {
   }, [posts]);
 
   const trabalhoVazio = COLUNAS.slice(0, 6).every((c) => (porStatus.get(c.status) ?? []).length === 0);
+  const focoVazio =
+    !!colunaFoco && !carregando && (porStatus.get(colunaFoco.status) ?? []).length === 0;
+
 
   async function soltar(status: Status, e: React.DragEvent) {
     e.preventDefault();
@@ -77,8 +95,31 @@ export function Kanban() {
     }
   }
 
+  if (carregando && (doPainel || colunaFoco)) {
+    return (
+      <Revelar className="space-y-4">
+        {doPainel ? (
+          <FaixaDeContexto
+            recorte={colunaFoco ? `coluna ${colunaFoco.rotulo}` : "fluxo de produção"}
+            onLimpar={limparRecorte}
+          />
+        ) : null}
+        <div className="secao-entrada">
+          <KanbanEsqueleto colunas={[...COLUNAS]} foco={colunaFoco?.status ?? null} />
+        </div>
+      </Revelar>
+    );
+  }
+
   return (
     <Revelar className="space-y-4">
+      {doPainel ? (
+        <FaixaDeContexto
+          recorte={colunaFoco ? `coluna ${colunaFoco.rotulo}` : "fluxo de produção"}
+          onLimpar={limparRecorte}
+        />
+      ) : null}
+
       <div className="secao-entrada flex items-center justify-between">
         <p className="text-sm text-muted">
           {carregando ? "Carregando…" : `${posts.length} cards no fluxo`}
@@ -88,7 +129,20 @@ export function Kanban() {
         </button>
       </div>
 
-      {trabalhoVazio && !carregando && (
+      {focoVazio && (
+        <div className="cartao secao-entrada flex flex-col items-center gap-3 p-8 text-center">
+          <p className="text-sm text-muted">
+            {colunaFoco?.status === "review"
+              ? "Nenhum post aguardando aprovação."
+              : `Nenhum post na coluna ${colunaFoco?.rotulo}.`}
+          </p>
+          <button className="btn px-3 py-1.5 text-xs" onClick={limparRecorte}>
+            ver todo o fluxo
+          </button>
+        </div>
+      )}
+
+      {trabalhoVazio && !carregando && !focoVazio && (
         <div className="cartao secao-entrada flex flex-col items-center gap-3 p-8 text-center">
           <p className="text-sm text-muted">Nenhuma ideia por aqui. Peça pautas ao cérebro.</p>
           <button className="btn-primario" onClick={() => void navigate({ to: "/pautas" })}>
@@ -98,14 +152,18 @@ export function Kanban() {
       )}
 
       <div className="secao-entrada flex gap-3 overflow-x-auto pb-2">
+
         {COLUNAS.map((coluna) => {
           const todos = porStatus.get(coluna.status) ?? [];
           const publicado = coluna.status === "published";
           const lista = publicado && !verTodosPublicados ? todos.slice(0, 10) : todos;
 
+          const emFoco = colunaFoco?.status === coluna.status;
+
           return (
             <section
               key={coluna.status}
+              ref={emFoco ? refFoco : undefined}
               onDragOver={(e) => {
                 e.preventDefault();
                 setSobre(coluna.status);
@@ -114,9 +172,11 @@ export function Kanban() {
               onDrop={(e) => void soltar(coluna.status, e)}
               className={
                 "w-[272px] shrink-0 rounded-xl bg-bg2 p-3 transition-colors " +
-                (sobre === coluna.status ? "ring-1 ring-azure/50" : "")
+                (sobre === coluna.status ? "ring-1 ring-azure/50 " : "") +
+                (emFoco ? "ring-1 ring-azure/40" : "")
               }
             >
+
               <header className="mb-3 flex items-center gap-2">
                 <span
                   className="h-2 w-2 shrink-0 rounded-full"

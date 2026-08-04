@@ -55,3 +55,57 @@ export function PostDetalheEsqueleto() {
     </div>
   );
 }
+
+/**
+ * Esqueleto do kanban. Com `foco`, a coluna em destaque vem em tamanho normal
+ * e as demais em largura reduzida.
+ */
+export function KanbanEsqueleto({
+  colunas,
+  foco,
+}: {
+  colunas: { status: string; rotulo: string }[];
+  foco?: string | null;
+}) {
+  return (
+    <div className="flex gap-3 overflow-x-hidden pb-2">
+      {colunas.map((c) => {
+        const emFoco = !foco || c.status === foco;
+        return (
+          <div
+            key={c.status}
+            className={
+              "shrink-0 rounded-xl bg-bg2 p-3 " + (emFoco ? "w-[272px]" : "w-[132px] opacity-60")
+            }
+          >
+            <Esqueleto className="mb-3 h-3 w-20 rounded" />
+            <div className="flex flex-col gap-[10px]">
+              {Array.from({ length: emFoco ? 3 : 1 }).map((_, i) => (
+                <Esqueleto key={i} className="h-16 w-full rounded-[.6rem]" />
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/** Esqueleto de faixa semanal (7 colunas), usado quando o recorte é "próximos 7 dias". */
+export function SemanaEsqueleto() {
+  return (
+    <div className="cartao p-3">
+      <div className="mb-2 grid grid-cols-7 gap-1">
+        {Array.from({ length: 7 }).map((_, i) => (
+          <Esqueleto key={i} className="mx-auto h-3 w-8 rounded" />
+        ))}
+      </div>
+      <div className="grid grid-cols-7 gap-1">
+        {Array.from({ length: 7 }).map((_, i) => (
+          <Esqueleto key={i} className="h-28 rounded-[.5rem]" />
+        ))}
+      </div>
+    </div>
+  );
+}
+

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 
 import { Revelar } from "@/components/Revelar";
 import { CartaoKpi } from "@/components/metricas/CartaoKpi";
@@ -7,22 +8,37 @@ import { EsqueletoMetricas } from "@/components/metricas/EsqueletoMetricas";
 import { FiltrosMetricas } from "@/components/metricas/FiltrosMetricas";
 import { GraficoAlcance } from "@/components/metricas/GraficoAlcance";
 import { TabelaPosts } from "@/components/metricas/TabelaPosts";
+import { FaixaDeContexto } from "@/components/painel/FaixaDeContexto";
 import { rotuloIntervalo } from "@/lib/metricas";
 import { usePilares } from "@/hooks/useConteudo";
-import { useContasConectadas, useMetricas } from "@/hooks/useMetricas";
+import { useContasConectadas, useMetricas, type Periodo } from "@/hooks/useMetricas";
 
 export function Metricas() {
-  const m = useMetricas();
+  const { dias: diasUrl, origem } = useSearch({ from: "/_authenticated/metricas" });
+  const navigate = useNavigate();
+  const diasInicial: Periodo = ([7, 30, 90] as const).includes(diasUrl as Periodo)
+    ? (diasUrl as Periodo)
+    : 30;
+  const m = useMetricas(diasInicial);
   const contas = useContasConectadas();
   const { pilares } = usePilares();
   const [acumulado, setAcumulado] = useState(false);
   const [modo, setModo] = useState<"top" | "piores">("top");
+
+  const doPainel = origem === "painel";
+  const faixa = doPainel ? (
+    <FaixaDeContexto
+      recorte={`últimos ${m.dias} dias`}
+      onLimpar={() => void navigate({ to: "/metricas", search: { dias: 30, origem: "" } })}
+    />
+  ) : null;
 
   const k = m.kpis;
   const ka = m.kpisComparados;
   const comparando = !!m.intervaloComparado;
   const semPosts = !m.carregando && m.linhas.length === 0;
   const rotuloComp = m.intervaloComparado ? rotuloIntervalo(m.intervaloComparado) : undefined;
+
 
   // undefined = comparação desligada; null = sem base
   const anterior = (v: number | null | undefined) =>
@@ -33,6 +49,8 @@ export function Metricas() {
 
   return (
     <Revelar className="space-y-4">
+      {faixa}
+
       <div className="secao-entrada">
         <FiltrosMetricas
           dias={m.dias}
@@ -60,12 +78,22 @@ export function Metricas() {
           <EsqueletoMetricas />
         </div>
       ) : semPosts ? (
-        <div className="cartao secao-entrada p-8 text-center text-sm text-muted">
-          {m.houveColeta
-            ? "Nenhum post no período selecionado"
-            : "Aguardando a primeira coleta das contas"}
+        <div className="cartao secao-entrada flex flex-col items-center gap-3 p-8 text-center">
+          <p className="text-sm text-muted">
+            {doPainel && m.dias === 7
+              ? "Sem leituras de métricas nos últimos 7 dias."
+              : m.houveColeta
+                ? "Nenhum post no período selecionado"
+                : "Aguardando a primeira coleta das contas"}
+          </p>
+          {doPainel && m.dias === 7 ? (
+            <button className="btn px-3 py-1.5 text-xs" onClick={() => m.setDias(30)}>
+              ver 30 dias
+            </button>
+          ) : null}
         </div>
       ) : (
+
         <>
           {comparando ? (
             <div className="secao-entrada text-xs text-muted">

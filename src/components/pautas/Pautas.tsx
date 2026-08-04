@@ -1,10 +1,12 @@
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 import { Revelar } from "@/components/Revelar";
 import { CartaoPauta, haQuanto } from "@/components/pautas/CartaoPauta";
 import { FiltrosPautas } from "@/components/pautas/FiltrosPautas";
+import { FaixaDeContexto } from "@/components/painel/FaixaDeContexto";
 import { usePautas } from "@/hooks/useInteligencia";
+
 
 export function Pautas() {
   const navigate = useNavigate();
@@ -24,6 +26,13 @@ export function Pautas() {
   } = usePautas();
 
   const ocupado = aceitar.isPending || descartar.isPending;
+  const { origem } = useSearch({ from: "/_authenticated/pautas" });
+  const doPainel = origem === "painel";
+  const limparRecorte = () =>
+    void navigate({
+      to: "/pautas",
+      search: { q: "", status: "todos", tipo: "todos", pilar: "todos", origem: "" },
+    });
 
   return (
     <Revelar className="space-y-4">
@@ -37,6 +46,8 @@ export function Pautas() {
         </div>
         <span className="text-xs text-muted">última rodada de pautas {haQuanto(ultimaRodada)}</span>
       </div>
+
+      {doPainel ? <FaixaDeContexto recorte="pautas novas" onLimpar={limparRecorte} /> : null}
 
       <FiltrosPautas
         filtros={filtros}
@@ -60,13 +71,21 @@ export function Pautas() {
           ))}
         </div>
       ) : lista.length === 0 ? (
-        <div className="secao-entrada cartao p-8 text-sm text-muted">
-          {temFiltroExtra
-            ? "Nenhuma pauta encontrada com esses filtros."
-            : filtros.status === "new"
-              ? "Nenhuma pauta aberta. A próxima rodada automática é segunda de manhã."
-              : "Nada por aqui ainda."}
+        <div className="secao-entrada cartao flex flex-col items-start gap-3 p-8 text-sm text-muted">
+          <p>
+            {temFiltroExtra
+              ? "Nenhuma pauta encontrada com esses filtros."
+              : filtros.status === "new"
+                ? "Nenhuma pauta nova. A próxima rodada automática é segunda de manhã."
+                : "Nada por aqui ainda."}
+          </p>
+          {doPainel && !temFiltroExtra ? (
+            <button className="btn px-3 py-1.5 text-xs" onClick={limparRecorte}>
+              ver todas as pautas
+            </button>
+          ) : null}
         </div>
+
       ) : (
         <div className="secao-entrada space-y-3">
           {lista.map((s) => (
