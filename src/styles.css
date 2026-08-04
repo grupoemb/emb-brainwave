@@ -19,7 +19,12 @@
   --alerta: #f6bd24;
   --ruim: #ff7a6b;
   --radius: 0.625rem;
+  --line-suave: rgba(148, 163, 184, 0.1);
+  --sombra-1: 0 10px 34px -18px rgb(0 0 0 / 0.6);
+  --sombra-2: 0 18px 48px -24px rgb(0 0 0 / 0.75);
+  --halo-azure: 0 0 0 1px rgba(0, 164, 255, 0.18), 0 18px 44px -26px rgba(0, 164, 255, 0.45);
 }
+
 
 @theme inline {
   --font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
