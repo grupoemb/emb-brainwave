@@ -242,7 +242,25 @@ export function Kanban() {
       </div>
 
 
+      {recalculando ? (
+        <div className="secao-entrada">
+          <KanbanEsqueleto
+            colunas={
+              filtroAtivo && !mostrarVazias
+                ? COLUNAS.filter(
+                    (c) =>
+                      (porStatus.get(c.status) ?? []).length > 0 ||
+                      colunaFoco?.status === c.status,
+                  )
+                : [...COLUNAS]
+            }
+            foco={colunaFoco?.status ?? null}
+          />
+        </div>
+      ) : (
+        <>
       {nadaNoFiltro && (
+
         <VazioFiltrado
           mensagem="Nenhum card corresponde ao filtro."
           detalhe={descricaoRecorte}
