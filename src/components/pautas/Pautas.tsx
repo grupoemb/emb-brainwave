@@ -1,10 +1,12 @@
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 import { Revelar } from "@/components/Revelar";
 import { CartaoPauta, haQuanto } from "@/components/pautas/CartaoPauta";
 import { FiltrosPautas } from "@/components/pautas/FiltrosPautas";
+import { FaixaDeContexto } from "@/components/painel/FaixaDeContexto";
 import { usePautas } from "@/hooks/useInteligencia";
+
 
 export function Pautas() {
   const navigate = useNavigate();
