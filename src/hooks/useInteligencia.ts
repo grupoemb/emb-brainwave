@@ -14,6 +14,8 @@ import {
 
 export type FiltroPauta = "new" | "accepted" | "dismissed";
 
+export type EstadoFiltros = { q: string; status: string; tipo: string; pilar: string };
+
 /** Normaliza texto para busca: minúsculo e sem acento. */
 function normalizar(v: string) {
   return v
@@ -36,14 +38,19 @@ export function usePautas() {
   const aceitarFn = useServerFn(aceitarSugestao);
   const descartarFn = useServerFn(descartarSugestao);
 
-  const filtros = useSearch({ from: "/_authenticated/pautas" });
-  const navigate = useNavigate({ from: "/pautas" });
+  const filtros: EstadoFiltros = useSearch({ from: "/_authenticated/pautas" });
+  const navigate = useNavigate();
 
-  const definir = (p: Partial<typeof filtros>) =>
-    navigate({ search: (prev) => ({ ...prev, ...p }), replace: true });
+  const definir = (p: Partial<EstadoFiltros>) =>
+    navigate({
+      to: "/pautas",
+      search: (prev: EstadoFiltros) => ({ ...prev, ...p }),
+      replace: true,
+    });
   const limpar = () =>
     navigate({
-      search: (prev) => ({ ...prev, q: "", tipo: "todos", pilar: "todos" }),
+      to: "/pautas",
+      search: (prev: EstadoFiltros) => ({ ...prev, q: "", tipo: "todos", pilar: "todos" }),
       replace: true,
     });
 

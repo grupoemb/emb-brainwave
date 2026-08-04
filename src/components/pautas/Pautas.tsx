@@ -3,43 +3,25 @@ import { toast } from "sonner";
 
 import { Revelar } from "@/components/Revelar";
 import { CartaoPauta, haQuanto } from "@/components/pautas/CartaoPauta";
-import { usePautas, type FiltroPauta } from "@/hooks/useInteligencia";
-
-const FILTROS: { valor: FiltroPauta; rotulo: string }[] = [
-  { valor: "new", rotulo: "Novas" },
-  { valor: "accepted", rotulo: "Aceitas" },
-  { valor: "dismissed", rotulo: "Descartadas" },
-];
-
-function Chip({
-  ativo,
-  onClick,
-  children,
-}: {
-  ativo: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={
-        "h-[30px] shrink-0 rounded-[8px] border px-3 text-xs transition-colors " +
-        (ativo
-          ? "border-azure/40 bg-azure/14 font-semibold text-txt"
-          : "border-line text-muted hover:text-corpo")
-      }
-    >
-      {children}
-    </button>
-  );
-}
+import { FiltrosPautas } from "@/components/pautas/FiltrosPautas";
+import { usePautas } from "@/hooks/useInteligencia";
 
 export function Pautas() {
   const navigate = useNavigate();
-  const { lista, contagem, filtro, setFiltro, carregando, ultimaRodada, aceitar, descartar } =
-    usePautas();
+  const {
+    lista,
+    contagemStatus,
+    contagemTipo,
+    pilares,
+    filtros,
+    definir,
+    limpar,
+    temFiltroExtra,
+    carregando,
+    ultimaRodada,
+    aceitar,
+    descartar,
+  } = usePautas();
 
   const ocupado = aceitar.isPending || descartar.isPending;
 
@@ -56,13 +38,16 @@ export function Pautas() {
         <span className="text-xs text-muted">última rodada de pautas {haQuanto(ultimaRodada)}</span>
       </div>
 
-      <div className="secao-entrada flex gap-2 overflow-x-auto pb-1">
-        {FILTROS.map((f) => (
-          <Chip key={f.valor} ativo={filtro === f.valor} onClick={() => setFiltro(f.valor)}>
-            {f.rotulo} ({contagem[f.valor]})
-          </Chip>
-        ))}
-      </div>
+      <FiltrosPautas
+        filtros={filtros}
+        definir={definir}
+        limpar={limpar}
+        contagemStatus={contagemStatus}
+        contagemTipo={contagemTipo}
+        pilares={pilares}
+        total={lista.length}
+        temFiltroExtra={temFiltroExtra}
+      />
 
       {carregando ? (
         <div className="secao-entrada space-y-3">
@@ -76,9 +61,11 @@ export function Pautas() {
         </div>
       ) : lista.length === 0 ? (
         <div className="secao-entrada cartao p-8 text-sm text-muted">
-          {filtro === "new"
-            ? "Nenhuma pauta aberta. A próxima rodada automática é segunda de manhã."
-            : "Nada por aqui ainda."}
+          {temFiltroExtra
+            ? "Nenhuma pauta encontrada com esses filtros."
+            : filtros.status === "new"
+              ? "Nenhuma pauta aberta. A próxima rodada automática é segunda de manhã."
+              : "Nada por aqui ainda."}
         </div>
       ) : (
         <div className="secao-entrada space-y-3">
