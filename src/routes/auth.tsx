@@ -85,93 +85,144 @@ function Acesso() {
     }
   }
 
+  const criando = aba === "criar";
+
   return (
-    <div className="flex min-h-screen items-center justify-center px-4 py-10">
-      <div className="cartao w-full max-w-sm p-8">
-        <div className="text-lg font-bold">
-          B7 · <span className="grad">Central</span> de Conteúdo
-        </div>
-        <p className="mt-1 text-sm text-muted">Acesso restrito à equipe EMB.</p>
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-10">
+      <VitrineFundo />
 
-        <div className="mt-6 flex gap-1 rounded-[.6rem] border border-line p-1">
-          {(["entrar", "criar"] as const).map((valor) => (
-            <button
-              key={valor}
-              type="button"
-              onClick={() => {
-                setAba(valor);
-                setErro(null);
-              }}
-              className={
-                "flex-1 rounded-[.45rem] px-3 py-1.5 text-sm transition-colors " +
-                (aba === valor ? "bg-azure/14 font-semibold text-white" : "text-muted")
-              }
-            >
-              {valor === "entrar" ? "Entrar" : "Criar conta"}
-            </button>
-          ))}
-        </div>
+      <div className="relative w-full max-w-[26rem]">
+        <div
+          className="acesso-sobe rounded-[1.1rem] border border-lineForte bg-card/80 p-7 shadow-[0_30px_80px_-30px_rgba(0,0,0,.85)] backdrop-blur-xl sm:p-8"
+          style={{ animationDelay: ".05s" }}
+        >
+          <div
+            aria-hidden
+            className="mx-auto -mt-7 mb-6 h-px w-2/3 bg-gradient-to-r from-transparent via-azure to-transparent"
+          />
 
-        <form className="mt-5 flex flex-col gap-3" onSubmit={enviar}>
-          {aba === "criar" && (
-            <label className="flex flex-col gap-1 text-sm">
-              Nome
-              <input
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
-                required
-                autoComplete="name"
-                className="rounded-[.5rem] border border-line bg-bg2 px-3 py-2 text-sm outline-none focus:border-azure"
+          <div className="text-[1.35rem] font-bold leading-tight tracking-tight">
+            B7 · <span className="grad">Central</span> de Conteúdo
+          </div>
+          <p className="mt-1.5 text-sm text-muted">
+            Três contas, um lugar só, zero achismo. Acesso restrito à equipe EMB.
+          </p>
+
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            {["Instagram", "LinkedIn", "TikTok"].map((c) => (
+              <span key={c} className="pill border border-line text-[.68rem] text-corpo">
+                {c}
+              </span>
+            ))}
+          </div>
+
+          <div className="relative mt-6 grid grid-cols-2 rounded-[.65rem] border border-line bg-bg2/60 p-1">
+            <span
+              aria-hidden
+              className="absolute inset-y-1 left-1 w-[calc(50%-.25rem)] rounded-[.5rem] bg-gradient-to-r from-royal/70 to-azure/60 transition-transform duration-300 ease-[cubic-bezier(.23,1,.32,1)]"
+              style={{ transform: criando ? "translateX(100%)" : "translateX(0)" }}
+            />
+            {(["entrar", "criar"] as const).map((valor) => (
+              <button
+                key={valor}
+                type="button"
+                onClick={() => {
+                  setAba(valor);
+                  setErro(null);
+                }}
+                className={
+                  "relative z-10 rounded-[.5rem] px-3 py-1.5 text-sm transition-colors " +
+                  (aba === valor ? "font-semibold text-white" : "text-muted hover:text-corpo")
+                }
+              >
+                {valor === "entrar" ? "Entrar" : "Criar conta"}
+              </button>
+            ))}
+          </div>
+
+          <form className="mt-5 flex flex-col gap-3.5" onSubmit={enviar}>
+            {criando && (
+              <div className="acesso-sobe" style={{ animationDelay: ".02s" }}>
+                <CampoAcesso
+                  rotulo="Nome"
+                  icone={User}
+                  valor={nome}
+                  onChange={setNome}
+                  obrigatorio
+                  autoComplete="name"
+                  placeholder="Como a equipe te chama"
+                />
+              </div>
+            )}
+
+            <div className="acesso-sobe" style={{ animationDelay: ".14s" }}>
+              <CampoAcesso
+                rotulo="E-mail"
+                icone={Mail}
+                tipo="email"
+                valor={email}
+                onChange={setEmail}
+                obrigatorio
+                autoComplete="email"
+                placeholder="voce@embmarketing.com"
               />
-            </label>
-          )}
+            </div>
 
-          <label className="flex flex-col gap-1 text-sm">
-            E-mail
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              autoComplete="email"
-              className="rounded-[.5rem] border border-line bg-bg2 px-3 py-2 text-sm outline-none focus:border-azure"
-            />
-          </label>
+            <div className="acesso-sobe" style={{ animationDelay: ".19s" }}>
+              <CampoAcesso
+                rotulo="Senha"
+                icone={Lock}
+                tipo="password"
+                valor={senha}
+                onChange={setSenha}
+                obrigatorio
+                minLength={6}
+                autoComplete={criando ? "new-password" : "current-password"}
+                placeholder="Mínimo de 6 caracteres"
+              />
+            </div>
 
-          <label className="flex flex-col gap-1 text-sm">
-            Senha
-            <input
-              type="password"
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-              required
-              minLength={6}
-              autoComplete={aba === "entrar" ? "current-password" : "new-password"}
-              className="rounded-[.5rem] border border-line bg-bg2 px-3 py-2 text-sm outline-none focus:border-azure"
-            />
-          </label>
+            {criando && (
+              <div className="acesso-sobe" style={{ animationDelay: ".24s" }}>
+                <CampoAcesso
+                  rotulo="Código de acesso da equipe"
+                  icone={KeyRound}
+                  valor={codigo}
+                  onChange={setCodigo}
+                  autoComplete="off"
+                  placeholder="Ex.: EMB-2026"
+                  dica="Peça o código a quem já usa a Central."
+                />
+              </div>
+            )}
 
-          <label className="flex flex-col gap-1 text-sm">
-            Código de acesso da equipe
-            <input
-              value={codigo}
-              onChange={(e) => setCodigo(e.target.value)}
-              placeholder="Somente para novos integrantes"
-              autoComplete="off"
-              className="rounded-[.5rem] border border-line bg-bg2 px-3 py-2 text-sm outline-none focus:border-azure"
-            />
-          </label>
+            {erro && (
+              <div className="acesso-sobe flex items-start gap-2 rounded-[.6rem] border border-ruim/30 bg-ruim/10 px-3 py-2.5">
+                <AlertCircle size={15} className="mt-px shrink-0 text-ruim" />
+                <p className="text-[.8rem] leading-snug text-corpo">{erro}</p>
+              </div>
+            )}
 
-          {erro && <p className="text-sm text-red-400">{erro}</p>}
+            <button
+              type="submit"
+              disabled={enviando}
+              className="btn-primario mt-1 flex h-11 w-full items-center justify-center gap-2 text-sm transition-all duration-200 hover:brightness-110 hover:shadow-[0_10px_30px_-12px_rgba(0,164,255,.8)] disabled:opacity-60"
+            >
+              {enviando && <Loader2 size={15} className="animate-spin" />}
+              {enviando ? "Aguarde…" : criando ? "Criar conta" : "Entrar"}
+            </button>
+          </form>
 
-          <button type="submit" disabled={enviando} className="btn mt-2 justify-center">
-            {enviando ? "Aguarde…" : aba === "entrar" ? "Entrar" : "Criar conta"}
-          </button>
-        </form>
+          <div className="mt-5 flex items-center justify-center gap-1.5 border-t border-line pt-4 text-[.7rem] text-muted">
+            <ShieldCheck size={12} className="text-bom" />
+            Uso interno · dados protegidos por RLS
+          </div>
+        </div>
       </div>
     </div>
   );
 }
+
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
