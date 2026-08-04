@@ -17,9 +17,12 @@ export type PostBruto = {
   title: string;
   channel: string | null;
   format: string | null;
+  hook?: string | null;
   pillar_id: string | null;
   published_at: string | null;
   source_handle: string | null;
+  theme?: string | null;
+  intent?: string | null;
 };
 
 export type Baseline = {
@@ -34,14 +37,20 @@ export type LinhaMetrica = {
   title: string;
   conta: string | null;
   format: Formato | null;
+  hook: string | null;
+  pillar_id: string | null;
+  theme: string | null;
+  intent: string | null;
   published_at: string | null;
   reach: number | null;
+  impressions: number | null;
   saves: number | null;
   shares: number | null;
   comments: number | null;
   likes: number | null;
   rx: number | null;
 };
+
 
 export const PALETA = ["#00a4ff", "#00e7ff", "#3ecf8e", "#f6bd24", "#a78bfa", "#ff7a6b"];
 
