@@ -1,7 +1,9 @@
 import { Search, X } from "lucide-react";
 
+import { MenuFiltro } from "@/components/filtros/MenuFiltro";
 import { comAlfa } from "@/lib/conteudo";
 import type { TipoSugestao } from "@/lib/inteligencia.functions";
+
 
 export const TIPOS_FILTRO: { valor: TipoSugestao | "todos"; rotulo: string }[] = [
   { valor: "todos", rotulo: "Todos" },
@@ -91,51 +93,52 @@ export function FiltrosPautas({
         ) : null}
       </div>
 
-      <div className="flex gap-2 overflow-x-auto pb-1">
-        {[
-          { valor: "new", rotulo: "Novas" },
-          { valor: "accepted", rotulo: "Aceitas" },
-          { valor: "dismissed", rotulo: "Descartadas" },
-        ].map((f) => (
-          <Chip
-            key={f.valor}
-            ativo={filtros.status === f.valor}
-            onClick={() => definir({ status: f.valor })}
-          >
-            {f.rotulo} ({contagemStatus[f.valor] ?? 0})
-          </Chip>
-        ))}
+      <div className="flex flex-wrap gap-2">
+        <MenuFiltro
+          rotulo="Status"
+          valor={filtros.status}
+          padrao="new"
+          largura="w-52"
+          opcoes={[
+            { valor: "new", rotulo: "Novas", contagem: contagemStatus["new"] ?? 0 },
+            { valor: "accepted", rotulo: "Aceitas", contagem: contagemStatus["accepted"] ?? 0 },
+            {
+              valor: "dismissed",
+              rotulo: "Descartadas",
+              contagem: contagemStatus["dismissed"] ?? 0,
+            },
+          ]}
+          onEscolher={(v) => definir({ status: v })}
+        />
+
+        <MenuFiltro
+          rotulo="Tipo"
+          valor={filtros.tipo}
+          padrao="todos"
+          largura="w-52"
+          opcoes={TIPOS_FILTRO.map((t) => ({
+            valor: t.valor,
+            rotulo: t.rotulo,
+            contagem: contagemTipo[t.valor] ?? 0,
+          }))}
+          onEscolher={(v) => definir({ tipo: v })}
+        />
+
+        {pilares.length > 0 ? (
+          <MenuFiltro
+            rotulo="Pilar"
+            valor={filtros.pilar}
+            padrao="todos"
+            largura="w-60"
+            opcoes={[
+              { valor: "todos", rotulo: "Todos os pilares" },
+              ...pilares.map((p) => ({ valor: p.id, rotulo: p.nome, cor: p.cor })),
+            ]}
+            onEscolher={(v) => definir({ pilar: v })}
+          />
+        ) : null}
       </div>
 
-      <div className="flex gap-2 overflow-x-auto pb-1">
-        {TIPOS_FILTRO.map((t) => (
-          <Chip
-            key={t.valor}
-            ativo={filtros.tipo === t.valor}
-            onClick={() => definir({ tipo: t.valor })}
-          >
-            {t.rotulo} ({contagemTipo[t.valor] ?? 0})
-          </Chip>
-        ))}
-      </div>
-
-      {pilares.length > 0 ? (
-        <div className="flex gap-2 overflow-x-auto pb-1">
-          <Chip ativo={filtros.pilar === "todos"} onClick={() => definir({ pilar: "todos" })}>
-            Todos os pilares
-          </Chip>
-          {pilares.map((p) => (
-            <Chip
-              key={p.id}
-              ativo={filtros.pilar === p.id}
-              cor={p.cor}
-              onClick={() => definir({ pilar: p.id })}
-            >
-              {p.nome}
-            </Chip>
-          ))}
-        </div>
-      ) : null}
 
       {temFiltroExtra ? (
         <div className="flex items-center gap-3 text-xs text-muted">
