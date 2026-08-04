@@ -16,6 +16,8 @@ import {
   salvarMarca,
   salvarPilar,
   salvarTemplate,
+  type Papel,
+
 } from "@/lib/ajustes.functions";
 
 export function mensagemErro(erro: unknown) {
