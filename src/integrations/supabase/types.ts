@@ -378,6 +378,105 @@ export type Database = {
           },
         ]
       }
+      library_items: {
+        Row: {
+          added_by: string | null
+          analysis: Json | null
+          comments: number | null
+          cover_url: string | null
+          created_at: string
+          creator_handle: string | null
+          duration_s: number | null
+          external_id: string | null
+          format: Database["public"]["Enums"]["post_format"] | null
+          headline: string | null
+          hook_text: string | null
+          hook_type: Database["public"]["Enums"]["hook_type"] | null
+          id: string
+          intent: string | null
+          likes: number | null
+          niche: string | null
+          note: string | null
+          organization_id: string
+          source: string
+          status: string
+          tags: string[] | null
+          theme: string | null
+          url: string | null
+          views: number | null
+          vx: number | null
+        }
+        Insert: {
+          added_by?: string | null
+          analysis?: Json | null
+          comments?: number | null
+          cover_url?: string | null
+          created_at?: string
+          creator_handle?: string | null
+          duration_s?: number | null
+          external_id?: string | null
+          format?: Database["public"]["Enums"]["post_format"] | null
+          headline?: string | null
+          hook_text?: string | null
+          hook_type?: Database["public"]["Enums"]["hook_type"] | null
+          id?: string
+          intent?: string | null
+          likes?: number | null
+          niche?: string | null
+          note?: string | null
+          organization_id: string
+          source?: string
+          status?: string
+          tags?: string[] | null
+          theme?: string | null
+          url?: string | null
+          views?: number | null
+          vx?: number | null
+        }
+        Update: {
+          added_by?: string | null
+          analysis?: Json | null
+          comments?: number | null
+          cover_url?: string | null
+          created_at?: string
+          creator_handle?: string | null
+          duration_s?: number | null
+          external_id?: string | null
+          format?: Database["public"]["Enums"]["post_format"] | null
+          headline?: string | null
+          hook_text?: string | null
+          hook_type?: Database["public"]["Enums"]["hook_type"] | null
+          id?: string
+          intent?: string | null
+          likes?: number | null
+          niche?: string | null
+          note?: string | null
+          organization_id?: string
+          source?: string
+          status?: string
+          tags?: string[] | null
+          theme?: string | null
+          url?: string | null
+          views?: number | null
+          vx?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "library_items_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "library_items_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       metric_baselines: {
         Row: {
           channel: Database["public"]["Enums"]["social_channel"]
@@ -948,6 +1047,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_library_insights: { Args: { p_org: string }; Returns: Json }
       get_perf_aggregates: { Args: { p_org: string }; Returns: Json }
       get_post_performance: {
         Args: { p_org: string }
