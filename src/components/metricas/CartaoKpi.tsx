@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { HelpCircle } from "lucide-react";
 
 import { Esqueleto } from "@/components/conteudo/Esqueleto";
+import { classeVariacao, numero, textoVariacao, variacao } from "@/lib/metricas";
+
 
 function reduzido() {
   return typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
