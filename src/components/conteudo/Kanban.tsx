@@ -21,11 +21,13 @@ export function Kanban() {
   const navigate = useNavigate();
   const { foco, origem } = useSearch({ from: "/_authenticated/kanban" });
   const { posts, carregando } = usePosts();
-  const { pilarPorId } = usePilares();
+  const { pilares, pilarPorId } = usePilares();
   const mover = useMoverStatus();
   const [abrirNovo, setAbrirNovo] = useState(false);
   const [verTodosPublicados, setVerTodosPublicados] = useState(false);
   const [sobre, setSobre] = useState<Status | null>(null);
+  const [canal, setCanal] = useState<Canal | null>(null);
+  const [pilar, setPilar] = useState<string | null>(null);
 
   const doPainel = origem === "painel";
   const colunaFoco = COLUNAS.find((c) => c.status === foco) ?? null;
@@ -39,10 +41,18 @@ export function Kanban() {
 
   const limparRecorte = () => void navigate({ to: "/kanban", search: { foco: "", origem: "" } });
 
+  const filtrados = useMemo(
+    () =>
+      posts.filter(
+        (p) => (!canal || p.channel === canal) && (!pilar || p.pillar_id === pilar),
+      ),
+    [posts, canal, pilar],
+  );
+
   const porStatus = useMemo(() => {
     const mapa = new Map<Status, typeof posts>();
     for (const c of COLUNAS) mapa.set(c.status, []);
-    for (const p of posts) mapa.get(p.status)?.push(p);
+    for (const p of filtrados) mapa.get(p.status)?.push(p);
     mapa.set(
       "published",
       [...(mapa.get("published") ?? [])].sort(
@@ -51,7 +61,8 @@ export function Kanban() {
       ),
     );
     return mapa;
-  }, [posts]);
+  }, [filtrados]);
+
 
   const trabalhoVazio = COLUNAS.slice(0, 6).every((c) => (porStatus.get(c.status) ?? []).length === 0);
   const focoVazio =
