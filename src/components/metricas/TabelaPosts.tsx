@@ -1,6 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
+import { Flame } from "lucide-react";
 
-import { classeRx, numero, rotuloFormato, type LinhaMetrica } from "@/lib/metricas";
+import { classeRx, ehOutlier, numero, rotuloFormato, type LinhaMetrica } from "@/lib/metricas";
 
 function data(iso: string | null) {
   if (!iso) return "—";
@@ -15,25 +16,31 @@ export function TabelaPosts({
   linhas,
   modo,
   setModo,
+  soOutliers,
+  aoLimparOutliers,
 }: {
   linhas: LinhaMetrica[];
   modo: "top" | "piores";
   setModo: (m: "top" | "piores") => void;
+  soOutliers?: boolean;
+  aoLimparOutliers?: () => void;
 }) {
   const navigate = useNavigate();
 
-  const ordenadas = [...linhas]
-    .filter((l) => l.rx !== null)
+  const comRx = linhas.filter((l) => l.rx !== null);
+  const base = soOutliers ? comRx.filter((l) => ehOutlier(l.rx)) : comRx;
+
+  const ordenadas = [...base]
     .sort((a, b) =>
       modo === "top" ? (b.rx as number) - (a.rx as number) : (a.rx as number) - (b.rx as number),
     )
     .slice(0, 10);
 
-  const semRx = ordenadas.length === 0;
+  const vazio = ordenadas.length === 0;
 
   return (
     <div className="cartao p-4">
-      <div className="mb-3 flex items-center gap-1.5">
+      <div className="mb-3 flex flex-wrap items-center gap-1.5">
         {(["top", "piores"] as const).map((m) => (
           <button
             key={m}
@@ -49,12 +56,37 @@ export function TabelaPosts({
             {m === "top" ? "Top posts" : "Piores posts"}
           </button>
         ))}
+
+        {soOutliers ? (
+          <span className="ml-auto flex items-center gap-2 text-xs text-muted">
+            <span className="flex items-center gap-1">
+              <Flame size={12} color="#f6bd24" />
+              mostrando só os posts fora da curva
+            </span>
+            <button
+              type="button"
+              onClick={aoLimparOutliers}
+              className="text-azureClaro hover:underline"
+            >
+              mostrar todos
+            </button>
+          </span>
+        ) : null}
       </div>
 
-      {semRx ? (
-        <p className="py-6 text-center text-sm text-muted">
-          Sem performance relativa disponível para os posts do período.
-        </p>
+      {vazio ? (
+        <div className="space-y-2 py-6 text-center">
+          <p className="text-sm text-muted">
+            {soOutliers
+              ? "Nenhum post fora da curva neste período."
+              : "Sem performance relativa disponível para os posts do período."}
+          </p>
+          {soOutliers ? (
+            <button type="button" onClick={aoLimparOutliers} className="btn px-3 py-1.5 text-xs">
+              mostrar todos
+            </button>
+          ) : null}
+        </div>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full min-w-[820px] border-collapse text-sm">
@@ -85,8 +117,20 @@ export function TabelaPosts({
                   <td className="numero py-2.5 pr-3 text-right text-txt">{numero(l.saves)}</td>
                   <td className="numero py-2.5 pr-3 text-right text-txt">{numero(l.shares)}</td>
                   <td className="py-2.5 text-right">
-                    <span className={"pill numero " + (classeRx(l.rx) || "text-corpo")}>
-                      {l.rx === null ? "—" : `${numero(l.rx, 2)}×`}
+                    <span className="inline-flex items-center justify-end gap-1">
+                      <span className={"pill numero " + (classeRx(l.rx) || "text-corpo")}>
+                        {l.rx === null ? "—" : `${numero(l.rx, 2)}×`}
+                      </span>
+                      {ehOutlier(l.rx) ? (
+                        <Flame
+                          size={12}
+                          color="#f6bd24"
+                          aria-label="fora da curva"
+                          className="shrink-0"
+                        >
+                          <title>{`Fora da curva: ${numero(l.rx, 1)}x a mediana do formato`}</title>
+                        </Flame>
+                      ) : null}
                     </span>
                   </td>
                 </tr>
