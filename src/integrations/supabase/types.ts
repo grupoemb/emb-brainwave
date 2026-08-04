@@ -14,16 +14,957 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      ai_runs: {
+        Row: {
+          cost_usd: number | null
+          created_at: string
+          id: string
+          input_tokens: number | null
+          model: string | null
+          organization_id: string
+          output_tokens: number | null
+          payload_in: Json | null
+          payload_out: Json | null
+          purpose: string
+          related_post_id: string | null
+        }
+        Insert: {
+          cost_usd?: number | null
+          created_at?: string
+          id?: string
+          input_tokens?: number | null
+          model?: string | null
+          organization_id: string
+          output_tokens?: number | null
+          payload_in?: Json | null
+          payload_out?: Json | null
+          purpose: string
+          related_post_id?: string | null
+        }
+        Update: {
+          cost_usd?: number | null
+          created_at?: string
+          id?: string
+          input_tokens?: number | null
+          model?: string | null
+          organization_id?: string
+          output_tokens?: number | null
+          payload_in?: Json | null
+          payload_out?: Json | null
+          purpose?: string
+          related_post_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_runs_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_runs_related_post_id_fkey"
+            columns: ["related_post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      approvals: {
+        Row: {
+          created_at: string
+          decision: string
+          id: string
+          note: string | null
+          post_id: string
+          reviewer_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          decision: string
+          id?: string
+          note?: string | null
+          post_id: string
+          reviewer_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          decision?: string
+          id?: string
+          note?: string | null
+          post_id?: string
+          reviewer_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "approvals_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "approvals_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      brand_profiles: {
+        Row: {
+          audience: string | null
+          created_at: string
+          dos_and_donts: Json | null
+          guidelines: string | null
+          id: string
+          name: string
+          organization_id: string
+          playbook: string | null
+          updated_at: string
+          voice: string | null
+        }
+        Insert: {
+          audience?: string | null
+          created_at?: string
+          dos_and_donts?: Json | null
+          guidelines?: string | null
+          id?: string
+          name: string
+          organization_id: string
+          playbook?: string | null
+          updated_at?: string
+          voice?: string | null
+        }
+        Update: {
+          audience?: string | null
+          created_at?: string
+          dos_and_donts?: Json | null
+          guidelines?: string | null
+          id?: string
+          name?: string
+          organization_id?: string
+          playbook?: string | null
+          updated_at?: string
+          voice?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brand_profiles_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      competitor_posts: {
+        Row: {
+          caption: string | null
+          captured_at: string
+          comments: number | null
+          competitor_id: string
+          format: Database["public"]["Enums"]["post_format"] | null
+          id: string
+          likes: number | null
+          raw: Json | null
+          source: string
+          url: string | null
+          views: number | null
+        }
+        Insert: {
+          caption?: string | null
+          captured_at?: string
+          comments?: number | null
+          competitor_id: string
+          format?: Database["public"]["Enums"]["post_format"] | null
+          id?: string
+          likes?: number | null
+          raw?: Json | null
+          source?: string
+          url?: string | null
+          views?: number | null
+        }
+        Update: {
+          caption?: string | null
+          captured_at?: string
+          comments?: number | null
+          competitor_id?: string
+          format?: Database["public"]["Enums"]["post_format"] | null
+          id?: string
+          likes?: number | null
+          raw?: Json | null
+          source?: string
+          url?: string | null
+          views?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "competitor_posts_competitor_id_fkey"
+            columns: ["competitor_id"]
+            isOneToOne: false
+            referencedRelation: "competitors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      competitors: {
+        Row: {
+          channel: Database["public"]["Enums"]["social_channel"]
+          created_at: string
+          handle: string | null
+          id: string
+          name: string
+          organization_id: string
+        }
+        Insert: {
+          channel: Database["public"]["Enums"]["social_channel"]
+          created_at?: string
+          handle?: string | null
+          id?: string
+          name: string
+          organization_id: string
+        }
+        Update: {
+          channel?: Database["public"]["Enums"]["social_channel"]
+          created_at?: string
+          handle?: string | null
+          id?: string
+          name?: string
+          organization_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "competitors_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      content_pillars: {
+        Row: {
+          color: string | null
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          organization_id: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          organization_id: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          organization_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_pillars_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      insights: {
+        Row: {
+          evidence: Json | null
+          first_seen_at: string
+          id: string
+          last_confirmed_at: string
+          organization_id: string
+          scope: Json | null
+          statement: string
+          status: Database["public"]["Enums"]["insight_status"]
+          strength: number | null
+        }
+        Insert: {
+          evidence?: Json | null
+          first_seen_at?: string
+          id?: string
+          last_confirmed_at?: string
+          organization_id: string
+          scope?: Json | null
+          statement: string
+          status?: Database["public"]["Enums"]["insight_status"]
+          strength?: number | null
+        }
+        Update: {
+          evidence?: Json | null
+          first_seen_at?: string
+          id?: string
+          last_confirmed_at?: string
+          organization_id?: string
+          scope?: Json | null
+          statement?: string
+          status?: Database["public"]["Enums"]["insight_status"]
+          strength?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "insights_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      metric_baselines: {
+        Row: {
+          channel: Database["public"]["Enums"]["social_channel"]
+          computed_at: string
+          format: Database["public"]["Enums"]["post_format"]
+          id: string
+          median_value: number | null
+          metric: string
+          organization_id: string
+          p25: number | null
+          p75: number | null
+          window_days: number
+        }
+        Insert: {
+          channel: Database["public"]["Enums"]["social_channel"]
+          computed_at?: string
+          format: Database["public"]["Enums"]["post_format"]
+          id?: string
+          median_value?: number | null
+          metric: string
+          organization_id: string
+          p25?: number | null
+          p75?: number | null
+          window_days?: number
+        }
+        Update: {
+          channel?: Database["public"]["Enums"]["social_channel"]
+          computed_at?: string
+          format?: Database["public"]["Enums"]["post_format"]
+          id?: string
+          median_value?: number | null
+          metric?: string
+          organization_id?: string
+          p25?: number | null
+          p75?: number | null
+          window_days?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "metric_baselines_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organization_members: {
+        Row: {
+          created_at: string
+          organization_id: string
+          role: Database["public"]["Enums"]["org_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          organization_id: string
+          role?: Database["public"]["Enums"]["org_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          organization_id?: string
+          role?: Database["public"]["Enums"]["org_role"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_members_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organizations: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      post_assets: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string | null
+          post_id: string
+          storage_path: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind?: string | null
+          post_id: string
+          storage_path: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string | null
+          post_id?: string
+          storage_path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_assets_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_metrics: {
+        Row: {
+          captured_at: string
+          clicks: number | null
+          comments: number | null
+          followers_delta: number | null
+          id: string
+          impressions: number | null
+          likes: number | null
+          post_id: string
+          raw: Json | null
+          reach: number | null
+          retention_pct: number | null
+          saves: number | null
+          shares: number | null
+          source: string
+          watch_time_s: number | null
+        }
+        Insert: {
+          captured_at?: string
+          clicks?: number | null
+          comments?: number | null
+          followers_delta?: number | null
+          id?: string
+          impressions?: number | null
+          likes?: number | null
+          post_id: string
+          raw?: Json | null
+          reach?: number | null
+          retention_pct?: number | null
+          saves?: number | null
+          shares?: number | null
+          source?: string
+          watch_time_s?: number | null
+        }
+        Update: {
+          captured_at?: string
+          clicks?: number | null
+          comments?: number | null
+          followers_delta?: number | null
+          id?: string
+          impressions?: number | null
+          likes?: number | null
+          post_id?: string
+          raw?: Json | null
+          reach?: number | null
+          retention_pct?: number | null
+          saves?: number | null
+          shares?: number | null
+          source?: string
+          watch_time_s?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_metrics_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_versions: {
+        Row: {
+          body: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          post_id: string
+          version_no: number
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          post_id: string
+          version_no: number
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          post_id?: string
+          version_no?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_versions_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      posts: {
+        Row: {
+          author_id: string | null
+          body: string | null
+          channel: Database["public"]["Enums"]["social_channel"] | null
+          created_at: string
+          external_post_id: string | null
+          format: Database["public"]["Enums"]["post_format"] | null
+          hook: Database["public"]["Enums"]["hook_type"] | null
+          id: string
+          meta: Json | null
+          organization_id: string
+          pillar_id: string | null
+          published_at: string | null
+          scheduled_for: string | null
+          status: Database["public"]["Enums"]["post_status"]
+          suggestion_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id?: string | null
+          body?: string | null
+          channel?: Database["public"]["Enums"]["social_channel"] | null
+          created_at?: string
+          external_post_id?: string | null
+          format?: Database["public"]["Enums"]["post_format"] | null
+          hook?: Database["public"]["Enums"]["hook_type"] | null
+          id?: string
+          meta?: Json | null
+          organization_id: string
+          pillar_id?: string | null
+          published_at?: string | null
+          scheduled_for?: string | null
+          status?: Database["public"]["Enums"]["post_status"]
+          suggestion_id?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string | null
+          body?: string | null
+          channel?: Database["public"]["Enums"]["social_channel"] | null
+          created_at?: string
+          external_post_id?: string | null
+          format?: Database["public"]["Enums"]["post_format"] | null
+          hook?: Database["public"]["Enums"]["hook_type"] | null
+          id?: string
+          meta?: Json | null
+          organization_id?: string
+          pillar_id?: string | null
+          published_at?: string | null
+          scheduled_for?: string | null
+          status?: Database["public"]["Enums"]["post_status"]
+          suggestion_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_pillar_id_fkey"
+            columns: ["pillar_id"]
+            isOneToOne: false
+            referencedRelation: "content_pillars"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_suggestion_fk"
+            columns: ["suggestion_id"]
+            isOneToOne: false
+            referencedRelation: "suggestions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
+      prompt_templates: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          kind: string
+          organization_id: string
+          source: string | null
+          system_prompt: string
+          title: string
+          version: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          kind: string
+          organization_id: string
+          source?: string | null
+          system_prompt: string
+          title: string
+          version?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          kind?: string
+          organization_id?: string
+          source?: string | null
+          system_prompt?: string
+          title?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prompt_templates_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      references_lib: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          note: string | null
+          organization_id: string
+          storage_path: string | null
+          tags: string[] | null
+          title: string | null
+          url: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          note?: string | null
+          organization_id: string
+          storage_path?: string | null
+          tags?: string[] | null
+          title?: string | null
+          url?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          note?: string | null
+          organization_id?: string
+          storage_path?: string | null
+          tags?: string[] | null
+          title?: string | null
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "references_lib_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "references_lib_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      social_accounts: {
+        Row: {
+          channel: Database["public"]["Enums"]["social_channel"]
+          connected_at: string | null
+          created_at: string
+          external_id: string | null
+          handle: string
+          id: string
+          is_active: boolean
+          meta: Json | null
+          organization_id: string
+          vault_secret_id: string | null
+        }
+        Insert: {
+          channel: Database["public"]["Enums"]["social_channel"]
+          connected_at?: string | null
+          created_at?: string
+          external_id?: string | null
+          handle: string
+          id?: string
+          is_active?: boolean
+          meta?: Json | null
+          organization_id: string
+          vault_secret_id?: string | null
+        }
+        Update: {
+          channel?: Database["public"]["Enums"]["social_channel"]
+          connected_at?: string | null
+          created_at?: string
+          external_id?: string | null
+          handle?: string
+          id?: string
+          is_active?: boolean
+          meta?: Json | null
+          organization_id?: string
+          vault_secret_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_accounts_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      suggestions: {
+        Row: {
+          converted_post_id: string | null
+          created_at: string
+          id: string
+          kind: Database["public"]["Enums"]["suggestion_kind"]
+          organization_id: string
+          pillar_id: string | null
+          priority: number | null
+          rationale: string | null
+          source_insights: string[] | null
+          status: string
+          suggested_channel:
+            | Database["public"]["Enums"]["social_channel"]
+            | null
+          suggested_format: Database["public"]["Enums"]["post_format"] | null
+          title: string
+        }
+        Insert: {
+          converted_post_id?: string | null
+          created_at?: string
+          id?: string
+          kind: Database["public"]["Enums"]["suggestion_kind"]
+          organization_id: string
+          pillar_id?: string | null
+          priority?: number | null
+          rationale?: string | null
+          source_insights?: string[] | null
+          status?: string
+          suggested_channel?:
+            | Database["public"]["Enums"]["social_channel"]
+            | null
+          suggested_format?: Database["public"]["Enums"]["post_format"] | null
+          title: string
+        }
+        Update: {
+          converted_post_id?: string | null
+          created_at?: string
+          id?: string
+          kind?: Database["public"]["Enums"]["suggestion_kind"]
+          organization_id?: string
+          pillar_id?: string | null
+          priority?: number | null
+          rationale?: string | null
+          source_insights?: string[] | null
+          status?: string
+          suggested_channel?:
+            | Database["public"]["Enums"]["social_channel"]
+            | null
+          suggested_format?: Database["public"]["Enums"]["post_format"] | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "suggestions_converted_post_id_fkey"
+            columns: ["converted_post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "suggestions_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "suggestions_pillar_id_fkey"
+            columns: ["pillar_id"]
+            isOneToOne: false
+            referencedRelation: "content_pillars"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_post_performance: {
+        Args: { p_org: string }
+        Returns: {
+          channel: Database["public"]["Enums"]["social_channel"]
+          comments: number
+          format: Database["public"]["Enums"]["post_format"]
+          hook: Database["public"]["Enums"]["hook_type"]
+          likes: number
+          pillar: string
+          post_id: string
+          published_at: string
+          reach: number
+          reach_x: number
+          saves: number
+          saves_x: number
+          shares: number
+          title: string
+        }[]
+      }
+      get_social_token: { Args: { p_secret_name: string }; Returns: string }
+      has_org_role: {
+        Args: { org: string; roles: Database["public"]["Enums"]["org_role"][] }
+        Returns: boolean
+      }
+      is_org_member: { Args: { org: string }; Returns: boolean }
+      join_organization: { Args: { p_code?: string }; Returns: Json }
+      recompute_baselines: { Args: never; Returns: undefined }
+      set_social_token: {
+        Args: { p_secret: string; p_secret_name: string }
+        Returns: undefined
+      }
     }
     Enums: {
-      [_ in never]: never
+      hook_type:
+        | "question"
+        | "bold_claim"
+        | "story"
+        | "stat"
+        | "contrarian"
+        | "list"
+        | "news"
+        | "how_to"
+        | "other"
+      insight_status: "active" | "weakening" | "refuted"
+      org_role: "owner" | "admin" | "editor" | "writer" | "reviewer" | "viewer"
+      post_format:
+        | "reel"
+        | "carousel"
+        | "image"
+        | "story"
+        | "video_long"
+        | "short"
+        | "text"
+        | "article"
+        | "other"
+      post_status:
+        | "idea"
+        | "script"
+        | "design"
+        | "review"
+        | "approved"
+        | "scheduled"
+        | "published"
+        | "archived"
+      social_channel: "instagram" | "linkedin" | "tiktok" | "youtube"
+      suggestion_kind:
+        | "theme"
+        | "improvement"
+        | "format"
+        | "timing"
+        | "pillar_alert"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +1091,49 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      hook_type: [
+        "question",
+        "bold_claim",
+        "story",
+        "stat",
+        "contrarian",
+        "list",
+        "news",
+        "how_to",
+        "other",
+      ],
+      insight_status: ["active", "weakening", "refuted"],
+      org_role: ["owner", "admin", "editor", "writer", "reviewer", "viewer"],
+      post_format: [
+        "reel",
+        "carousel",
+        "image",
+        "story",
+        "video_long",
+        "short",
+        "text",
+        "article",
+        "other",
+      ],
+      post_status: [
+        "idea",
+        "script",
+        "design",
+        "review",
+        "approved",
+        "scheduled",
+        "published",
+        "archived",
+      ],
+      social_channel: ["instagram", "linkedin", "tiktok", "youtube"],
+      suggestion_kind: [
+        "theme",
+        "improvement",
+        "format",
+        "timing",
+        "pillar_alert",
+      ],
+    },
   },
 } as const
