@@ -211,6 +211,53 @@ export function Painel() {
         </div>
       </TooltipProvider>
 
+      <div className="secao-entrada space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <span className="text-xs text-muted">
+            Janela de análise das contas e do bloco fora da curva
+          </span>
+          <div className="flex items-center gap-1">
+            {JANELAS.map((d) => {
+              const ativo = d === diasOutliers;
+              return (
+                <button
+                  key={d}
+                  type="button"
+                  onClick={() => setDiasOutliers(d)}
+                  aria-pressed={ativo}
+                  className={
+                    "numero rounded-[.5rem] px-2 py-1 text-xs transition-colors " +
+                    (ativo
+                      ? "bg-azure/14 font-semibold text-txt"
+                      : "text-muted hover:bg-white/6 hover:text-corpo")
+                  }
+                >
+                  {d}d
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {recalculando ? (
+          <div className="grid gap-3 lg:grid-cols-3">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="cartao h-72 p-4">
+                <div className="h-3 w-24 rounded bg-white/6" />
+                <div className="mt-6 h-7 w-28 rounded bg-white/6" />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <>
+            <DestaquesPeriodo destaques={dados.destaques} dias={diasOutliers} />
+            <ComparativoContas contas={dados.contas} dias={diasOutliers} />
+          </>
+        )}
+      </div>
+
+
+
 
 
       <div className="secao-entrada grid gap-3 lg:grid-cols-3">
