@@ -27,11 +27,9 @@ export type Sugestao = {
   rx: number | null;
 };
 
-const orgInput = z.object({ organizationId: z.string().uuid() });
-
 export const listarSugestoes = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => orgInput.parse(input))
+  .inputValidator((input: unknown) => z.object({ organizationId: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }): Promise<{ sugestoes: Sugestao[]; ultimaRodada: string | null }> => {
     const db = context.supabase as unknown as SupabaseClient;
 
@@ -145,7 +143,7 @@ export const listarSugestoes = createServerFn({ method: "GET" })
 export const aceitarSugestao = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) =>
-    orgInput.extend({ suggestionId: z.string().uuid() }).parse(input),
+    z.object({ organizationId: z.string().uuid(), suggestionId: z.string().uuid() }).parse(input),
   )
   .handler(async ({ data, context }) => {
     const db = context.supabase as unknown as SupabaseClient;
@@ -194,7 +192,7 @@ export const aceitarSugestao = createServerFn({ method: "POST" })
 export const descartarSugestao = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) =>
-    orgInput.extend({ suggestionId: z.string().uuid() }).parse(input),
+    z.object({ organizationId: z.string().uuid(), suggestionId: z.string().uuid() }).parse(input),
   )
   .handler(async ({ data, context }) => {
     const db = context.supabase as unknown as SupabaseClient;
@@ -219,7 +217,7 @@ export type Insight = {
 
 export const obterCerebro = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => orgInput.parse(input))
+  .inputValidator((input: unknown) => z.object({ organizationId: z.string().uuid() }).parse(input))
   .handler(
     async ({ data, context }): Promise<{ playbook: string | null; insights: Insight[]; ultimaAnalise: string | null }> => {
       const db = context.supabase as unknown as SupabaseClient;
