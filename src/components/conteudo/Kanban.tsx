@@ -158,9 +158,12 @@ export function Kanban() {
           const publicado = coluna.status === "published";
           const lista = publicado && !verTodosPublicados ? todos.slice(0, 10) : todos;
 
+          const emFoco = colunaFoco?.status === coluna.status;
+
           return (
             <section
               key={coluna.status}
+              ref={emFoco ? refFoco : undefined}
               onDragOver={(e) => {
                 e.preventDefault();
                 setSobre(coluna.status);
@@ -169,9 +172,11 @@ export function Kanban() {
               onDrop={(e) => void soltar(coluna.status, e)}
               className={
                 "w-[272px] shrink-0 rounded-xl bg-bg2 p-3 transition-colors " +
-                (sobre === coluna.status ? "ring-1 ring-azure/50" : "")
+                (sobre === coluna.status ? "ring-1 ring-azure/50 " : "") +
+                (emFoco ? "ring-1 ring-azure/40" : "")
               }
             >
+
               <header className="mb-3 flex items-center gap-2">
                 <span
                   className="h-2 w-2 shrink-0 rounded-full"
