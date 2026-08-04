@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedAjustesRouteImport } from './routes/_authenticated/ajustes'
 import { Route as AuthenticatedCalendarioRouteImport } from './routes/_authenticated/calendario'
@@ -19,54 +20,59 @@ import { Route as AuthenticatedKanbanRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedMetricasRouteImport } from './routes/_authenticated/metricas'
 import { Route as AuthenticatedPautasRouteImport } from './routes/_authenticated/pautas'
 
-const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
-  id: '/_authenticated/',
-  path: '/',
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAjustesRoute = AuthenticatedAjustesRouteImport.update({
-  id: '/_authenticated/ajustes',
+  id: '/ajustes',
   path: '/ajustes',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedCalendarioRoute = AuthenticatedCalendarioRouteImport.update({
-  id: '/_authenticated/calendario',
+  id: '/calendario',
   path: '/calendario',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedCerebroRoute = AuthenticatedCerebroRouteImport.update({
-  id: '/_authenticated/cerebro',
+  id: '/cerebro',
   path: '/cerebro',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedConcorrentesRoute =
   AuthenticatedConcorrentesRouteImport.update({
-    id: '/_authenticated/concorrentes',
+    id: '/concorrentes',
     path: '/concorrentes',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedCriarRoute = AuthenticatedCriarRouteImport.update({
-  id: '/_authenticated/criar',
+  id: '/criar',
   path: '/criar',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedKanbanRoute = AuthenticatedKanbanRouteImport.update({
-  id: '/_authenticated/kanban',
+  id: '/kanban',
   path: '/kanban',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedMetricasRoute = AuthenticatedMetricasRouteImport.update({
-  id: '/_authenticated/metricas',
+  id: '/metricas',
   path: '/metricas',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedPautasRoute = AuthenticatedPautasRouteImport.update({
-  id: '/_authenticated/pautas',
+  id: '/pautas',
   path: '/pautas',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/': typeof AuthenticatedIndexRoute
   '/ajustes': typeof AuthenticatedAjustesRoute
   '/calendario': typeof AuthenticatedCalendarioRoute
   '/cerebro': typeof AuthenticatedCerebroRoute
@@ -75,7 +81,6 @@ export interface FileRoutesByFullPath {
   '/kanban': typeof AuthenticatedKanbanRoute
   '/metricas': typeof AuthenticatedMetricasRoute
   '/pautas': typeof AuthenticatedPautasRoute
-  '/': typeof AuthenticatedIndexRoute
 }
 export interface FileRoutesByTo {
   '/ajustes': typeof AuthenticatedAjustesRoute
@@ -90,6 +95,7 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_authenticated/ajustes': typeof AuthenticatedAjustesRoute
   '/_authenticated/calendario': typeof AuthenticatedCalendarioRoute
   '/_authenticated/cerebro': typeof AuthenticatedCerebroRoute
@@ -103,6 +109,7 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/'
     | '/ajustes'
     | '/calendario'
     | '/cerebro'
@@ -111,7 +118,6 @@ export interface FileRouteTypes {
     | '/kanban'
     | '/metricas'
     | '/pautas'
-    | '/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/ajustes'
@@ -125,6 +131,7 @@ export interface FileRouteTypes {
     | '/'
   id:
     | '__root__'
+    | '/_authenticated'
     | '/_authenticated/ajustes'
     | '/_authenticated/calendario'
     | '/_authenticated/cerebro'
@@ -137,6 +144,85 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+}
+
+declare module '@tanstack/react-router' {
+  interface FileRoutesByPath {
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/': {
+      id: '/_authenticated/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/ajustes': {
+      id: '/_authenticated/ajustes'
+      path: '/ajustes'
+      fullPath: '/ajustes'
+      preLoaderRoute: typeof AuthenticatedAjustesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/calendario': {
+      id: '/_authenticated/calendario'
+      path: '/calendario'
+      fullPath: '/calendario'
+      preLoaderRoute: typeof AuthenticatedCalendarioRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/cerebro': {
+      id: '/_authenticated/cerebro'
+      path: '/cerebro'
+      fullPath: '/cerebro'
+      preLoaderRoute: typeof AuthenticatedCerebroRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/concorrentes': {
+      id: '/_authenticated/concorrentes'
+      path: '/concorrentes'
+      fullPath: '/concorrentes'
+      preLoaderRoute: typeof AuthenticatedConcorrentesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/criar': {
+      id: '/_authenticated/criar'
+      path: '/criar'
+      fullPath: '/criar'
+      preLoaderRoute: typeof AuthenticatedCriarRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/kanban': {
+      id: '/_authenticated/kanban'
+      path: '/kanban'
+      fullPath: '/kanban'
+      preLoaderRoute: typeof AuthenticatedKanbanRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/metricas': {
+      id: '/_authenticated/metricas'
+      path: '/metricas'
+      fullPath: '/metricas'
+      preLoaderRoute: typeof AuthenticatedMetricasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/pautas': {
+      id: '/_authenticated/pautas'
+      path: '/pautas'
+      fullPath: '/pautas'
+      preLoaderRoute: typeof AuthenticatedPautasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+  }
+}
+
+interface AuthenticatedRouteRouteChildren {
   AuthenticatedAjustesRoute: typeof AuthenticatedAjustesRoute
   AuthenticatedCalendarioRoute: typeof AuthenticatedCalendarioRoute
   AuthenticatedCerebroRoute: typeof AuthenticatedCerebroRoute
@@ -148,75 +234,7 @@ export interface RootRouteChildren {
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
 }
 
-declare module '@tanstack/react-router' {
-  interface FileRoutesByPath {
-    '/_authenticated/': {
-      id: '/_authenticated/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/ajustes': {
-      id: '/_authenticated/ajustes'
-      path: '/ajustes'
-      fullPath: '/ajustes'
-      preLoaderRoute: typeof AuthenticatedAjustesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/calendario': {
-      id: '/_authenticated/calendario'
-      path: '/calendario'
-      fullPath: '/calendario'
-      preLoaderRoute: typeof AuthenticatedCalendarioRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/cerebro': {
-      id: '/_authenticated/cerebro'
-      path: '/cerebro'
-      fullPath: '/cerebro'
-      preLoaderRoute: typeof AuthenticatedCerebroRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/concorrentes': {
-      id: '/_authenticated/concorrentes'
-      path: '/concorrentes'
-      fullPath: '/concorrentes'
-      preLoaderRoute: typeof AuthenticatedConcorrentesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/criar': {
-      id: '/_authenticated/criar'
-      path: '/criar'
-      fullPath: '/criar'
-      preLoaderRoute: typeof AuthenticatedCriarRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/kanban': {
-      id: '/_authenticated/kanban'
-      path: '/kanban'
-      fullPath: '/kanban'
-      preLoaderRoute: typeof AuthenticatedKanbanRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/metricas': {
-      id: '/_authenticated/metricas'
-      path: '/metricas'
-      fullPath: '/metricas'
-      preLoaderRoute: typeof AuthenticatedMetricasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/pautas': {
-      id: '/_authenticated/pautas'
-      path: '/pautas'
-      fullPath: '/pautas'
-      preLoaderRoute: typeof AuthenticatedPautasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-  }
-}
-
-const rootRouteChildren: RootRouteChildren = {
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAjustesRoute: AuthenticatedAjustesRoute,
   AuthenticatedCalendarioRoute: AuthenticatedCalendarioRoute,
   AuthenticatedCerebroRoute: AuthenticatedCerebroRoute,
@@ -226,6 +244,13 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedMetricasRoute: AuthenticatedMetricasRoute,
   AuthenticatedPautasRoute: AuthenticatedPautasRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
+const rootRouteChildren: RootRouteChildren = {
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
