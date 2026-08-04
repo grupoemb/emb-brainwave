@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Flame, Sparkles } from "lucide-react";
+import { useState } from "react";
 
 import { Revelar } from "@/components/Revelar";
 import {
@@ -8,7 +9,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { usePainel } from "@/hooks/usePainel";
+import { usePainel, type DiasOutliers } from "@/hooks/usePainel";
 import { COLUNAS, comAlfa, corDoCanal, type Canal } from "@/lib/conteudo";
 import { numero, textoFrescor } from "@/lib/metricas";
 
@@ -101,8 +102,11 @@ function BlocoVazio({ children }: { children: React.ReactNode }) {
   return <p className="text-xs text-muted">{children}</p>;
 }
 
+const JANELAS: DiasOutliers[] = [7, 14, 30];
+
 export function Painel() {
-  const { dados, carregando } = usePainel();
+  const [diasOutliers, setDiasOutliers] = useState<DiasOutliers>(7);
+  const { dados, carregando, recalculando } = usePainel(diasOutliers);
   const agora = new Date();
   const primeiroNome = (dados?.nome ?? "").trim().split(/\s+/)[0] ?? "";
   const coleta = dados?.ultimaColeta ? new Date(dados.ultimaColeta).getTime() : null;
