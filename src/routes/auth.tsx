@@ -101,12 +101,15 @@ function Acesso() {
             className="mx-auto -mt-7 mb-6 h-px w-2/3 bg-gradient-to-r from-transparent via-azure to-transparent"
           />
 
-          <div className="text-[1.35rem] font-bold leading-tight tracking-tight">
-            B7 · <span className="grad">Central</span> de Conteúdo
+          <div className="flex flex-col items-center text-center">
+            <LogoB7 altura={42} />
+            <p className="rotulo mt-3.5">Central de Conteúdo</p>
+            <p className="mt-2.5 max-w-[30rem] text-sm leading-relaxed text-corpo">
+              Cérebro artificial para criação, gestão e análises de conteúdo para redes sociais.
+            </p>
+            <p className="mt-1 text-xs text-muted">Acesso restrito à equipe B7.</p>
           </div>
-          <p className="mt-1.5 text-sm text-muted">
-            Três contas, um lugar só, zero achismo. Acesso restrito à equipe EMB.
-          </p>
+
 
           <div className="mt-3 flex flex-wrap gap-1.5">
             {["Instagram", "LinkedIn", "TikTok"].map((c) => (
