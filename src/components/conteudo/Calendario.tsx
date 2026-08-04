@@ -94,6 +94,7 @@ function Pill({
 }
 
 export function Calendario() {
+  useRealtimePosts();
   const { posts, carregando } = usePosts();
   const { pilares, pilarPorId } = usePilares();
   const agendar = useAgendar();
