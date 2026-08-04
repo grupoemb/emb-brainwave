@@ -9,7 +9,9 @@ const buscaPautas = z.object({
   status: fallback(z.string(), "new").default("new"),
   tipo: fallback(z.string(), "todos").default("todos"),
   pilar: fallback(z.string(), "todos").default("todos"),
+  origem: fallback(z.string(), "").default(""),
 });
+
 
 export const Route = createFileRoute("/_authenticated/pautas")({
   validateSearch: zodValidator(buscaPautas),
