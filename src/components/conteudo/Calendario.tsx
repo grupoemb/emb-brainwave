@@ -13,13 +13,13 @@ import {
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 import { toastDesfazer } from "@/lib/toastDesfazer";
 
 import { Revelar } from "@/components/Revelar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { usePilares, usePosts, useAgendar } from "@/hooks/useConteudo";
 import { useRealtimePosts } from "@/hooks/useRealtimePosts";
 import {
@@ -276,7 +276,7 @@ export function Calendario() {
                     <Pill
                       key={p.id}
                       post={p}
-                      onClick={() => setAberto(p)}
+                      onClick={() => void navigate({ to: "/post/$id", params: { id: p.id } })}
                       onDragStart={(e) => e.dataTransfer.setData("text/post-id", p.id)}
                     />
                   ))}
@@ -290,7 +290,7 @@ export function Calendario() {
                           <Pill
                             key={p.id}
                             post={p}
-                            onClick={() => setAberto(p)}
+                            onClick={() => void navigate({ to: "/post/$id", params: { id: p.id } })}
                             onDragStart={(e) => e.dataTransfer.setData("text/post-id", p.id)}
                           />
                         ))}
@@ -336,19 +336,6 @@ export function Calendario() {
         </aside>
       </div>
 
-      <Dialog open={!!aberto} onOpenChange={(v) => !v && setAberto(null)}>
-        <DialogContent className="border-line bg-card">
-          <DialogHeader>
-            <DialogTitle>{aberto?.title}</DialogTitle>
-          </DialogHeader>
-          <p className="text-sm text-muted">
-            Status: {aberto ? ROTULO_STATUS[aberto.status] : ""}
-            {aberto?.scheduled_for
-              ? ` · ${format(new Date(aberto.scheduled_for), "dd/MM/yyyy HH:mm", { locale: ptBR })}`
-              : ""}
-          </p>
-        </DialogContent>
-      </Dialog>
     </Revelar>
   );
 }
