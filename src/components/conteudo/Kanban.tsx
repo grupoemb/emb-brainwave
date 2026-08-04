@@ -355,6 +355,9 @@ export function Kanban() {
           );
         })}
       </div>
+        </>
+      )}
+
 
       <NovoCardDialog aberto={abrirNovo} aoFechar={() => setAbrirNovo(false)} />
     </Revelar>
