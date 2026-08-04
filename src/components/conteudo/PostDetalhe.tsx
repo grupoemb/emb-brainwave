@@ -7,6 +7,7 @@ import { Revelar } from "@/components/Revelar";
 import { Frescor } from "@/components/conteudo/Frescor";
 import { MidiaPost } from "@/components/conteudo/MidiaPost";
 import { LateralPost } from "@/components/conteudo/LateralPost";
+import { TrilhaPost } from "@/components/conteudo/TrilhaPost";
 import { PostDetalheEsqueleto } from "@/components/conteudo/Esqueleto";
 import { usePilares } from "@/hooks/useConteudo";
 import {
@@ -147,7 +148,9 @@ export function PostDetalhe({ id }: { id: string }) {
   return (
     <Revelar className="grid gap-4 lg:grid-cols-3">
       <div className="space-y-4 lg:col-span-2">
+        <TrilhaPost />
         <header className="cartao secao-entrada flex flex-wrap items-center gap-3 p-4">
+
           <IconeCanal canal={post.channel} />
           <input
             value={titulo}
