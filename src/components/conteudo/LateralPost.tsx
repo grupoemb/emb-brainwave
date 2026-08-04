@@ -5,6 +5,7 @@ import { iniciais } from "@/lib/conteudo";
 import { useOrg } from "@/hooks/useOrg";
 import { useAprovacoes, useDecidir, useVersoes } from "@/hooks/usePost";
 import { Esqueleto, LinhaEsqueleto } from "@/components/conteudo/Esqueleto";
+import { AbaAudiencia } from "@/components/conteudo/AudienciaPost";
 
 type Decisao = "approved" | "changes_requested" | "rejected";
 
@@ -193,7 +194,7 @@ export function LateralPost({
   postId: string;
   aoRestaurar: (texto: string | null, versao: number) => void | Promise<void>;
 }) {
-  const [aba, setAba] = useState<"aprovacao" | "versoes">("aprovacao");
+  const [aba, setAba] = useState<"aprovacao" | "versoes" | "audiencia">("aprovacao");
 
   return (
     <aside className="cartao secao-entrada h-fit p-4">
@@ -202,6 +203,7 @@ export function LateralPost({
           [
             ["aprovacao", "Aprovação"],
             ["versoes", "Versões"],
+            ["audiencia", "Audiência"],
           ] as const
         ).map(([valor, rotulo]) => (
           <button
@@ -219,8 +221,10 @@ export function LateralPost({
 
       {aba === "aprovacao" ? (
         <AbaAprovacao postId={postId} />
-      ) : (
+      ) : aba === "versoes" ? (
         <AbaVersoes postId={postId} aoRestaurar={aoRestaurar} />
+      ) : (
+        <AbaAudiencia postId={postId} />
       )}
     </aside>
   );
