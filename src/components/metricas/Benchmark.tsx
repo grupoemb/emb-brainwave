@@ -44,6 +44,11 @@ export function Benchmark({
     () => metasSugeridas({ linhas, taxas, baselines, publicados, porSemana }),
     [linhas, taxas, baselines, publicados, porSemana],
   );
+  const recs = useMemo(
+    () => recomendacoes({ linhas, taxas, baselines, porSemana }),
+    [linhas, taxas, baselines, porSemana],
+  );
+
 
   return (
     <div className="space-y-4">
