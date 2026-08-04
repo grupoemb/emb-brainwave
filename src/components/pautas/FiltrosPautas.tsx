@@ -1,9 +1,7 @@
 import { Search, X } from "lucide-react";
 
 import { MenuFiltro } from "@/components/filtros/MenuFiltro";
-import { comAlfa } from "@/lib/conteudo";
 import type { TipoSugestao } from "@/lib/inteligencia.functions";
-
 
 export const TIPOS_FILTRO: { valor: TipoSugestao | "todos"; rotulo: string }[] = [
   { valor: "todos", rotulo: "Todos" },
@@ -14,35 +12,6 @@ export const TIPOS_FILTRO: { valor: TipoSugestao | "todos"; rotulo: string }[] =
   { valor: "pillar_alert", rotulo: "Alerta" },
 ];
 
-export function Chip({
-  ativo,
-  onClick,
-  cor,
-  children,
-}: {
-  ativo: boolean;
-  onClick: () => void;
-  cor?: string | null;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      style={
-        ativo && cor ? { backgroundColor: comAlfa(cor, 0.14), borderColor: comAlfa(cor, 0.4) } : {}
-      }
-      className={
-        "h-[30px] shrink-0 rounded-[8px] border px-3 text-xs transition-colors " +
-        (ativo
-          ? "border-azure/40 bg-azure/14 font-semibold text-txt"
-          : "border-line text-muted hover:text-corpo")
-      }
-    >
-      {children}
-    </button>
-  );
-}
 
 export type EstadoFiltros = {
   q: string;
