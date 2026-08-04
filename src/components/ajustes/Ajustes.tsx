@@ -1,6 +1,9 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
+import { Settings } from "lucide-react";
 
 import { Revelar } from "@/components/Revelar";
+import { CabecalhoTela } from "@/components/ui/CabecalhoTela";
+
 import { AbaContas } from "@/components/ajustes/AbaContas";
 import { AbaEquipe } from "@/components/ajustes/AbaEquipe";
 import { AbaMarca } from "@/components/ajustes/AbaMarca";
