@@ -20,8 +20,10 @@ import { toastDesfazer } from "@/lib/toastDesfazer";
 
 import { Revelar } from "@/components/Revelar";
 import { MenuFiltro } from "@/components/filtros/MenuFiltro";
-import { SemanaEsqueleto } from "@/components/conteudo/Esqueleto";
+import { VazioFiltrado } from "@/components/filtros/VazioFiltrado";
+import { SemanaEsqueleto, CalendarioEsqueleto } from "@/components/conteudo/Esqueleto";
 import { FaixaDeContexto } from "@/components/painel/FaixaDeContexto";
+
 
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -190,6 +192,21 @@ export function Calendario() {
 
   const hoje = new Date();
 
+  const temFiltro = Boolean(canal || pilar || status);
+  const limparFiltros = () => {
+    setCanal(null);
+    setPilar(null);
+    setStatus(null);
+  };
+  const resumoFiltros = [
+    canal ? (CANAIS.find((c) => c.valor === canal)?.rotulo ?? canal) : null,
+    pilar ? (pilares.find((p) => p.id === pilar)?.name ?? "pilar") : null,
+    status ? (COLUNAS.find((c) => c.status === status)?.rotulo ?? status) : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+  const nadaNoFiltro = !carregando && temFiltro && filtrados.length === 0;
+
   const faixa = doPainel ? (
     <FaixaDeContexto
       recorte={foco7d ? "próximos 7 dias" : "agenda editorial"}
@@ -207,6 +224,7 @@ export function Calendario() {
       </Revelar>
     );
   }
+
 
   return (
     <Revelar className="space-y-4">
@@ -302,23 +320,31 @@ export function Calendario() {
           onEscolher={(v) => setStatus(v === "todas" ? null : (v as Status))}
         />
 
-        {canal || pilar || status ? (
+        {temFiltro ? (
           <button
             type="button"
             className="text-xs text-corpo hover:text-txt"
-            onClick={() => {
-              setCanal(null);
-              setPilar(null);
-              setStatus(null);
-            }}
+            onClick={limparFiltros}
           >
             Limpar filtros
           </button>
         ) : null}
       </div>
 
-
+      {carregando ? (
+        <div className="secao-entrada">
+          <CalendarioEsqueleto visao={visao} />
+        </div>
+      ) : nadaNoFiltro ? (
+        <VazioFiltrado
+          mensagem="Nenhum card com esses filtros."
+          detalhe={`Filtro ativo: ${resumoFiltros}`}
+          acao="limpar filtros"
+          onAcao={limparFiltros}
+        />
+      ) : (
       <div className="secao-entrada grid gap-4 lg:grid-cols-[1fr_260px]">
+
         <div className="cartao overflow-hidden p-3">
           <div className="mb-2 grid grid-cols-7 gap-1">
             {["seg", "ter", "qua", "qui", "sex", "sáb", "dom"].map((d) => (
@@ -417,6 +443,8 @@ export function Calendario() {
           </div>
         </aside>
       </div>
+      )}
+
 
     </Revelar>
   );
