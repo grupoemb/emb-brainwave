@@ -138,42 +138,42 @@ const PECAS: { el: React.ReactNode; classe: string; blur: string; opac: string; 
       el: <MiniKpi />,
       classe: "left-[3%] top-[14%]",
       blur: "blur-[2px]",
-      opac: "opacity-55",
+      opac: "opacity-65",
       atraso: "0s",
     },
     {
       el: <MiniKanban />,
       classe: "left-[7%] bottom-[12%]",
       blur: "blur-[6px]",
-      opac: "opacity-32",
+      opac: "opacity-40",
       atraso: "-3s",
     },
     {
       el: <MiniOutlier />,
       classe: "left-[16%] top-[52%]",
       blur: "blur-[12px]",
-      opac: "opacity-20",
+      opac: "opacity-28",
       atraso: "-6s",
     },
     {
       el: <MiniDonut />,
       classe: "right-[4%] top-[18%]",
       blur: "blur-[2px]",
-      opac: "opacity-55",
+      opac: "opacity-65",
       atraso: "-1.5s",
     },
     {
       el: <MiniRitmo />,
       classe: "right-[9%] bottom-[15%]",
       blur: "blur-[6px]",
-      opac: "opacity-32",
+      opac: "opacity-40",
       atraso: "-4.5s",
     },
     {
       el: <MiniOutlier />,
       classe: "right-[18%] top-[54%]",
       blur: "blur-[12px]",
-      opac: "opacity-20",
+      opac: "opacity-28",
       atraso: "-7.5s",
     },
   ];
@@ -184,7 +184,7 @@ export function VitrineFundo() {
       {/* halo de luz */}
       <div className="absolute inset-0 flex items-center justify-center">
         <div
-          className="acesso-halo h-[70vh] w-[70vw] rounded-full opacity-45 blur-[110px]"
+          className="acesso-halo h-[70vh] w-[70vw] rounded-full opacity-60 blur-[110px]"
           style={{
             background:
               "radial-gradient(circle at 30% 35%, rgba(0,164,255,.55), transparent 60%), radial-gradient(circle at 70% 65%, rgba(0,231,255,.35), transparent 62%)",
@@ -225,13 +225,13 @@ export function VitrineFundo() {
         <div className="acesso-fade absolute -left-6 top-[6%] opacity-25 blur-[5px]">
           <MiniKpi />
         </div>
-        <div className="acesso-fade absolute -right-8 bottom-[7%] opacity-20 blur-[7px]">
+        <div className="acesso-fade absolute -right-8 bottom-[7%] opacity-28 blur-[7px]">
           <MiniRitmo />
         </div>
       </div>
 
       {/* vinheta */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_35%,var(--bg)_88%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_42%,var(--bg)_95%)]" />
     </div>
   );
 }
