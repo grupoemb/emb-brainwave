@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { forwardRef, useEffect, useMemo, useState } from "react";
 import { Check, ChevronDown, RefreshCw, Search } from "lucide-react";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -6,26 +6,29 @@ import { textoFrescor } from "@/lib/metricas";
 import type { ModoComparacao, Periodo } from "@/hooks/useMetricas";
 import type { Pilar } from "@/lib/conteudo";
 
-function GatilhoFiltro({
-  rotulo,
-  valor,
-  destacado,
-  aberto,
-}: {
+type PropsGatilho = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   rotulo: string;
   valor: string;
   destacado: boolean;
   aberto: boolean;
-}) {
+};
+
+const GatilhoFiltro = forwardRef<HTMLButtonElement, PropsGatilho>(function GatilhoFiltro(
+  { rotulo, valor, destacado, aberto, className, ...resto },
+  ref,
+) {
   return (
     <button
+      ref={ref}
       type="button"
+      {...resto}
       className={
         "flex min-w-[8.5rem] flex-1 items-center gap-2 rounded-[.6rem] border px-3 py-1.5 text-left transition-colors sm:flex-none " +
         (destacado
           ? "border-azure/40 bg-azure/14 "
           : "border-line bg-card hover:border-lineForte ") +
-        (aberto ? "border-azure/50" : "")
+        (aberto ? "border-azure/50 " : "") +
+        (className ?? "")
       }
     >
       <span className="min-w-0 flex-1">
@@ -47,7 +50,8 @@ function GatilhoFiltro({
       />
     </button>
   );
-}
+});
+
 
 function ItemOpcao({
   ativo,
