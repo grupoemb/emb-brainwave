@@ -60,7 +60,7 @@ export function useMetricas(diasInicial: Periodo = 30) {
 
   const [conta, setConta] = useState<string>("todas");
   const [pilar, setPilar] = useState<string>("todos");
-  const [comparacao, setComparacao] = useState<ModoComparacao>("off");
+  const [comparacao, setComparacao] = useState<ModoComparacao>("anterior");
   const [customDesde, setCustomDesde] = useState<string>(() =>
     soData(intervaloAnterior(30).desde),
   );
