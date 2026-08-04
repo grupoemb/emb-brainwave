@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ModuloEmConstrucao } from "@/components/ModuloEmConstrucao";
+import { Kanban } from "@/components/conteudo/Kanban";
 
 export const Route = createFileRoute("/_authenticated/kanban")({
   head: () => ({
@@ -10,5 +10,5 @@ export const Route = createFileRoute("/_authenticated/kanban")({
       { property: "og:description", content: "Fluxo de produção de conteúdo por etapas." },
     ],
   }),
-  component: () => <ModuloEmConstrucao titulo="Kanban" />,
+  component: Kanban,
 });
