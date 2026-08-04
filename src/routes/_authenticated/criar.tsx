@@ -1,14 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ModuloEmConstrucao } from "@/components/ModuloEmConstrucao";
+import { Estudio } from "@/components/criar/Estudio";
 
 export const Route = createFileRoute("/_authenticated/criar")({
   head: () => ({
     meta: [
       { title: "Criar — Central de Conteúdo EMB" },
-      { name: "description", content: "Criação de conteúdo assistida por IA." },
+      { name: "description", content: "Estúdio de geração de conteúdo com IA." },
       { property: "og:title", content: "Criar — Central de Conteúdo EMB" },
-      { property: "og:description", content: "Criação de conteúdo assistida por IA." },
+      { property: "og:description", content: "Estúdio de geração de conteúdo com IA." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: () => <ModuloEmConstrucao titulo="Criar" />,
+  component: Estudio,
 });
