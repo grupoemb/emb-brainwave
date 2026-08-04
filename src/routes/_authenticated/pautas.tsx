@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ModuloEmConstrucao } from "@/components/ModuloEmConstrucao";
 
-export const Route = createFileRoute("/pautas")({
+export const Route = createFileRoute("/_authenticated/pautas")({
   head: () => ({
     meta: [
       { title: "Pautas — Central de Conteúdo EMB" },

@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ModuloEmConstrucao } from "@/components/ModuloEmConstrucao";
 
-export const Route = createFileRoute("/criar")({
+export const Route = createFileRoute("/_authenticated/criar")({
   head: () => ({
     meta: [
       { title: "Criar — Central de Conteúdo EMB" },

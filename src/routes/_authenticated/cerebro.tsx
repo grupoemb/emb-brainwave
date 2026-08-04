@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ModuloEmConstrucao } from "@/components/ModuloEmConstrucao";
 
-export const Route = createFileRoute("/cerebro")({
+export const Route = createFileRoute("/_authenticated/cerebro")({
   head: () => ({
     meta: [
       { title: "Cérebro — Central de Conteúdo EMB" },

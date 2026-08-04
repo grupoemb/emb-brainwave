@@ -1,4 +1,6 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import {
   LayoutDashboard,
   CalendarDays,
@@ -11,7 +13,11 @@ import {
   Settings,
   Menu,
   X,
+  LogOut,
 } from "lucide-react";
+
+import { supabase } from "@/integrations/supabase/client";
+import { obterMeuPerfil } from "@/lib/perfil.functions";
 import { useEffect, useState, type ReactNode } from "react";
 
 const NAV = [
@@ -79,6 +85,40 @@ function Marca() {
   );
 }
 
+function iniciais(texto: string) {
+  const partes = texto.trim().split(/[\s@._-]+/).filter(Boolean);
+  const letras = (partes[0]?.[0] ?? "") + (partes[1]?.[0] ?? "");
+  return (letras || texto.slice(0, 2) || "EM").toUpperCase();
+}
+
+function Usuario() {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const buscarPerfil = useServerFn(obterMeuPerfil);
+  const { data } = useQuery({ queryKey: ["meu-perfil"], queryFn: () => buscarPerfil() });
+
+  async function sair() {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await supabase.auth.signOut();
+    navigate({ to: "/auth", replace: true });
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      <div
+        title={data?.nome || undefined}
+        className="flex h-9 w-9 items-center justify-center rounded-full bg-azure/15 text-xs font-bold text-azureClaro"
+      >
+        {iniciais(data?.nome ?? "EM")}
+      </div>
+      <button className="btn !p-1.5" onClick={() => void sair()} aria-label="Sair" title="Sair">
+        <LogOut size={16} />
+      </button>
+    </div>
+  );
+}
+
 export function AppShell({ children }: { children: ReactNode }) {
   const [aberto, setAberto] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -126,9 +166,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             </button>
             <span className="text-sm font-semibold">{titulo}</span>
           </div>
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-azure/15 text-xs font-bold text-azureClaro">
-            EM
-          </div>
+          <Usuario />
         </header>
 
         <main className="px-4 py-5 lg:px-6">
