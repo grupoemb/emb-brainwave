@@ -20,67 +20,147 @@ import { supabase } from "@/integrations/supabase/client";
 import { obterMeuPerfil } from "@/lib/perfil.functions";
 import { useEffect, useState, type ReactNode } from "react";
 
-const NAV = [
-  { rotulo: "Painel", to: "/", icone: LayoutDashboard },
-  { rotulo: "Calendário", to: "/calendario", icone: CalendarDays },
-  { rotulo: "Kanban", to: "/kanban", icone: KanbanSquare },
-  { rotulo: "Criar", to: "/criar", icone: PenLine },
-  { rotulo: "Métricas", to: "/metricas", icone: BarChart3 },
-  { rotulo: "Pautas", to: "/pautas", icone: Lightbulb },
-  { rotulo: "Cérebro", to: "/cerebro", icone: Brain },
-  { rotulo: "Reels Radar", to: "/radar", icone: Radar },
-  { rotulo: "Ajustes", to: "/ajustes", icone: Settings },
-] as const;
+type ItemNav = {
+  rotulo: string;
+  to: string;
+  icone: typeof LayoutDashboard;
+  subtitulo: string;
+  desativado?: boolean;
+};
+
+const GRUPOS: { grupo: string; itens: ItemNav[] }[] = [
+  {
+    grupo: "Operação",
+    itens: [
+      {
+        rotulo: "Painel",
+        to: "/",
+        icone: LayoutDashboard,
+        subtitulo: "O resumo do dia da equipe",
+      },
+      {
+        rotulo: "Calendário",
+        to: "/calendario",
+        icone: CalendarDays,
+        subtitulo: "Agenda de publicações por dia",
+      },
+      {
+        rotulo: "Kanban",
+        to: "/kanban",
+        icone: KanbanSquare,
+        subtitulo: "Fluxo de produção por etapa",
+      },
+      { rotulo: "Criar", to: "/criar", icone: PenLine, subtitulo: "Estúdio de geração com IA" },
+    ],
+  },
+  {
+    grupo: "Inteligência",
+    itens: [
+      {
+        rotulo: "Métricas",
+        to: "/metricas",
+        icone: BarChart3,
+        subtitulo: "Desempenho, ritmo e benchmark",
+      },
+      {
+        rotulo: "Pautas",
+        to: "/pautas",
+        icone: Lightbulb,
+        subtitulo: "Ideias sugeridas e o resultado de cada uma",
+      },
+      { rotulo: "Cérebro", to: "/cerebro", icone: Brain, subtitulo: "Playbook e aprendizados da marca" },
+      {
+        rotulo: "Reels Radar",
+        to: "/radar",
+        icone: Radar,
+        subtitulo: "Referências e leitura do mercado",
+      },
+    ],
+  },
+  {
+    grupo: "Configuração",
+    itens: [
+      {
+        rotulo: "Ajustes",
+        to: "/ajustes",
+        icone: Settings,
+        subtitulo: "Perfil, equipe, contas e marca",
+      },
+    ],
+  },
+];
+
+const TODOS = GRUPOS.flatMap((g) => g.itens);
 
 function Navegacao({ aoNavegar }: { aoNavegar?: () => void }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
-    <nav className="flex flex-col gap-1 p-3">
-      {NAV.map((item) => {
-        const Icone = item.icone;
-        const ativo = pathname === item.to;
+    <nav className="flex flex-col gap-4 px-3 py-3">
+      {GRUPOS.map((grupo) => (
+        <div key={grupo.grupo} className="flex flex-col gap-1">
+          <span className="rotulo px-3 pb-1 text-[.62rem]">{grupo.grupo}</span>
+          {grupo.itens.map((item) => {
+            const Icone = item.icone;
+            const ativo = pathname === item.to;
 
-        if ("desativado" in item && item.desativado) {
-          return (
-            <span
-              key={item.to}
-              title="Em breve"
-              aria-disabled="true"
-              className="flex cursor-not-allowed items-center gap-2.5 rounded-[.5rem] px-3 py-2 text-sm text-muted opacity-45"
-            >
-              <Icone size={16} />
-              {item.rotulo}
-            </span>
-          );
-        }
-
-        return (
-          <Link
-            key={item.to}
-            to={item.to}
-            onClick={aoNavegar}
-            className={
-              "flex items-center gap-2.5 rounded-[.5rem] px-3 py-2 text-sm transition-colors " +
-              (ativo
-                ? "bg-azure/14 font-semibold text-white"
-                : "text-muted hover:text-corpo")
+            if (item.desativado) {
+              return (
+                <span
+                  key={item.to}
+                  title="Em breve"
+                  aria-disabled="true"
+                  className="flex min-h-11 cursor-not-allowed items-center gap-2.5 rounded-[.6rem] px-3 text-sm text-muted opacity-45"
+                >
+                  <Icone size={16} />
+                  {item.rotulo}
+                </span>
+              );
             }
-          >
-            <Icone size={16} />
-            {item.rotulo}
-          </Link>
-        );
-      })}
+
+            return (
+              <Link
+                key={item.to}
+                to={item.to}
+                onClick={aoNavegar}
+                title={item.subtitulo}
+                className={
+                  "group relative flex min-h-11 items-center gap-2.5 rounded-[.6rem] px-3 text-sm transition-all duration-150 " +
+                  (ativo
+                    ? "bg-azure/14 font-semibold text-white"
+                    : "text-muted hover:bg-white/4 hover:text-corpo")
+                }
+              >
+                <span
+                  aria-hidden
+                  className={
+                    "absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-full bg-azure transition-opacity " +
+                    (ativo ? "opacity-100" : "opacity-0")
+                  }
+                />
+                <Icone
+                  size={16}
+                  className={ativo ? "text-azureClaro" : "text-muted group-hover:text-corpo"}
+                />
+                {item.rotulo}
+              </Link>
+            );
+          })}
+        </div>
+      ))}
     </nav>
   );
 }
 
 function Marca() {
   return (
-    <div className="flex h-14 items-center px-4 font-bold">
-      B7 · <span className="grad ml-1">Central</span>
-      <span className="ml-1">de Conteúdo</span>
+    <div className="flex h-14 items-center gap-2 px-4">
+      <span className="grid h-7 w-7 shrink-0 place-items-center rounded-[.55rem] bg-linear-to-br from-royal to-cyan text-[.7rem] font-bold text-white">
+        B7
+      </span>
+      <span className="truncate text-sm font-bold">
+        <span className="grad">Central</span> de Conteúdo
+      </span>
     </div>
   );
 }
@@ -91,11 +171,26 @@ function iniciais(texto: string) {
   return (letras || texto.slice(0, 2) || "EM").toUpperCase();
 }
 
-function Usuario() {
+function useMeuPerfil() {
+  const buscarPerfil = useServerFn(obterMeuPerfil);
+  return useQuery({ queryKey: ["meu-perfil"], queryFn: () => buscarPerfil() });
+}
+
+function Avatar({ nome }: { nome: string }) {
+  return (
+    <div
+      title={nome}
+      className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-azure/15 text-xs font-bold text-azureClaro"
+    >
+      {iniciais(nome)}
+    </div>
+  );
+}
+
+function BlocoUsuario() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const buscarPerfil = useServerFn(obterMeuPerfil);
-  const { data } = useQuery({ queryKey: ["meu-perfil"], queryFn: () => buscarPerfil() });
+  const { data } = useMeuPerfil();
 
   async function sair() {
     await queryClient.cancelQueries();
@@ -105,14 +200,18 @@ function Usuario() {
   }
 
   return (
-    <div className="flex items-center gap-2">
-      <div
-        title={data?.nome || undefined}
-        className="flex h-9 w-9 items-center justify-center rounded-full bg-azure/15 text-xs font-bold text-azureClaro"
-      >
-        {iniciais(data?.nome ?? "EM")}
+    <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 border-t border-line px-3 py-3">
+      <Avatar nome={data?.nome ?? "EM"} />
+      <div className="min-w-0">
+        <p className="truncate text-xs font-semibold text-txt">{data?.nome ?? "Minha conta"}</p>
+        <p className="truncate text-[.7rem] text-muted">{data?.email ?? "—"}</p>
       </div>
-      <button className="btn !p-1.5" onClick={() => void sair()} aria-label="Sair" title="Sair">
+      <button
+        className="btn-fantasma min-h-11 min-w-11 justify-center"
+        onClick={() => void sair()}
+        aria-label="Sair da conta"
+        title="Sair"
+      >
         <LogOut size={16} />
       </button>
     </div>
@@ -122,57 +221,78 @@ function Usuario() {
 export function AppShell({ children }: { children: ReactNode }) {
   const [aberto, setAberto] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const titulo =
-    NAV.find((n) => n.to === pathname)?.rotulo ??
-    (pathname.startsWith("/post/") ? "Post" : "Painel");
+  const atual = TODOS.find((n) => n.to === pathname);
+  const noPost = pathname.startsWith("/post/");
+  const titulo = atual?.rotulo ?? (noPost ? "Post" : "Painel");
+  const subtitulo = atual?.subtitulo ?? (noPost ? "Edição, versões e aprovação" : "");
+  const { data: perfil } = useMeuPerfil();
 
   useEffect(() => {
     setAberto(false);
   }, [pathname]);
 
   return (
-    <div className="min-h-screen overflow-x-clip">
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 border-r border-line bg-bg2 lg:block">
+    <div className="min-h-dvh overflow-x-clip">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-line bg-bg2 lg:flex">
         <Marca />
-        <Navegacao />
+        <div className="flex-1 overflow-y-auto">
+          <Navegacao />
+        </div>
+        <BlocoUsuario />
       </aside>
 
       {aberto && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <button
             aria-label="Fechar menu"
-            className="absolute inset-0 bg-black/60"
+            className="absolute inset-0 bg-black/60 backdrop-blur-[2px]"
             onClick={() => setAberto(false)}
           />
-          <div className="absolute inset-y-0 left-0 w-64 border-r border-line bg-bg2">
+          <div className="absolute inset-y-0 left-0 flex w-64 flex-col border-r border-line bg-bg2 shadow-[var(--sombra-2)]">
             <div className="flex items-center justify-between pr-3">
               <Marca />
-              <button className="btn !p-1.5" onClick={() => setAberto(false)} aria-label="Fechar">
+              <button
+                className="btn-fantasma min-h-11 min-w-11 justify-center"
+                onClick={() => setAberto(false)}
+                aria-label="Fechar menu"
+              >
                 <X size={16} />
               </button>
             </div>
-            <Navegacao aoNavegar={() => setAberto(false)} />
+            <div className="flex-1 overflow-y-auto">
+              <Navegacao aoNavegar={() => setAberto(false)} />
+            </div>
+            <BlocoUsuario />
           </div>
         </div>
       )}
 
       <div className="lg:pl-64">
-        <header className="flex h-14 items-center justify-between border-b border-line px-4 lg:px-6">
-          <div className="flex items-center gap-3">
+        <header className="sticky top-0 z-30 grid h-14 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-line bg-bg/85 px-4 backdrop-blur-md lg:px-6">
+          <div className="flex min-w-0 items-center gap-3">
             <button
-              className="btn !p-1.5 lg:hidden"
+              className="btn-fantasma min-h-11 min-w-11 justify-center lg:hidden"
               onClick={() => setAberto(true)}
               aria-label="Abrir menu"
             >
               <Menu size={16} />
             </button>
-            <span className="text-sm font-semibold">{titulo}</span>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold leading-tight">{titulo}</p>
+              {subtitulo ? (
+                <p className="hidden truncate text-[.72rem] leading-tight text-muted sm:block">
+                  {subtitulo}
+                </p>
+              ) : null}
+            </div>
           </div>
-          <Usuario />
+          <div className="lg:hidden">
+            <Avatar nome={perfil?.nome ?? "EM"} />
+          </div>
         </header>
 
         <main className="px-4 py-5 lg:px-6">
-          <div className="mx-auto max-w-[1500px]">{children}</div>
+          <div className="mx-auto max-w-[1500px] space-y-5">{children}</div>
         </main>
       </div>
     </div>
