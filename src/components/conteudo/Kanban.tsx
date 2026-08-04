@@ -6,13 +6,15 @@ import { toast } from "sonner";
 import { toastDesfazer } from "@/lib/toastDesfazer";
 
 import { Revelar } from "@/components/Revelar";
+import { MenuFiltro } from "@/components/filtros/MenuFiltro";
 import { CartaoPost } from "@/components/conteudo/CartaoPost";
 import { KanbanEsqueleto } from "@/components/conteudo/Esqueleto";
 import { NovoCardDialog } from "@/components/conteudo/NovoCardDialog";
 import { FaixaDeContexto } from "@/components/painel/FaixaDeContexto";
 import { usePilares, usePosts, useMoverStatus } from "@/hooks/useConteudo";
 import { useRealtimePosts } from "@/hooks/useRealtimePosts";
-import { COLUNAS, type Status } from "@/lib/conteudo";
+import { CANAIS, COLUNAS, type Canal, type Status } from "@/lib/conteudo";
+
 
 export function Kanban() {
   useRealtimePosts();
