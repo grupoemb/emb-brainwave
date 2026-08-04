@@ -53,7 +53,7 @@ function usarCacheOtimista(organizationId: string | null) {
       queryClient.setQueryData<Post[]>(chave, (atual) => mudar(atual ?? []));
       return { anterior };
     },
-    restaurar(ctx?: { anterior?: Post[] }) {
+    restaurar(ctx?: { anterior: Post[] | undefined }) {
       if (ctx?.anterior) queryClient.setQueryData<Post[]>(chave, ctx.anterior);
     },
     invalidar() {
