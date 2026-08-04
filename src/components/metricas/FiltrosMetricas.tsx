@@ -42,6 +42,12 @@ export function FiltrosMetricas({
   ultimaColeta,
   atualizando,
   atualizar,
+  comparacao,
+  setComparacao,
+  customDesde,
+  setCustomDesde,
+  customAte,
+  setCustomAte,
 }: {
   dias: Periodo;
   setDias: (v: Periodo) => void;
@@ -54,8 +60,15 @@ export function FiltrosMetricas({
   ultimaColeta: number | null;
   atualizando: boolean;
   atualizar: () => void;
+  comparacao: ModoComparacao;
+  setComparacao: (v: ModoComparacao) => void;
+  customDesde: string;
+  setCustomDesde: (v: string) => void;
+  customAte: string;
+  setCustomAte: (v: string) => void;
 }) {
   return (
+    <div className="flex flex-col gap-3">
     <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
       <div className="-mx-1 flex gap-4 overflow-x-auto px-1 pb-1">
         <div className="flex shrink-0 items-center gap-1.5">
@@ -90,7 +103,21 @@ export function FiltrosMetricas({
             </Chip>
           ))}
         </div>
+
+        <div className="flex shrink-0 items-center gap-1.5">
+          <span className="rotulo mr-1">Comparar</span>
+          <Chip ativo={comparacao === "off"} onClick={() => setComparacao("off")}>
+            Desligado
+          </Chip>
+          <Chip ativo={comparacao === "anterior"} onClick={() => setComparacao("anterior")}>
+            Período anterior
+          </Chip>
+          <Chip ativo={comparacao === "custom"} onClick={() => setComparacao("custom")}>
+            Personalizado
+          </Chip>
+        </div>
       </div>
+
 
       <div className="flex shrink-0 items-center gap-2">
         <span className="text-xs text-muted">{textoFrescor(ultimaColeta)}</span>
