@@ -109,3 +109,54 @@ export function SemanaEsqueleto() {
   );
 }
 
+/**
+ * Esqueleto da grade do calendário (mês = 5 linhas, semana = 1 linha alta),
+ * junto da coluna lateral "Sem data".
+ */
+export function CalendarioEsqueleto({ visao = "mes" }: { visao?: "mes" | "semana" }) {
+  const celulas = visao === "semana" ? 7 : 35;
+  const altura = visao === "semana" ? "h-[220px]" : "h-[104px]";
+  return (
+    <div className="grid gap-4 lg:grid-cols-[1fr_260px]">
+      <div className="cartao p-3">
+        <div className="mb-2 grid grid-cols-7 gap-1">
+          {Array.from({ length: 7 }).map((_, i) => (
+            <Esqueleto key={i} className="mx-auto h-3 w-8 rounded" />
+          ))}
+        </div>
+        <div className="grid grid-cols-7 gap-1">
+          {Array.from({ length: celulas }).map((_, i) => (
+            <Esqueleto key={i} className={"rounded-[8px] " + altura} />
+          ))}
+        </div>
+      </div>
+      <aside className="cartao h-fit space-y-2 p-3">
+        <Esqueleto className="h-3 w-16 rounded" />
+        {Array.from({ length: 3 }).map((_, i) => (
+          <Esqueleto key={i} className="h-12 w-full rounded-[8px]" />
+        ))}
+      </aside>
+    </div>
+  );
+}
+
+/** Esqueleto da lista de pautas. */
+export function PautasEsqueleto({ linhas = 3 }: { linhas?: number }) {
+  return (
+    <div className="space-y-3">
+      {Array.from({ length: linhas }).map((_, i) => (
+        <div key={i} className="cartao space-y-2 p-4">
+          <div className="flex items-center gap-2">
+            <Esqueleto className="h-4 w-20 rounded-full" />
+            <Esqueleto className="h-4 w-16 rounded-full" />
+          </div>
+          <Esqueleto className="h-4 w-2/3 rounded" />
+          <Esqueleto className="h-3 w-full rounded" />
+          <Esqueleto className="h-3 w-4/5 rounded" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+
