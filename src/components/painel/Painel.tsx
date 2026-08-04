@@ -2,9 +2,29 @@ import { Link } from "@tanstack/react-router";
 import { Sparkles } from "lucide-react";
 
 import { Revelar } from "@/components/Revelar";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { usePainel } from "@/hooks/usePainel";
 import { COLUNAS, comAlfa, corDoCanal, type Canal } from "@/lib/conteudo";
 import { numero, textoFrescor } from "@/lib/metricas";
+
+function ComDica({ dica, children }: { dica: string; children: React.ReactNode }) {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <div>{children}</div>
+      </TooltipTrigger>
+      <TooltipContent className="max-w-[16rem] border-line bg-card text-xs text-corpo">
+        {dica}
+      </TooltipContent>
+    </Tooltip>
+  );
+}
+
 
 const TZ = "America/Sao_Paulo";
 
