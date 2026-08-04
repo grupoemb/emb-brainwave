@@ -424,6 +424,9 @@ export const carregarPainel = createServerFn({ method: "GET" })
         strength: number | null;
       }[]).map((i) => ({ id: i.id, statement: i.statement, strength: Number(i.strength ?? 0) })),
       outliers: outliers.slice(0, 5),
+      contas,
+      destaques,
       producao,
+
     };
   });
