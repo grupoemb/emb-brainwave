@@ -14,10 +14,13 @@ export function Cerebro() {
 
   return (
     <Revelar className="space-y-4">
-      <div className="secao-entrada flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-lg font-bold">Cérebro</h1>
-        <span className="text-xs text-muted">última análise {haQuanto(ultimaAnalise)}</span>
-      </div>
+      <CabecalhoTela
+        icone={<Brain size={17} />}
+        titulo="Cérebro"
+        descricao="O playbook vivo da marca e o que a análise semanal aprendeu."
+        acoes={<span className="text-xs text-muted">última análise {haQuanto(ultimaAnalise)}</span>}
+      />
+
 
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="secao-entrada space-y-4">
