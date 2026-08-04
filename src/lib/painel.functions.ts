@@ -280,7 +280,7 @@ export const carregarPainel = createServerFn({ method: "GET" })
       const mapa = new Map<string, Acumulado>();
 
       for (const p of publicados) {
-        const conta = ((p.meta?.["source_handle"] ?? null) as string | null) ?? "sem conta";
+        const conta = ((p.meta?.["source_handle"] as string | undefined) ?? null) ?? "sem conta";
         const l = vistos.get(p.id) ?? null;
         const reach = l?.reach ?? null;
         const interacoes =
