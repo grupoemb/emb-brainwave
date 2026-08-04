@@ -86,6 +86,9 @@ export function Kanban() {
   }, [posts]);
 
 
+  const colunasVazias = filtroAtivo
+    ? COLUNAS.filter((c) => (porStatus.get(c.status) ?? []).length === 0).length
+    : 0;
   const nadaNoFiltro = !carregando && filtroAtivo && filtrados.length === 0;
   const trabalhoVazio =
     !filtroAtivo && COLUNAS.slice(0, 6).every((c) => (porStatus.get(c.status) ?? []).length === 0);
