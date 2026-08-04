@@ -16,7 +16,9 @@ import {
   LogOut,
 } from "lucide-react";
 
+import { LogoB7 } from "@/components/ui/LogoB7";
 import { supabase } from "@/integrations/supabase/client";
+
 import { obterMeuPerfil } from "@/lib/perfil.functions";
 import { useEffect, useState, type ReactNode } from "react";
 
