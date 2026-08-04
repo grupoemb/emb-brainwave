@@ -116,7 +116,7 @@ export function AbaMarca() {
           <div className="rotulo">Pilares de conteúdo</div>
           {podeEditarMarca ? (
             <button
-              onClick={() => setEditando({ name: "", description: "", color: PALETA[0] })}
+              onClick={() => setEditando({ name: "", description: "", color: PALETA[0]! })}
               className="btn flex items-center gap-1.5 px-3 py-1.5 text-xs"
             >
               <Plus size={13} /> Novo pilar
