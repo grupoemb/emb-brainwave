@@ -3,6 +3,7 @@ import { useNavigate, useSearch } from "@tanstack/react-router";
 
 import { Revelar } from "@/components/Revelar";
 import { BarrasDimensao } from "@/components/metricas/BarrasDimensao";
+import { Benchmark } from "@/components/metricas/Benchmark";
 import { CartaoKpi } from "@/components/metricas/CartaoKpi";
 import { ComparativoContas } from "@/components/metricas/ComparativoContas";
 import { EsqueletoMetricas } from "@/components/metricas/EsqueletoMetricas";
@@ -301,6 +302,17 @@ export function Metricas() {
                 vazio="Nenhuma conta identificada nos posts do período."
               />
             </div>
+          ) : null}
+
+          {aba === "benchmark" ? (
+            <Benchmark
+              linhas={m.linhas}
+              baselines={m.baselines}
+              taxas={t}
+              publicados={k.publicados}
+              porSemana={m.cadencia.porSemana}
+              porConta={m.porConta}
+            />
           ) : null}
         </>
       )}
