@@ -30,6 +30,8 @@ export type Baseline = {
   format: string;
   metric: string;
   median_value: number | null;
+  p25?: number | null;
+  p75?: number | null;
 };
 
 export type LinhaMetrica = {
