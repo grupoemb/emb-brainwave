@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 
 import { useOrg } from "@/hooks/useOrg";
@@ -8,9 +9,27 @@ import {
   descartarSugestao,
   listarSugestoes,
   obterCerebro,
+  type Sugestao,
 } from "@/lib/inteligencia.functions";
 
 export type FiltroPauta = "new" | "accepted" | "dismissed";
+
+export type EstadoFiltros = { q: string; status: string; tipo: string; pilar: string };
+
+/** Normaliza texto para busca: minúsculo e sem acento. */
+function normalizar(v: string) {
+  return v
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
+function casaTexto(s: Sugestao, termo: string) {
+  if (!termo) return true;
+  const alvo = normalizar(`${s.title} ${s.rationale ?? ""}`);
+  return termo.split(/\s+/).every((p) => alvo.includes(p));
+}
 
 export function usePautas() {
   const { organizationId } = useOrg();
@@ -19,7 +38,21 @@ export function usePautas() {
   const aceitarFn = useServerFn(aceitarSugestao);
   const descartarFn = useServerFn(descartarSugestao);
 
-  const [filtro, setFiltro] = useState<FiltroPauta>("new");
+  const filtros: EstadoFiltros = useSearch({ from: "/_authenticated/pautas" });
+  const navigate = useNavigate();
+
+  const definir = (p: Partial<EstadoFiltros>) =>
+    navigate({
+      to: "/pautas",
+      search: (prev: EstadoFiltros) => ({ ...prev, ...p }),
+      replace: true,
+    });
+  const limpar = () =>
+    navigate({
+      to: "/pautas",
+      search: (prev: EstadoFiltros) => ({ ...prev, q: "", tipo: "todos", pilar: "todos" }),
+      replace: true,
+    });
 
   const q = useQuery({
     queryKey: ["sugestoes", organizationId],
@@ -41,20 +74,54 @@ export function usePautas() {
     onSuccess: invalidar,
   });
 
-  const todas = q.data?.sugestoes ?? [];
-  const lista = useMemo(() => todas.filter((s) => s.status === filtro), [todas, filtro]);
+  const todas = useMemo(() => q.data?.sugestoes ?? [], [q.data]);
+  const termo = normalizar(filtros.q);
+
+  const derivado = useMemo(() => {
+    const casaTipo = (s: Sugestao) => filtros.tipo === "todos" || s.kind === filtros.tipo;
+    const casaPilar = (s: Sugestao) => filtros.pilar === "todos" || s.pillar_id === filtros.pilar;
+    const casaStatus = (s: Sugestao) => s.status === filtros.status;
+
+    const lista = todas.filter(
+      (s) => casaStatus(s) && casaTipo(s) && casaPilar(s) && casaTexto(s, termo),
+    );
+
+    const contagemStatus: Record<string, number> = { new: 0, accepted: 0, dismissed: 0 };
+    for (const s of todas) {
+      if (casaTipo(s) && casaPilar(s) && casaTexto(s, termo)) {
+        contagemStatus[s.status] = (contagemStatus[s.status] ?? 0) + 1;
+      }
+    }
+
+    const contagemTipo: Record<string, number> = {};
+    for (const s of todas) {
+      if (!casaStatus(s) || !casaPilar(s) || !casaTexto(s, termo)) continue;
+      contagemTipo["todos"] = (contagemTipo["todos"] ?? 0) + 1;
+      contagemTipo[s.kind] = (contagemTipo[s.kind] ?? 0) + 1;
+    }
+
+    const mapaPilares = new Map<string, { id: string; nome: string; cor: string | null }>();
+    for (const s of todas) {
+      if (s.pillar_id && s.pilar_nome && !mapaPilares.has(s.pillar_id)) {
+        mapaPilares.set(s.pillar_id, {
+          id: s.pillar_id,
+          nome: s.pilar_nome,
+          cor: s.pilar_cor,
+        });
+      }
+    }
+
+    return { lista, contagemStatus, contagemTipo, pilares: [...mapaPilares.values()] };
+  }, [todas, filtros.status, filtros.tipo, filtros.pilar, termo]);
 
   const ultimaRodada = q.data?.ultimaRodada ? new Date(q.data.ultimaRodada).getTime() : null;
 
   return {
-    lista,
-    contagem: {
-      new: todas.filter((s) => s.status === "new").length,
-      accepted: todas.filter((s) => s.status === "accepted").length,
-      dismissed: todas.filter((s) => s.status === "dismissed").length,
-    },
-    filtro,
-    setFiltro,
+    ...derivado,
+    filtros,
+    definir,
+    limpar,
+    temFiltroExtra: !!filtros.q || filtros.tipo !== "todos" || filtros.pilar !== "todos",
     carregando: q.isPending,
     ultimaRodada,
     aceitar,
