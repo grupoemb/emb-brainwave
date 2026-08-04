@@ -12,12 +12,17 @@ export const obterMeuPerfil = createServerFn({ method: "GET" })
     const db = context.supabase as unknown as SupabaseClient;
     const { data, error } = await db
       .from("profiles")
-      .select("id, nome, avatar_url")
+      .select("id, full_name, avatar_url")
       .eq("id", context.userId)
       .maybeSingle();
 
     if (error) throw new Error(error.message);
-    return (data as Perfil | null) ?? { id: context.userId, nome: "", avatar_url: null };
+    const linha = data as { id: string; full_name: string | null; avatar_url: string | null } | null;
+    return {
+      id: linha?.id ?? context.userId,
+      nome: linha?.full_name ?? "",
+      avatar_url: linha?.avatar_url ?? null,
+    };
   });
 
 const esquemaPerfil = z.object({
@@ -32,8 +37,10 @@ export const atualizarMeuPerfil = createServerFn({ method: "POST" })
     const db = context.supabase as unknown as SupabaseClient;
     const { error } = await db
       .from("profiles")
-      .update({ nome: data.nome, avatar_url: data.avatar_url || null })
-      .eq("id", context.userId);
+      .upsert(
+        { id: context.userId, full_name: data.nome, avatar_url: data.avatar_url || null },
+        { onConflict: "id" },
+      );
 
     if (error) throw new Error(error.message);
     return { ok: true };
