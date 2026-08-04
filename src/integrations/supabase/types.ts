@@ -894,6 +894,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_perf_aggregates: { Args: { p_org: string }; Returns: Json }
       get_post_performance: {
         Args: { p_org: string }
         Returns: {
@@ -901,6 +902,7 @@ export type Database = {
           comments: number
           format: Database["public"]["Enums"]["post_format"]
           hook: Database["public"]["Enums"]["hook_type"]
+          intent: string
           likes: number
           pillar: string
           post_id: string
@@ -910,6 +912,7 @@ export type Database = {
           saves: number
           saves_x: number
           shares: number
+          theme: string
           title: string
         }[]
       }
