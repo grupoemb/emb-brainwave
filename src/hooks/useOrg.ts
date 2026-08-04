@@ -17,6 +17,8 @@ export function useOrg() {
     organizationId: data?.organizationId ?? null,
     papel,
     canReview: ["owner", "admin", "editor", "reviewer"].includes(papel ?? ""),
+    isAdmin: ["owner", "admin"].includes(papel ?? ""),
+    podeEditarMarca: ["owner", "admin", "editor"].includes(papel ?? ""),
     carregando: isPending,
   };
 }
