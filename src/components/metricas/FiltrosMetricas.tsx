@@ -127,8 +127,31 @@ export function FiltrosMetricas({
         </button>
       </div>
     </div>
+
+    {comparacao === "custom" ? (
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="rotulo">Comparar com</span>
+        <input
+          type="date"
+          value={customDesde}
+          onChange={(e) => setCustomDesde(e.target.value)}
+          className="h-[30px] rounded-[8px] border border-line bg-card px-2 text-xs text-corpo"
+          aria-label="Início do período comparado"
+        />
+        <span className="text-xs text-muted">até</span>
+        <input
+          type="date"
+          value={customAte}
+          onChange={(e) => setCustomAte(e.target.value)}
+          className="h-[30px] rounded-[8px] border border-line bg-card px-2 text-xs text-corpo"
+          aria-label="Fim do período comparado"
+        />
+      </div>
+    ) : null}
+    </div>
   );
 }
+
 
 function IconeAtualizar({ girando }: { girando: boolean }) {
   const [ativo, setAtivo] = useState(false);
