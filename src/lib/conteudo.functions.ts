@@ -194,3 +194,248 @@ export const excluirPost = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+const HOOKS = [
+  "question",
+  "bold_claim",
+  "story",
+  "stat",
+  "contrarian",
+  "list",
+  "news",
+  "how_to",
+  "other",
+] as const;
+
+export const obterPost = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    const db = context.supabase as unknown as SupabaseClient;
+    const { data: linha, error } = await db
+      .from("posts")
+      .select(
+        "id, organization_id, title, status, channel, format, hook, pillar_id, body, author_id, suggestion_id, scheduled_for, published_at, meta, created_at, updated_at",
+      )
+      .eq("id", data.id)
+      .maybeSingle();
+
+    if (error) throw new Error(error.message);
+    if (!linha) return null;
+    return linha as Record<string, unknown>;
+  });
+
+export const atualizarPost = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        campos: z.object({
+          title: z.string().trim().min(1).max(200).optional(),
+          body: z.string().nullable().optional(),
+          channel: z.enum(CANAIS).nullable().optional(),
+          format: z.enum(FORMATOS).nullable().optional(),
+          hook: z.enum(HOOKS).nullable().optional(),
+          pillar_id: z.string().uuid().nullable().optional(),
+          scheduled_for: z.string().datetime().nullable().optional(),
+          cta: z.string().nullable().optional(),
+        }),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const db = context.supabase as unknown as SupabaseClient;
+    const { cta, ...resto } = data.campos;
+    const patch: Record<string, unknown> = { ...resto };
+
+    if (cta !== undefined) {
+      const { data: atual, error: erroAtual } = await db
+        .from("posts")
+        .select("meta")
+        .eq("id", data.id)
+        .maybeSingle();
+      if (erroAtual) throw new Error(erroAtual.message);
+      const meta = ((atual as { meta: Record<string, unknown> | null } | null)?.meta ??
+        {}) as Record<string, unknown>;
+      patch['meta'] = { ...meta, cta };
+    }
+
+    if (Object.keys(patch).length === 0) return { ok: true as const };
+
+    const { error } = await db.from("posts").update(patch).eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true as const };
+  });
+
+async function nomesDePerfis(db: SupabaseClient, ids: (string | null)[]) {
+  const unicos = Array.from(new Set(ids.filter(Boolean) as string[]));
+  if (!unicos.length) return new Map<string, string | null>();
+  const { data } = await db.from("profiles").select("id, full_name").in("id", unicos);
+  return new Map(
+    ((data ?? []) as { id: string; full_name: string | null }[]).map((p) => [p.id, p.full_name]),
+  );
+}
+
+export const listarVersoes = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ postId: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    const db = context.supabase as unknown as SupabaseClient;
+    const { data: linhas, error } = await db
+      .from("post_versions")
+      .select("id, version_no, body, created_by, created_at")
+      .eq("post_id", data.postId)
+      .order("version_no", { ascending: false });
+
+    if (error) throw new Error(error.message);
+    const lista = (linhas ?? []) as {
+      id: string;
+      version_no: number;
+      body: string | null;
+      created_by: string | null;
+      created_at: string;
+    }[];
+    const nomes = await nomesDePerfis(db, lista.map((v) => v.created_by));
+    return lista.map((v) => ({ ...v, autor_nome: nomes.get(v.created_by ?? "") ?? null }));
+  });
+
+export const criarVersao = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z.object({ postId: z.string().uuid(), body: z.string().nullable() }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const db = context.supabase as unknown as SupabaseClient;
+
+    for (let tentativa = 0; tentativa < 3; tentativa++) {
+      const { data: ultima, error: erroUltima } = await db
+        .from("post_versions")
+        .select("version_no")
+        .eq("post_id", data.postId)
+        .order("version_no", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (erroUltima) throw new Error(erroUltima.message);
+
+      const proximo = ((ultima as { version_no: number } | null)?.version_no ?? 0) + 1;
+      const { error } = await db.from("post_versions").insert({
+        post_id: data.postId,
+        version_no: proximo,
+        body: data.body,
+        created_by: context.userId,
+      });
+
+      if (!error) return { ok: true as const, version_no: proximo };
+      if (tentativa === 2) throw new Error(error.message);
+    }
+    return { ok: false as const, version_no: 0 };
+  });
+
+export const listarAprovacoes = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ postId: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    const db = context.supabase as unknown as SupabaseClient;
+    const { data: linhas, error } = await db
+      .from("approvals")
+      .select("id, decision, note, reviewer_id, created_at")
+      .eq("post_id", data.postId)
+      .order("created_at", { ascending: false });
+
+    if (error) throw new Error(error.message);
+    const lista = (linhas ?? []) as {
+      id: string;
+      decision: string;
+      note: string | null;
+      reviewer_id: string | null;
+      created_at: string;
+    }[];
+    const nomes = await nomesDePerfis(db, lista.map((a) => a.reviewer_id));
+    return lista.map((a) => ({ ...a, revisor_nome: nomes.get(a.reviewer_id ?? "") ?? null }));
+  });
+
+export const criarAprovacao = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        postId: z.string().uuid(),
+        decision: z.enum(["approved", "changes_requested", "rejected"]),
+        note: z.string().trim().max(1000).nullable(),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const db = context.supabase as unknown as SupabaseClient;
+    const { error } = await db.from("approvals").insert({
+      post_id: data.postId,
+      reviewer_id: context.userId,
+      decision: data.decision,
+      note: data.note,
+    });
+    if (error) throw new Error(error.message);
+    return { ok: true as const };
+  });
+
+export const listarAssets = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ postId: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    const db = context.supabase as unknown as SupabaseClient;
+    const { data: linhas, error } = await db
+      .from("post_assets")
+      .select("id, storage_path, kind, created_at")
+      .eq("post_id", data.postId)
+      .order("created_at", { ascending: false });
+
+    if (error) throw new Error(error.message);
+    const lista = (linhas ?? []) as {
+      id: string;
+      storage_path: string;
+      kind: string | null;
+      created_at: string;
+    }[];
+
+    const assinados = await Promise.all(
+      lista.map(async (a) => {
+        const { data: url } = await db.storage
+          .from("post-assets")
+          .createSignedUrl(a.storage_path, 60 * 60);
+        return { ...a, url: url?.signedUrl ?? null };
+      }),
+    );
+    return assinados;
+  });
+
+export const registrarAsset = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        postId: z.string().uuid(),
+        storage_path: z.string().min(1).max(500),
+        kind: z.enum(["image", "video", "pdf", "other"]),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const db = context.supabase as unknown as SupabaseClient;
+    const { error } = await db.from("post_assets").insert({
+      post_id: data.postId,
+      storage_path: data.storage_path,
+      kind: data.kind,
+    });
+    if (error) throw new Error(error.message);
+    return { ok: true as const };
+  });
+
+export const removerAsset = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    const db = context.supabase as unknown as SupabaseClient;
+    const { error } = await db.from("post_assets").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true as const };
+  });
