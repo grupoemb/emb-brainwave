@@ -177,12 +177,19 @@ export function Kanban() {
 
   return (
     <Revelar className="space-y-4">
+      <CabecalhoTela
+        icone={<KanbanSquare size={17} />}
+        titulo="Kanban"
+        descricao="Arraste os cards entre as etapas para acompanhar a produção."
+      />
+
       {doPainel ? (
         <FaixaDeContexto
           recorte={colunaFoco ? `coluna ${colunaFoco.rotulo}` : "fluxo de produção"}
           onLimpar={limparRecorte}
         />
       ) : null}
+
 
       <div className="secao-entrada flex flex-wrap items-center gap-2">
         <p className="text-sm text-muted">
