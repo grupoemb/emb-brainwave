@@ -36,7 +36,7 @@ export function CartaoPost({
       draggable={!!onDragStart}
       onDragStart={onDragStart}
       onClick={onClick}
-      className="cartao secao-entrada cursor-grab select-none p-[14px] active:cursor-grabbing"
+      className="cartao interativo secao-entrada cursor-grab select-none p-[14px] active:cursor-grabbing"
       style={daIA ? { borderLeft: `2px solid ${comAlfa("#00a4ff", 0.6)}` } : undefined}
     >
       <div className="mb-2 flex items-center gap-2">
