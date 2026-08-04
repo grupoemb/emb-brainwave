@@ -49,6 +49,8 @@ export function Metricas() {
 
   return (
     <Revelar className="space-y-4">
+      {faixa}
+
       <div className="secao-entrada">
         <FiltrosMetricas
           dias={m.dias}
@@ -76,12 +78,22 @@ export function Metricas() {
           <EsqueletoMetricas />
         </div>
       ) : semPosts ? (
-        <div className="cartao secao-entrada p-8 text-center text-sm text-muted">
-          {m.houveColeta
-            ? "Nenhum post no período selecionado"
-            : "Aguardando a primeira coleta das contas"}
+        <div className="cartao secao-entrada flex flex-col items-center gap-3 p-8 text-center">
+          <p className="text-sm text-muted">
+            {doPainel && m.dias === 7
+              ? "Sem leituras de métricas nos últimos 7 dias."
+              : m.houveColeta
+                ? "Nenhum post no período selecionado"
+                : "Aguardando a primeira coleta das contas"}
+          </p>
+          {doPainel && m.dias === 7 ? (
+            <button className="btn px-3 py-1.5 text-xs" onClick={() => m.setDias(30)}>
+              ver 30 dias
+            </button>
+          ) : null}
         </div>
       ) : (
+
         <>
           {comparando ? (
             <div className="secao-entrada text-xs text-muted">
