@@ -185,9 +185,45 @@ export function Calendario() {
 
   const hoje = new Date();
 
+  const faixa = doPainel ? (
+    <FaixaDeContexto
+      recorte={foco7d ? "próximos 7 dias" : "agenda editorial"}
+      onLimpar={limparRecorte}
+    />
+  ) : null;
+
+  if (carregando && doPainel) {
+    return (
+      <Revelar className="space-y-4">
+        {faixa}
+        <div className="secao-entrada">
+          <SemanaEsqueleto />
+        </div>
+      </Revelar>
+    );
+  }
+
   return (
     <Revelar className="space-y-4">
+      {faixa}
+
+      {foco7d && !carregando && proximos7d.length === 0 && (
+        <div className="cartao secao-entrada flex flex-col items-center gap-3 p-8 text-center">
+          <p className="text-sm text-muted">Nada agendado pros próximos 7 dias.</p>
+          <button
+            className="btn px-3 py-1.5 text-xs"
+            onClick={() => {
+              setVisao("mes");
+              limparRecorte();
+            }}
+          >
+            ver o mês inteiro
+          </button>
+        </div>
+      )}
+
       <div className="secao-entrada flex flex-wrap items-center gap-2">
+
         <div className="flex gap-2">
           <Chip ativo={visao === "mes"} onClick={() => setVisao("mes")}>
             Mês
