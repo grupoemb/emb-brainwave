@@ -69,7 +69,13 @@ export function Metricas() {
 
   return (
     <Revelar className="space-y-4">
+      <CabecalhoTela
+        icone={<BarChart3 size={17} />}
+        titulo="Métricas"
+        descricao="Desempenho das contas, ritmo de publicação e comparação com o mercado."
+      />
       {faixa}
+
 
       <div className="secao-entrada">
         <FiltrosMetricas
