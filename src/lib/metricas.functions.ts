@@ -44,17 +44,22 @@ export const carregarMetricas = createServerFn({ method: "GET" })
   .inputValidator((input: unknown) => entrada.parse(input))
   .handler(async ({ data, context }) => {
     const db = context.supabase as unknown as SupabaseClient;
-    const desde = new Date(Date.now() - data.dias * 86_400_000).toISOString();
+    const desde = data.desde ?? new Date(Date.now() - data.dias * 86_400_000).toISOString();
 
-    const { data: linhasPosts, error: erroPosts } = await db
+    let consulta = db
       .from("posts")
       .select("id, title, channel, format, pillar_id, published_at, meta")
       .eq("organization_id", data.organizationId)
       .eq("status", "published")
       .eq("channel", "instagram")
-      .gte("published_at", desde)
+      .gte("published_at", desde);
+
+    if (data.ate) consulta = consulta.lte("published_at", data.ate);
+
+    const { data: linhasPosts, error: erroPosts } = await consulta
       .order("published_at", { ascending: false })
       .limit(1000);
+
 
     if (erroPosts) throw new Error(erroPosts.message);
 
