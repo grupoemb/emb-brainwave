@@ -3,6 +3,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 
+import { toastDesfazer } from "@/lib/toastDesfazer";
+
 import { Revelar } from "@/components/Revelar";
 import { CartaoPost } from "@/components/conteudo/CartaoPost";
 import { NovoCardDialog } from "@/components/conteudo/NovoCardDialog";
@@ -58,25 +60,17 @@ export function Kanban() {
       }
       const rotulo = COLUNAS.find((c) => c.status === status)?.rotulo ?? "etapa";
       const anterior = atual.status;
-      toast.success(`Movido para ${rotulo}`, {
-        duration: 7000,
-        action: {
-          label: "Desfazer",
-          onClick: () => {
-            void (async () => {
-              try {
-                const volta = await mover.mutateAsync({ id, status: anterior });
-                if (!volta.ok) {
-                  toast.error("Não foi possível desfazer");
-                  return;
-                }
-                toast("Movimento desfeito");
-              } catch {
-                toast.error("Não foi possível desfazer");
-              }
-            })();
-          },
-        },
+      toastDesfazer(`Movido para ${rotulo}`, async () => {
+        try {
+          const volta = await mover.mutateAsync({ id, status: anterior });
+          if (!volta.ok) {
+            toast.error("Não foi possível desfazer");
+            return;
+          }
+          toast("Movimento desfeito");
+        } catch {
+          toast.error("Não foi possível desfazer");
+        }
       });
     } catch (erro) {
       toast.error(erro instanceof Error ? erro.message : "Não foi possível salvar");
