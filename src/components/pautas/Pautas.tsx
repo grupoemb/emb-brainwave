@@ -52,16 +52,17 @@ export function Pautas() {
 
   return (
     <Revelar className="space-y-4">
-      <div className="secao-entrada flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="text-lg font-bold">Pautas</h1>
-          <p className="mt-1 max-w-2xl text-xs text-muted">
-            O cérebro gera pautas novas toda segunda de manhã, e aprende com o resultado de cada
-            pauta aceita.
-          </p>
-        </div>
-        <span className="text-xs text-muted">última rodada de pautas {haQuanto(ultimaRodada)}</span>
-      </div>
+      <CabecalhoTela
+        icone={<Lightbulb size={17} />}
+        titulo="Pautas"
+        descricao="O cérebro gera pautas novas toda segunda de manhã, e aprende com o resultado de cada pauta aceita."
+        acoes={
+          <span className="text-xs text-muted">
+            última rodada {haQuanto(ultimaRodada)}
+          </span>
+        }
+      />
+
 
       {doPainel ? <FaixaDeContexto recorte="pautas novas" onLimpar={limparRecorte} /> : null}
 
