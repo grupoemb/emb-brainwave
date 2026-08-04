@@ -14,9 +14,11 @@ export type ResultadoEntrada = {
  * usando a RPC existente `join_organization` do banco.
  */
 export async function entrarNaOrganizacao(codigo?: string): Promise<ResultadoEntrada> {
-  const { data, error } = await supabase.rpc("join_organization", {
-    p_code: codigo && codigo.trim() ? codigo.trim() : undefined,
-  });
+  const limpo = codigo?.trim();
+  const { data, error } = await supabase.rpc(
+    "join_organization",
+    limpo ? { p_code: limpo } : {},
+  );
 
   if (error) return { ok: false, error: error.message };
   return (data ?? { ok: false, error: "resposta inválida" }) as unknown as ResultadoEntrada;
