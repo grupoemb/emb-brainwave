@@ -18,6 +18,7 @@ export function usePosts() {
   const q = useQuery({
     queryKey: ["posts", organizationId],
     enabled: !!organizationId,
+    refetchOnWindowFocus: true,
     queryFn: () => buscar({ data: { organizationId: organizationId! } }),
   });
 
@@ -40,44 +41,91 @@ export function usePilares() {
   return { pilares: lista, pilarPorId: porId };
 }
 
-export function useMoverStatus() {
+/** Aplica uma alteração otimista na lista de posts em cache. */
+function usarCacheOtimista(organizationId: string | null) {
   const queryClient = useQueryClient();
+  const chave = ["posts", organizationId] as const;
+
+  return {
+    async aplicar(mudar: (posts: Post[]) => Post[]) {
+      await queryClient.cancelQueries({ queryKey: chave });
+      const anterior = queryClient.getQueryData<Post[]>(chave);
+      queryClient.setQueryData<Post[]>(chave, (atual) => mudar(atual ?? []));
+      return { anterior };
+    },
+    restaurar(ctx?: { anterior: Post[] | undefined }) {
+      if (ctx?.anterior) queryClient.setQueryData<Post[]>(chave, ctx.anterior);
+    },
+    invalidar() {
+      void queryClient.invalidateQueries({ queryKey: chave });
+    },
+  };
+}
+
+export function useMoverStatus() {
+  const { organizationId } = useOrg();
+  const cache = usarCacheOtimista(organizationId);
   const mover = useServerFn(atualizarStatusPost);
 
   return useMutation({
     mutationFn: (v: { id: string; status: Status }) => mover({ data: v }),
-    onSettled: () => {
-      void queryClient.invalidateQueries({ queryKey: ["posts"] });
-    },
+    onMutate: (v) =>
+      cache.aplicar((posts) => posts.map((p) => (p.id === v.id ? { ...p, status: v.status } : p))),
+    onError: (_erro, _v, ctx) => cache.restaurar(ctx),
+    onSettled: () => cache.invalidar(),
   });
 }
 
 export function useAgendar() {
-  const queryClient = useQueryClient();
+  const { organizationId } = useOrg();
+  const cache = usarCacheOtimista(organizationId);
   const agendar = useServerFn(atualizarAgendamento);
 
   return useMutation({
     mutationFn: (v: { id: string; scheduled_for: string | null }) => agendar({ data: v }),
-    onSettled: () => {
-      void queryClient.invalidateQueries({ queryKey: ["posts"] });
-    },
+    onMutate: (v) =>
+      cache.aplicar((posts) =>
+        posts.map((p) => (p.id === v.id ? { ...p, scheduled_for: v.scheduled_for } : p)),
+      ),
+    onError: (_erro, _v, ctx) => cache.restaurar(ctx),
+    onSettled: () => cache.invalidar(),
   });
 }
 
 export function useCriarPost() {
-  const queryClient = useQueryClient();
+  const { organizationId } = useOrg();
+  const cache = usarCacheOtimista(organizationId);
   const criar = useServerFn(criarPost);
 
   return useMutation({
-    mutationFn: (v: Parameters<typeof criarPost>[0] extends never ? never : {
+    mutationFn: (v: {
       organizationId: string;
       title: string;
       channel: Post["channel"];
       format: Post["format"];
       pillar_id: string | null;
     }) => criar({ data: v }),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["posts"] });
-    },
+    onMutate: (v) =>
+      cache.aplicar((posts) => [
+        {
+          id: `temp-${Date.now()}`,
+          organization_id: v.organizationId,
+          title: v.title,
+          status: "idea",
+          channel: v.channel,
+          format: v.format,
+          hook: null,
+          pillar_id: v.pillar_id,
+          body: null,
+          author_id: null,
+          suggestion_id: null,
+          scheduled_for: null,
+          published_at: null,
+          meta: null,
+        } as unknown as Post,
+        ...posts,
+      ]),
+    onError: (_erro, _v, ctx) => cache.restaurar(ctx),
+    onSettled: () => cache.invalidar(),
   });
 }

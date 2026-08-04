@@ -7,9 +7,11 @@ import { Revelar } from "@/components/Revelar";
 import { CartaoPost } from "@/components/conteudo/CartaoPost";
 import { NovoCardDialog } from "@/components/conteudo/NovoCardDialog";
 import { usePilares, usePosts, useMoverStatus } from "@/hooks/useConteudo";
+import { useRealtimePosts } from "@/hooks/useRealtimePosts";
 import { COLUNAS, type Status } from "@/lib/conteudo";
 
 export function Kanban() {
+  useRealtimePosts();
   const navigate = useNavigate();
   const { posts, carregando } = usePosts();
   const { pilarPorId } = usePilares();
@@ -42,15 +44,22 @@ export function Kanban() {
     const atual = posts.find((p) => p.id === id);
     if (!atual || atual.status === status) return;
 
-    const r = await mover.mutateAsync({ id, status });
-    if (!r.ok) {
-      toast("Este post ainda não foi aprovado", {
-        style: {
-          background: "rgba(246, 189, 36, 0.12)",
-          border: "1px solid rgba(246, 189, 36, 0.35)",
-          color: "#f6bd24",
-        },
-      });
+    try {
+      const r = await mover.mutateAsync({ id, status });
+      if (!r.ok) {
+        toast("Este post ainda não foi aprovado", {
+          style: {
+            background: "rgba(246, 189, 36, 0.12)",
+            border: "1px solid rgba(246, 189, 36, 0.35)",
+            color: "#f6bd24",
+          },
+        });
+        return;
+      }
+      const rotulo = COLUNAS.find((c) => c.status === status)?.rotulo ?? "etapa";
+      toast.success(`Movido para ${rotulo}`);
+    } catch (erro) {
+      toast.error(erro instanceof Error ? erro.message : "Não foi possível salvar");
     }
   }
 
