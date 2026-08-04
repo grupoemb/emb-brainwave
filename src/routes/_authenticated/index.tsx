@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ModuloEmConstrucao } from "@/components/ModuloEmConstrucao";
+import { Painel } from "@/components/painel/Painel";
 
 export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
