@@ -4,7 +4,9 @@ import { useEffect, useState } from "react";
 
 import { CampoAcesso } from "@/components/acesso/CampoAcesso";
 import { VitrineFundo } from "@/components/acesso/VitrineFundo";
+import { LogoB7 } from "@/components/ui/LogoB7";
 import { supabase } from "@/integrations/supabase/client";
+
 import { entrarNaOrganizacao } from "@/lib/organizacao";
 
 
