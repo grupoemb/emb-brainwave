@@ -4,6 +4,8 @@ import { useState } from "react";
 
 import { Revelar } from "@/components/Revelar";
 import { CabecalhoTela } from "@/components/ui/CabecalhoTela";
+import { LogoB7 } from "@/components/ui/LogoB7";
+
 
 import { Dica } from "@/components/painel/Dica";
 import { ComparativoContas } from "@/components/painel/ComparativoContas";
