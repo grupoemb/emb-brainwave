@@ -228,6 +228,7 @@ export function Painel() {
                 key={p.id}
                 to="/post/$id"
                 params={{ id: p.id }}
+                search={{ origem: "painel" }}
                 className="flex items-center gap-2 rounded-[.5rem] px-2 py-1.5 hover:bg-white/6"
               >
                 <Dot cor={corDoCanal((p.channel ?? null) as Canal | null)} />
@@ -355,6 +356,7 @@ export function Painel() {
                 key={o.id}
                 to="/post/$id"
                 params={{ id: o.id }}
+                search={{ origem: "painel", dias: diasOutliers }}
                 className="flex items-center gap-2 rounded-[.5rem] px-2 py-1.5 hover:bg-white/6"
               >
                 <span className="flex-1 truncate text-sm text-corpo">{o.title}</span>

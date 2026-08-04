@@ -384,7 +384,7 @@ export function Calendario() {
                     <Pill
                       key={p.id}
                       post={p}
-                      onClick={() => void navigate({ to: "/post/$id", params: { id: p.id } })}
+                      onClick={() => void navigate({ to: "/post/$id", params: { id: p.id }, search: { origem: "calendario" } })}
                       onDragStart={(e) => e.dataTransfer.setData("text/post-id", p.id)}
                     />
                   ))}
@@ -398,7 +398,7 @@ export function Calendario() {
                           <Pill
                             key={p.id}
                             post={p}
-                            onClick={() => void navigate({ to: "/post/$id", params: { id: p.id } })}
+                            onClick={() => void navigate({ to: "/post/$id", params: { id: p.id }, search: { origem: "calendario" } })}
                             onDragStart={(e) => e.dataTransfer.setData("text/post-id", p.id)}
                           />
                         ))}

@@ -111,7 +111,7 @@ export function Pautas() {
                 aceitar.mutate(s.id, {
                   onSuccess: ({ id }) => {
                     toast.success("Pauta aceita — post criado.");
-                    navigate({ to: "/post/$id", params: { id } });
+                    navigate({ to: "/post/$id", params: { id }, search: { origem: "pautas" } });
                   },
                   onError: (e: Error) => toast.error(e.message),
                 })
