@@ -163,7 +163,69 @@
     color: #ff7a6b;
     background: rgba(255, 122, 107, 0.12);
   }
+
+  .prosa {
+    color: var(--corpo);
+    font-size: 0.925rem;
+    line-height: 1.65;
+  }
+  .prosa > * + * {
+    margin-top: 0.75rem;
+  }
+  .prosa h1,
+  .prosa h2,
+  .prosa h3 {
+    color: var(--txt);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.12;
+  }
+  .prosa h1 {
+    font-size: 1.15rem;
+  }
+  .prosa h2 {
+    font-size: 1.05rem;
+  }
+  .prosa h3 {
+    font-size: 0.95rem;
+  }
+  .prosa strong {
+    color: var(--txt);
+    font-weight: 600;
+  }
+  .prosa ul,
+  .prosa ol {
+    padding-left: 1.15rem;
+  }
+  .prosa ul {
+    list-style: disc;
+  }
+  .prosa ol {
+    list-style: decimal;
+  }
+  .prosa li + li {
+    margin-top: 0.3rem;
+  }
+  .prosa a {
+    color: var(--azure-claro);
+    text-decoration: underline;
+  }
+  .prosa code {
+    background: rgb(255 255 255 / 0.06);
+    border-radius: 0.3rem;
+    padding: 0.1rem 0.3rem;
+    font-size: 0.85em;
+  }
+  .prosa blockquote {
+    border-left: 2px solid var(--line-forte);
+    padding-left: 0.75rem;
+    color: var(--muted);
+  }
+  .prosa hr {
+    border-color: var(--line);
+  }
 }
+
 
 @layer utilities {
   .secao-entrada {

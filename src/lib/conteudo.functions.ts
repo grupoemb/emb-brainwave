@@ -486,3 +486,35 @@ export const removerAsset = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true as const };
   });
+
+export const salvarPostGerado = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        organizationId: z.string().uuid(),
+        title: z.string().trim().min(1).max(200),
+        body: z.string().trim().min(1),
+        format: z.enum(FORMATOS).nullable(),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const db = context.supabase as unknown as SupabaseClient;
+    const { data: criado, error } = await db
+      .from("posts")
+      .insert({
+        organization_id: data.organizationId,
+        title: data.title,
+        body: data.body,
+        status: "script",
+        channel: "instagram",
+        format: data.format,
+        author_id: context.userId,
+      })
+      .select("id")
+      .single();
+
+    if (error) throw new Error(error.message);
+    return { id: (criado as { id: string }).id };
+  });
