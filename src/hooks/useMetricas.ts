@@ -44,11 +44,12 @@ function soData(iso: string) {
   return iso.slice(0, 10);
 }
 
-export function useMetricas() {
+export function useMetricas(diasInicial: Periodo = 30) {
   const { organizationId } = useOrg();
   const buscar = useServerFn(carregarMetricas);
 
-  const [dias, setDias] = useState<Periodo>(30);
+  const [dias, setDias] = useState<Periodo>(diasInicial);
+
   const [conta, setConta] = useState<string>("todas");
   const [pilar, setPilar] = useState<string>("todos");
   const [comparacao, setComparacao] = useState<ModoComparacao>("off");
