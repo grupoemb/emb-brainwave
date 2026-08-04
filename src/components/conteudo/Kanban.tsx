@@ -11,6 +11,7 @@ import { useRealtimePosts } from "@/hooks/useRealtimePosts";
 import { COLUNAS, type Status } from "@/lib/conteudo";
 
 export function Kanban() {
+  useRealtimePosts();
   const navigate = useNavigate();
   const { posts, carregando } = usePosts();
   const { pilarPorId } = usePilares();
