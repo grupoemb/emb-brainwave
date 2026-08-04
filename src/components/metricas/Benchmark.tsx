@@ -76,6 +76,11 @@ export function Benchmark({
       </div>
 
       <div className="secao-entrada">
+        <Recomendacoes itens={recs} />
+      </div>
+
+
+      <div className="secao-entrada">
         <TabelaMercado linhas={mercado} />
       </div>
 
