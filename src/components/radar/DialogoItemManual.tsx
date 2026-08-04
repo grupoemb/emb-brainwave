@@ -96,6 +96,7 @@ export function DialogoItemManual({
   return (
     <Dialog open={aberto} onOpenChange={(v) => (!v && !salvar.isPending ? aoFechar() : null)}>
       <DialogContent className="max-h-[90vh] overflow-y-auto border-line bg-card sm:max-w-[34rem]">
+
         <DialogHeader>
           <DialogTitle className="text-base">Adicionar item manual</DialogTitle>
           <DialogDescription className="text-xs text-muted">
