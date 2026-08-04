@@ -9,10 +9,11 @@ export function VazioFiltrado({
   onAcao,
 }: {
   mensagem: string;
-  detalhe?: string;
-  acao?: string;
-  onAcao?: () => void;
+  detalhe?: string | undefined;
+  acao?: string | undefined;
+  onAcao?: (() => void) | undefined;
 }) {
+
   return (
     <div className="cartao secao-entrada flex flex-col items-center gap-3 p-8 text-center">
       <p className="text-sm text-muted">{mensagem}</p>
