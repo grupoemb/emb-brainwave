@@ -8,6 +8,7 @@ import {
   atualizarStatusPost,
   atualizarAgendamento,
   criarPost,
+  excluirPost,
 } from "@/lib/conteudo.functions";
 import type { Pilar, Post, Status } from "@/lib/conteudo";
 
@@ -125,6 +126,19 @@ export function useCriarPost() {
         } as unknown as Post,
         ...posts,
       ]),
+    onError: (_erro, _v, ctx) => cache.restaurar(ctx),
+    onSettled: () => cache.invalidar(),
+  });
+}
+
+export function useExcluirPost() {
+  const { organizationId } = useOrg();
+  const cache = usarCacheOtimista(organizationId);
+  const excluir = useServerFn(excluirPost);
+
+  return useMutation({
+    mutationFn: (v: { id: string }) => excluir({ data: v }),
+    onMutate: (v) => cache.aplicar((posts) => posts.filter((p) => p.id !== v.id)),
     onError: (_erro, _v, ctx) => cache.restaurar(ctx),
     onSettled: () => cache.invalidar(),
   });

@@ -57,7 +57,27 @@ export function Kanban() {
         return;
       }
       const rotulo = COLUNAS.find((c) => c.status === status)?.rotulo ?? "etapa";
-      toast.success(`Movido para ${rotulo}`);
+      const anterior = atual.status;
+      toast.success(`Movido para ${rotulo}`, {
+        duration: 7000,
+        action: {
+          label: "Desfazer",
+          onClick: () => {
+            void (async () => {
+              try {
+                const volta = await mover.mutateAsync({ id, status: anterior });
+                if (!volta.ok) {
+                  toast.error("Não foi possível desfazer");
+                  return;
+                }
+                toast("Movimento desfeito");
+              } catch {
+                toast.error("Não foi possível desfazer");
+              }
+            })();
+          },
+        },
+      });
     } catch (erro) {
       toast.error(erro instanceof Error ? erro.message : "Não foi possível salvar");
     }
