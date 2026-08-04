@@ -30,7 +30,8 @@ export function Ajustes() {
       : "perfil";
 
   const ir = (id: AbaId) =>
-    void navigate({ to: "/ajustes", search: (p) => ({ ...p, aba: id }) });
+    void navigate({ to: "/ajustes", search: { aba: id, secao, origem } });
+
 
   return (
     <Revelar className="space-y-4">
