@@ -51,13 +51,22 @@ export type DadosPainel = {
 
 export const carregarPainel = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => z.object({ organizationId: z.string().uuid() }).parse(input))
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        organizationId: z.string().uuid(),
+        diasOutliers: z.union([z.literal(7), z.literal(14), z.literal(30)]).optional(),
+      })
+      .parse(input),
+  )
   .handler(async ({ data, context }): Promise<DadosPainel> => {
     const db = context.supabase as unknown as SupabaseClient;
     const org = data.organizationId;
+    const dias = data.diasOutliers ?? 7;
     const agora = new Date();
     const em7d = new Date(agora.getTime() + 7 * 86_400_000).toISOString();
     const ha7d = new Date(agora.getTime() - 7 * 86_400_000).toISOString();
+    const haJanela = new Date(agora.getTime() - dias * 86_400_000).toISOString();
 
     const [perfilRes, agendadosRes, todosRes, publicadosRes, sugestoesRes, insightsRes, contasRes] =
       await Promise.all([
