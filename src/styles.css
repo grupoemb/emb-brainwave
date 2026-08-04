@@ -233,6 +233,137 @@
   }
 }
 
+@layer components {
+  /* Superfícies */
+  .cartao-alto {
+    background: linear-gradient(180deg, var(--card-2), var(--card));
+    border: 1px solid var(--line-forte);
+    border-radius: 0.9rem;
+    box-shadow: var(--sombra-2);
+  }
+  .cartao-plano {
+    background: var(--card);
+    border: 1px solid var(--line-suave);
+    border-radius: 0.75rem;
+  }
+  .destaque-azure {
+    box-shadow: var(--halo-azure);
+  }
+
+  /* Tipografia de tela */
+  .titulo-pagina {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    color: var(--txt);
+  }
+  .titulo-secao {
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--txt);
+  }
+  .legenda {
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  /* Interação */
+  .interativo {
+    transition:
+      transform 0.16s ease,
+      border-color 0.16s ease,
+      background-color 0.16s ease,
+      box-shadow 0.16s ease;
+  }
+  .interativo:hover {
+    transform: translateY(-1px);
+    border-color: var(--line-forte);
+    box-shadow: var(--sombra-2);
+  }
+  .interativo:active {
+    transform: translateY(0);
+  }
+
+  .btn-fantasma {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    border-radius: 0.55rem;
+    padding: 0.4rem 0.7rem;
+    font-size: 0.875rem;
+    color: var(--muted);
+    transition: all 0.16s ease;
+  }
+  .btn-fantasma:hover {
+    color: var(--txt);
+    background: rgb(255 255 255 / 0.06);
+  }
+
+  /* Carregamento */
+  .esqueleto {
+    position: relative;
+    overflow: hidden;
+    background: rgb(255 255 255 / 0.05);
+    border-radius: 0.5rem;
+  }
+  .esqueleto::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgb(255 255 255 / 0.07),
+      transparent
+    );
+    animation: brilho 1.5s ease-in-out infinite;
+  }
+
+  /* Tabela densa */
+  .tabela {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.85rem;
+  }
+  .tabela thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--card);
+    font-family: "Montserrat", ui-sans-serif, sans-serif;
+    font-weight: 700;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--muted);
+    text-align: left;
+    padding: 0.6rem 0.75rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .tabela tbody td {
+    padding: 0.65rem 0.75rem;
+    border-bottom: 1px solid var(--line-suave);
+    color: var(--corpo);
+  }
+  .tabela tbody tr:hover td {
+    background: rgb(255 255 255 / 0.03);
+  }
+  .tabela tbody tr:last-child td {
+    border-bottom: 0;
+  }
+}
+
+@keyframes brilho {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
 
 @layer utilities {
   .secao-entrada {
