@@ -153,16 +153,12 @@ export function Painel() {
 
   return (
     <Revelar className="space-y-4">
-      <div className="secao-entrada flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="text-lg font-bold">
-            {saudacao(agora)}
-            {primeiroNome ? `, ${primeiroNome}` : ""}
-          </h1>
-          <p className="mt-1 text-xs capitalize text-muted">{dataPorExtenso(agora)}</p>
-        </div>
-        <span className="text-xs text-muted">{textoFrescor(coleta)}</span>
-      </div>
+      <CabecalhoTela
+        titulo={`${saudacao(agora)}${primeiroNome ? `, ${primeiroNome}` : ""}`}
+        descricao={<span className="capitalize">{dataPorExtenso(agora)}</span>}
+        acoes={<span className="text-xs text-muted">{textoFrescor(coleta)}</span>}
+      />
+
 
       <TooltipProvider delayDuration={200}>
         <div className="secao-entrada grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
