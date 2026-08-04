@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { RefreshCw } from "lucide-react";
 
 import { textoFrescor } from "@/lib/metricas";
@@ -101,8 +102,6 @@ export function FiltrosMetricas({
     </div>
   );
 }
-
-import { useEffect, useState } from "react";
 
 function IconeAtualizar({ girando }: { girando: boolean }) {
   const [ativo, setAtivo] = useState(false);
