@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ModuloEmConstrucao } from "@/components/ModuloEmConstrucao";
+import { Metricas } from "@/components/metricas/Metricas";
 
 export const Route = createFileRoute("/_authenticated/metricas")({
   head: () => ({
@@ -10,5 +10,5 @@ export const Route = createFileRoute("/_authenticated/metricas")({
       { property: "og:description", content: "Desempenho dos conteúdos publicados." },
     ],
   }),
-  component: () => <ModuloEmConstrucao titulo="Métricas" />,
+  component: Metricas,
 });
