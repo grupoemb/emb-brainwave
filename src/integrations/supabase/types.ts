@@ -382,6 +382,7 @@ export type Database = {
         Row: {
           added_by: string | null
           analysis: Json | null
+          caption: string | null
           comments: number | null
           cover_url: string | null
           created_at: string
@@ -409,6 +410,7 @@ export type Database = {
         Insert: {
           added_by?: string | null
           analysis?: Json | null
+          caption?: string | null
           comments?: number | null
           cover_url?: string | null
           created_at?: string
@@ -436,6 +438,7 @@ export type Database = {
         Update: {
           added_by?: string | null
           analysis?: Json | null
+          caption?: string | null
           comments?: number | null
           cover_url?: string | null
           created_at?: string
