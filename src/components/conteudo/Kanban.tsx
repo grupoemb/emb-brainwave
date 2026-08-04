@@ -120,14 +120,44 @@ export function Kanban() {
         />
       ) : null}
 
-      <div className="secao-entrada flex items-center justify-between">
+      <div className="secao-entrada flex flex-wrap items-center gap-2">
         <p className="text-sm text-muted">
-          {carregando ? "Carregando…" : `${posts.length} cards no fluxo`}
+          {carregando
+            ? "Carregando…"
+            : filtrados.length === posts.length
+              ? `${posts.length} cards no fluxo`
+              : `${filtrados.length} de ${posts.length} cards`}
         </p>
-        <button className="btn-primario" onClick={() => setAbrirNovo(true)}>
+
+        <MenuFiltro
+          rotulo="Canal"
+          valor={canal ?? "todos"}
+          padrao="todos"
+          largura="w-52"
+          opcoes={[
+            { valor: "todos", rotulo: "Todos os canais" },
+            ...CANAIS.map((c) => ({ valor: c.valor, rotulo: c.rotulo })),
+          ]}
+          onEscolher={(v) => setCanal(v === "todos" ? null : (v as Canal))}
+        />
+
+        <MenuFiltro
+          rotulo="Pilar"
+          valor={pilar ?? "todos"}
+          padrao="todos"
+          largura="w-60"
+          opcoes={[
+            { valor: "todos", rotulo: "Todos os pilares" },
+            ...pilares.map((p) => ({ valor: p.id, rotulo: p.name, cor: p.color })),
+          ]}
+          onEscolher={(v) => setPilar(v === "todos" ? null : v)}
+        />
+
+        <button className="btn-primario ml-auto" onClick={() => setAbrirNovo(true)}>
           <Plus size={15} /> Novo card
         </button>
       </div>
+
 
       {focoVazio && (
         <div className="cartao secao-entrada flex flex-col items-center gap-3 p-8 text-center">
