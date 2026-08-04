@@ -137,6 +137,7 @@ export const carregarPainel = createServerFn({ method: "GET" })
       channel: string | null;
       format: string | null;
       meta: Record<string, unknown> | null;
+      published_at: string | null;
     }[];
     const idsPublicados = publicados.map((p) => p.id);
     let alcance7d: number | null = null;
@@ -166,8 +167,10 @@ export const carregarPainel = createServerFn({ method: "GET" })
         if (!vistos.has(l.post_id)) vistos.set(l.post_id, l.reach);
         if (!ultimaColeta || l.captured_at > ultimaColeta) ultimaColeta = l.captured_at;
       }
-      const soma = [...vistos.values()].reduce<number>((t, v) => t + (v ?? 0), 0);
-      alcance7d = vistos.size ? soma : null;
+      // O KPI de alcance continua fixo em 7 dias, mesmo com janela maior de outliers.
+      const de7d = publicados.filter((p) => (p.published_at ?? "") >= ha7d && vistos.has(p.id));
+      const soma = de7d.reduce<number>((t, p) => t + (vistos.get(p.id) ?? 0), 0);
+      alcance7d = de7d.length ? soma : null;
 
       const baselines = (baseRaw ?? []) as {
         channel: string;
