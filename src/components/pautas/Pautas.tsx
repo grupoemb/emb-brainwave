@@ -61,32 +61,30 @@ export function Pautas() {
       />
 
       {carregando ? (
-        <div className="secao-entrada space-y-3">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="cartao space-y-2 p-4">
-              <div className="h-4 w-24 rounded bg-white/6" />
-              <div className="h-4 w-2/3 rounded bg-white/6" />
-              <div className="h-3 w-full rounded bg-white/6" />
-            </div>
-          ))}
+        <div className="secao-entrada">
+          <PautasEsqueleto linhas={temFiltroExtra ? 2 : 3} />
         </div>
       ) : lista.length === 0 ? (
-        <div className="secao-entrada cartao flex flex-col items-start gap-3 p-8 text-sm text-muted">
-          <p>
-            {temFiltroExtra
-              ? "Nenhuma pauta encontrada com esses filtros."
-              : filtros.status === "new"
+        temFiltroExtra ? (
+          <VazioFiltrado
+            mensagem="Nenhuma pauta encontrada com esses filtros."
+            detalhe={resumoFiltros ? `Filtro ativo: ${resumoFiltros}` : undefined}
+            acao="limpar filtros"
+            onAcao={limpar}
+          />
+        ) : (
+          <VazioFiltrado
+            mensagem={
+              filtros.status === "new"
                 ? "Nenhuma pauta nova. A próxima rodada automática é segunda de manhã."
-                : "Nada por aqui ainda."}
-          </p>
-          {doPainel && !temFiltroExtra ? (
-            <button className="btn px-3 py-1.5 text-xs" onClick={limparRecorte}>
-              ver todas as pautas
-            </button>
-          ) : null}
-        </div>
-
+                : "Nada por aqui ainda."
+            }
+            acao={doPainel ? "ver todas as pautas" : undefined}
+            onAcao={doPainel ? limparRecorte : undefined}
+          />
+        )
       ) : (
+
         <div className="secao-entrada space-y-3">
           {lista.map((s) => (
             <CartaoPauta
