@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { Brain, ChevronDown } from "lucide-react";
+import { CabecalhoTela } from "@/components/ui/CabecalhoTela";
+
 import Markdown from "react-markdown";
 
 import { Revelar } from "@/components/Revelar";
