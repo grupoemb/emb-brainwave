@@ -124,12 +124,27 @@ export function Painel() {
       </div>
 
       <div className="secao-entrada grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
-        <MiniKpi rotulo="Agendados" valor={dados.kpis.agendados} />
-        <MiniKpi rotulo="Aguardando aprovação" valor={dados.kpis.aguardandoAprovacao} />
-        <MiniKpi rotulo="Pautas novas" valor={dados.kpis.pautasNovas} />
-        <MiniKpi rotulo="Alcance 7d" valor={dados.kpis.alcance7d} />
-        <MiniKpi rotulo="Contas conectadas" valor={dados.kpis.contasConectadas} />
+        <Link to="/calendario" title="Ver no calendário">
+          <MiniKpi rotulo="Agendados" valor={dados.kpis.agendados} />
+        </Link>
+        <Link to="/kanban" title="Ver na coluna de aprovação">
+          <MiniKpi rotulo="Aguardando aprovação" valor={dados.kpis.aguardandoAprovacao} />
+        </Link>
+        <Link
+          to="/pautas"
+          search={{ q: "", status: "new", tipo: "todos", pilar: "todos" }}
+          title="Ver pautas novas"
+        >
+          <MiniKpi rotulo="Pautas novas" valor={dados.kpis.pautasNovas} />
+        </Link>
+        <Link to="/metricas" title="Ver métricas">
+          <MiniKpi rotulo="Alcance 7d" valor={dados.kpis.alcance7d} />
+        </Link>
+        <Link to="/ajustes" title="Gerenciar contas conectadas">
+          <MiniKpi rotulo="Contas conectadas" valor={dados.kpis.contasConectadas} />
+        </Link>
       </div>
+
 
       <div className="secao-entrada grid gap-3 lg:grid-cols-3">
         <Cartao titulo="Próximos agendamentos">
