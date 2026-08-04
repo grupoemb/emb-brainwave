@@ -5,18 +5,26 @@ import { useServerFn } from "@tanstack/react-start";
 import { useOrg } from "@/hooks/useOrg";
 import { carregarMetricas, listarContasConectadas } from "@/lib/metricas.functions";
 import {
+  cadencia,
   calcularKpis,
+  calcularTaxas,
   distribuicaoFormatos,
+  funilInteracao,
   intervaloAnterior,
   intervaloAtual,
+  mapaDeCalor,
+  maturacao,
   montarLinhas,
+  porDimensao,
   serieDiaria,
+  serieIndicador,
   ultimaColeta,
   type Baseline,
   type Intervalo,
   type Leitura,
   type PostBruto,
 } from "@/lib/metricas";
+
 
 export type Periodo = 7 | 30 | 90;
 export type ModoComparacao = "off" | "anterior" | "custom";
