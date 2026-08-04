@@ -50,6 +50,9 @@ export function CartaoKpi({
   textoAnterior,
   comparando,
   rotuloComparacao,
+  aoClicar,
+  ativo,
+  dicaAcao,
 }: {
   rotulo: string;
   /** valor numérico animado; null = sem base */
@@ -65,6 +68,10 @@ export function CartaoKpi({
   textoAnterior?: string | null | undefined;
   comparando?: boolean | undefined;
   rotuloComparacao?: string | undefined;
+  /** torna o cartão clicável (alterna um modo de leitura) */
+  aoClicar?: (() => void) | undefined;
+  ativo?: boolean | undefined;
+  dicaAcao?: string | undefined;
 }) {
   const numerico = typeof valor === "number" ? valor : null;
   const animado = useContagem(numerico);
@@ -92,8 +99,20 @@ export function CartaoKpi({
     </>
   );
 
+  const clicavel = typeof aoClicar === "function";
+  const Elemento = (clicavel ? "button" : "div") as "button" | "div";
+
   return (
-    <div className="cartao group relative flex min-h-[5.9rem] flex-col justify-between p-3.5">
+    <Elemento
+      {...(clicavel
+        ? { type: "button" as const, onClick: aoClicar, "aria-pressed": !!ativo }
+        : {})}
+      className={
+        "cartao group relative flex min-h-[5.9rem] flex-col justify-between p-3.5 text-left " +
+        (clicavel ? "cursor-pointer transition-colors hover:bg-white/4 " : "") +
+        (ativo ? "border-azure/50 bg-azure/8" : "")
+      }
+    >
       <div className="flex items-start justify-between gap-2">
         <span className="rotulo">{rotulo}</span>
         <HelpCircle
@@ -135,8 +154,8 @@ export function CartaoKpi({
       >
         {formula}
         {rotuloComparacao ? ` Comparado com ${rotuloComparacao}.` : ""}
+        {dicaAcao ? ` ${dicaAcao}` : ""}
       </span>
-    </div>
-
+    </Elemento>
   );
 }

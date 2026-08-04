@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Sparkles } from "lucide-react";
+import { Flame, Sparkles } from "lucide-react";
 
 import { Revelar } from "@/components/Revelar";
 import {
@@ -296,6 +296,43 @@ export function Painel() {
             ))
           )}
         </Cartao>
+      </div>
+
+      <div className="secao-entrada cartao p-4">
+        <div className="mb-3 flex items-center justify-between gap-2">
+          <h2 className="rotulo flex items-center gap-1.5">
+            <Flame size={12} color="#f6bd24" />
+            Fora da curva — 7 dias
+          </h2>
+          <Link to="/metricas" search={{ dias: 7, origem: "painel" }} className="text-xs text-azureClaro hover:underline">
+            ver métricas
+          </Link>
+        </div>
+
+        {dados.outliers.length === 0 ? (
+          <BlocoVazio>Nenhum post fora da curva nesta semana.</BlocoVazio>
+        ) : (
+          <div className="space-y-1">
+            {dados.outliers.map((o) => (
+              <Link
+                key={o.id}
+                to="/post/$id"
+                params={{ id: o.id }}
+                className="flex items-center gap-2 rounded-[.5rem] px-2 py-1.5 hover:bg-white/6"
+              >
+                <span className="flex-1 truncate text-sm text-corpo">{o.title}</span>
+                <span className="shrink-0 text-xs text-muted">{o.conta ? `@${o.conta}` : "—"}</span>
+                <span className="pill pill-bom numero shrink-0">{numero(o.rx, 2)}×</span>
+                <Flame
+                  size={12}
+                  color="#f6bd24"
+                  className="shrink-0"
+                  aria-label="fora da curva"
+                />
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
 
       <Link to="/kanban" className="secao-entrada cartao block p-4 hover:bg-white/4">

@@ -24,6 +24,7 @@ export function Metricas() {
   const { pilares } = usePilares();
   const [acumulado, setAcumulado] = useState(false);
   const [modo, setModo] = useState<"top" | "piores">("top");
+  const [soOutliers, setSoOutliers] = useState(false);
 
   const doPainel = origem === "painel";
   const faixa = doPainel ? (
@@ -161,6 +162,9 @@ export function Metricas() {
               casas={2}
               sufixo="×"
               formula="Média do rx: alcance do post ÷ mediana da baseline do canal e formato."
+              aoClicar={() => setSoOutliers((v) => !v)}
+              ativo={soOutliers}
+              dicaAcao="Clique para ver só os posts fora da curva (rx ≥ 2,00×)."
             />
             <CartaoKpi
               rotulo="Melhor formato"
@@ -189,7 +193,13 @@ export function Metricas() {
           </div>
 
           <div className="secao-entrada">
-            <TabelaPosts linhas={m.linhas} modo={modo} setModo={setModo} />
+            <TabelaPosts
+              linhas={m.linhas}
+              modo={modo}
+              setModo={setModo}
+              soOutliers={soOutliers}
+              aoLimparOutliers={() => setSoOutliers(false)}
+            />
           </div>
         </>
       )}

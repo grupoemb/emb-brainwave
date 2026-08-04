@@ -3,6 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { contar, textosDaLista } from "@/lib/audiencia";
 
 export type TipoSugestao = "theme" | "improvement" | "format" | "timing" | "pillar_alert";
 export type StatusSugestao = "new" | "accepted" | "dismissed";
@@ -262,3 +263,86 @@ export const obterCerebro = createServerFn({ method: "GET" })
       };
     },
   );
+
+/* ---------------------------------------------------------------------------
+ * Audiência (somente leitura de audience_notes)
+ * ------------------------------------------------------------------------- */
+
+export type ItemAudiencia = { texto: string; contagem: number };
+
+export type NotaAudiencia = {
+  id: string;
+  summary: string | null;
+  sentiment: string | null;
+  comment_count: number | null;
+  analyzed_at: string;
+  temas: string[];
+  perguntas: string[];
+};
+
+/** Perguntas e temas mais recorrentes nos últimos 30 dias. */
+export const resumoAudiencia = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ organizationId: z.string().uuid() }).parse(input))
+  .handler(
+    async ({
+      data,
+      context,
+    }): Promise<{ perguntas: ItemAudiencia[]; temas: ItemAudiencia[]; notas: number }> => {
+      const db = context.supabase as unknown as SupabaseClient;
+      const ha30d = new Date(Date.now() - 30 * 86_400_000).toISOString();
+
+      const { data: linhas, error } = await db
+        .from("audience_notes")
+        .select("id, themes, questions, analyzed_at")
+        .eq("organization_id", data.organizationId)
+        .gte("analyzed_at", ha30d)
+        .order("analyzed_at", { ascending: false })
+        .limit(500);
+
+      if (error) return { perguntas: [], temas: [], notas: 0 };
+
+      const notas = (linhas ?? []) as Record<string, unknown>[];
+      const perguntas: string[] = [];
+      const temas: string[] = [];
+      for (const n of notas) {
+        perguntas.push(...textosDaLista(n["questions"]));
+        temas.push(...textosDaLista(n["themes"]));
+      }
+
+      return {
+        perguntas: contar(perguntas).slice(0, 5),
+        temas: contar(temas).slice(0, 5),
+        notas: notas.length,
+      };
+    },
+  );
+
+/** Leitura de audiência de um post específico. */
+export const audienciaDoPost = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ postId: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }): Promise<NotaAudiencia | null> => {
+    const db = context.supabase as unknown as SupabaseClient;
+
+    const { data: linha, error } = await db
+      .from("audience_notes")
+      .select("id, summary, sentiment, comment_count, themes, questions, analyzed_at")
+      .eq("post_id", data.postId)
+      .order("analyzed_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (error || !linha) return null;
+    const n = linha as Record<string, unknown>;
+
+    return {
+      id: n["id"] as string,
+      summary: (n["summary"] ?? null) as string | null,
+      sentiment: (n["sentiment"] ?? null) as string | null,
+      comment_count: (n["comment_count"] ?? null) as number | null,
+      analyzed_at: n["analyzed_at"] as string,
+      temas: textosDaLista(n["themes"]),
+      perguntas: textosDaLista(n["questions"]),
+    };
+  });

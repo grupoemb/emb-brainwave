@@ -3,6 +3,7 @@ import { ChevronDown } from "lucide-react";
 import Markdown from "react-markdown";
 
 import { Revelar } from "@/components/Revelar";
+import { AudienciaPede } from "@/components/cerebro/AudienciaPede";
 import { CartaoInsight } from "@/components/cerebro/CartaoInsight";
 import { haQuanto } from "@/components/pautas/CartaoPauta";
 import { useCerebro } from "@/hooks/useInteligencia";
@@ -19,7 +20,8 @@ export function Cerebro() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <div className="secao-entrada cartao space-y-3 p-5">
+        <div className="secao-entrada space-y-4">
+        <div className="cartao space-y-3 p-5">
           <h2 className="text-sm font-bold text-txt">O que os dados dizem</h2>
           {carregando ? (
             <div className="space-y-2">
@@ -37,6 +39,9 @@ export function Cerebro() {
             </p>
           )}
           <p className="text-xs text-muted">Atualizado automaticamente pela análise semanal.</p>
+        </div>
+
+          <AudienciaPede />
         </div>
 
         <div className="secao-entrada space-y-3">

@@ -6,6 +6,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { useOrg } from "@/hooks/useOrg";
 import {
   aceitarSugestao,
+  audienciaDoPost,
+  resumoAudiencia,
   descartarSugestao,
   listarSugestoes,
   obterCerebro,
@@ -148,4 +150,34 @@ export function useCerebro() {
     historico: insights.filter((i) => i.status !== "active"),
     ultimaAnalise: q.data?.ultimaAnalise ? new Date(q.data.ultimaAnalise).getTime() : null,
   };
+}
+
+export function useAudienciaOrg() {
+  const { organizationId } = useOrg();
+  const buscar = useServerFn(resumoAudiencia);
+
+  const q = useQuery({
+    queryKey: ["audiencia-org", organizationId],
+    enabled: !!organizationId,
+    queryFn: () => buscar({ data: { organizationId: organizationId! } }),
+  });
+
+  return {
+    carregando: q.isPending,
+    perguntas: q.data?.perguntas ?? [],
+    temas: q.data?.temas ?? [],
+    notas: q.data?.notas ?? 0,
+  };
+}
+
+export function useAudienciaPost(postId: string) {
+  const buscar = useServerFn(audienciaDoPost);
+
+  const q = useQuery({
+    queryKey: ["audiencia-post", postId],
+    enabled: !!postId,
+    queryFn: () => buscar({ data: { postId } }),
+  });
+
+  return { carregando: q.isPending, nota: q.data ?? null };
 }
