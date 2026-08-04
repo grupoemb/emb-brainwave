@@ -37,6 +37,19 @@ export function Pautas() {
       search: { q: "", status: "todos", tipo: "todos", pilar: "todos", origem: "" },
     });
 
+  const resumoFiltros = [
+    filtros.q ? `"${filtros.q}"` : null,
+    filtros.tipo !== "todos"
+      ? (TIPOS_FILTRO.find((t) => t.valor === filtros.tipo)?.rotulo ?? filtros.tipo)
+      : null,
+    filtros.pilar !== "todos"
+      ? (pilares.find((p) => p.id === filtros.pilar)?.nome ?? "pilar")
+      : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
+
   return (
     <Revelar className="space-y-4">
       <div className="secao-entrada flex flex-wrap items-start justify-between gap-3">
