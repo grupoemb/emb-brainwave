@@ -188,10 +188,13 @@ export function Kanban() {
         <p className="text-sm text-muted">
           {carregando
             ? "Carregando…"
-            : filtroAtivo
-              ? `${filtrados.length} de ${posts.length} cards · ${descricaoRecorte}`
-              : `${posts.length} cards no fluxo`}
+            : recalculando
+              ? "Recalculando o recorte…"
+              : filtroAtivo
+                ? `${filtrados.length} de ${posts.length} cards · ${descricaoRecorte}`
+                : `${posts.length} cards no fluxo`}
         </p>
+
 
         {filtroAtivo && !carregando ? (
           <button className="btn px-2.5 py-1 text-xs" onClick={limparFiltros}>
