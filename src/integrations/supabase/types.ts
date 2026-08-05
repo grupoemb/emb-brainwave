@@ -472,6 +472,62 @@ export type Database = {
           },
         ]
       }
+      ideas: {
+        Row: {
+          angle: string | null
+          based_on: string | null
+          created_at: string
+          format: string | null
+          handle: string | null
+          hook_type: string | null
+          id: string
+          organization_id: string
+          pillar: string | null
+          rationale: string | null
+          status: string
+          tipo: string
+          title: string
+        }
+        Insert: {
+          angle?: string | null
+          based_on?: string | null
+          created_at?: string
+          format?: string | null
+          handle?: string | null
+          hook_type?: string | null
+          id?: string
+          organization_id: string
+          pillar?: string | null
+          rationale?: string | null
+          status?: string
+          tipo?: string
+          title: string
+        }
+        Update: {
+          angle?: string | null
+          based_on?: string | null
+          created_at?: string
+          format?: string | null
+          handle?: string | null
+          hook_type?: string | null
+          id?: string
+          organization_id?: string
+          pillar?: string | null
+          rationale?: string | null
+          status?: string
+          tipo?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ideas_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       insights: {
         Row: {
           evidence: Json | null
@@ -1222,6 +1278,10 @@ export type Database = {
     Functions: {
       accounts_overview: { Args: { p_org: string }; Returns: Json }
       best_time_recommendation: {
+        Args: { p_handle?: string; p_org: string }
+        Returns: Json
+      }
+      brain_briefing: {
         Args: { p_handle?: string; p_org: string }
         Returns: Json
       }

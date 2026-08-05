@@ -46,7 +46,7 @@ export function GraficoEvolucaoMeta({ meta }: { meta: Meta }) {
 
   if (dados.length < 2) {
     return (
-      <div className="grid h-[180px] place-items-center rounded-[.6rem] border border-dashed border-line text-xs text-muted">
+      <div className="grid h-[110px] place-items-center rounded-[.6rem] border border-dashed border-line text-xs text-muted">
         Ainda sem histórico suficiente para desenhar a evolução.
       </div>
     );
@@ -54,8 +54,8 @@ export function GraficoEvolucaoMeta({ meta }: { meta: Meta }) {
 
   return (
     <div>
-      <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-        <h3 className="rotulo">Evolução vs. meta</h3>
+      <div className="mb-1.5 flex flex-wrap items-center justify-between gap-2">
+        <h3 className="rotulo text-[.58rem]">Evolução vs. meta</h3>
         <div className="flex items-center gap-3 text-[.66rem] text-muted">
           <span className="inline-flex items-center gap-1.5">
             <span className="h-[2px] w-4 rounded-full" style={{ background: cor }} /> real
@@ -69,7 +69,7 @@ export function GraficoEvolucaoMeta({ meta }: { meta: Meta }) {
         </div>
       </div>
 
-      <div style={{ height: 200 }} className="w-full">
+      <div style={{ height: 158 }} className="w-full">
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={dados} margin={{ top: 6, right: 8, bottom: 0, left: -18 }}>
             <defs>

@@ -32,6 +32,8 @@ export function Metas() {
   const [emEdicao, setEmEdicao] = useState<Meta | null>(null);
   const [inicial, setInicial] = useState<Partial<FormularioMeta> | null>(null);
 
+  const total = metas.length;
+
   const visiveis = useMemo(
     () =>
       metas.filter(
@@ -89,13 +91,26 @@ export function Metas() {
               {h === TODOS ? "Todos" : `@${h}`}
             </button>
           ))}
+          <span className="ml-auto px-2 text-[.7rem] text-muted">
+            {visiveis.length === total ? (
+              <>
+                <span className="numero text-corpo">{total}</span>{" "}
+                {total === 1 ? "meta" : "metas"}
+              </>
+            ) : (
+              <>
+                <span className="numero text-corpo">{visiveis.length}</span> de{" "}
+                <span className="numero text-corpo">{total}</span> metas
+              </>
+            )}
+          </span>
         </div>
       ) : null}
 
       {carregando ? (
-        <div className="grid gap-4 xl:grid-cols-2">
-          {[0, 1].map((i) => (
-            <Skeleton key={i} className="h-[520px] rounded-[.9rem]" />
+        <div className="grid gap-3 md:grid-cols-2 2xl:grid-cols-3">
+          {[0, 1, 2].map((i) => (
+            <Skeleton key={i} className="h-[360px] rounded-[.9rem]" />
           ))}
         </div>
       ) : erro ? (
@@ -117,7 +132,7 @@ export function Metas() {
               descricao="Troque o perfil ou o status para ver as outras."
             />
           ) : (
-            <div className="animar-troca grid gap-4 xl:grid-cols-2">
+            <div className="animar-troca grid gap-3 md:grid-cols-2 2xl:grid-cols-3">
               {visiveis.map((m) => (
                 <CartaoMeta
                   key={m.id}
@@ -140,7 +155,17 @@ export function Metas() {
         salvando={salvar.isPending}
         aoSalvar={(f) =>
           salvar.mutate(f, {
-            onSuccess: () => setAberto(false),
+            onSuccess: () => {
+              setAberto(false);
+              setEmEdicao(null);
+              setInicial(null);
+              // Nenhum filtro pode esconder a meta recém-salva.
+              if (!f.id) {
+                setStatus(null);
+                if (f.handle && perfil !== TODOS && perfil !== f.handle) setPerfil(TODOS);
+                if (!f.handle) setPerfil(TODOS);
+              }
+            },
           })
         }
       />

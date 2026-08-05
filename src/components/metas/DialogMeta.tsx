@@ -63,7 +63,11 @@ export function DialogMeta({
   const [form, setForm] = useState<FormularioMeta>(vazio);
 
   useEffect(() => {
-    if (!aberto) return;
+    // Ao fechar, o formulário volta ao zero — criar nunca herda a identidade de uma edição.
+    if (!aberto) {
+      setForm(vazio());
+      return;
+    }
     if (metaEmEdicao) {
       setForm({
         id: metaEmEdicao.id,
@@ -76,7 +80,8 @@ export function DialogMeta({
         label: metaEmEdicao.label,
       });
     } else {
-      setForm({ ...vazio(), ...(inicial ?? {}) });
+      const { id: _ignorado, ...base } = (inicial ?? {}) as Partial<FormularioMeta>;
+      setForm({ ...vazio(), ...base });
     }
   }, [aberto, metaEmEdicao, inicial]);
 
