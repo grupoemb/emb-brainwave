@@ -36,7 +36,14 @@ import { MapaDeCalor } from "@/components/metricas/MapaDeCalor";
 import { PainelResultado } from "@/components/metricas/PainelResultado";
 import { RadarDesempenho } from "@/components/metricas/RadarDesempenho";
 import { RitmoPublicacao } from "@/components/metricas/RitmoPublicacao";
-import { SubAbas, type Aba } from "@/components/metricas/SubAbas";
+import {
+  ABA_POR_VALOR,
+  SubAbas,
+  ehAba,
+  type Aba,
+} from "@/components/metricas/SubAbas";
+import { TrilhaMetricas } from "@/components/metricas/TrilhaMetricas";
+
 import { TabelaPosts } from "@/components/metricas/TabelaPosts";
 import { FaixaDeContexto } from "@/components/painel/FaixaDeContexto";
 import { rotuloIntervalo } from "@/lib/metricas";
