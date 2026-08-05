@@ -29,6 +29,9 @@ import {
 
 const DIAS = 90;
 
+const rota = getRouteApi("/_authenticated/radar");
+
+
 function CartaoKpiSimples({ rotulo, valor }: { rotulo: string; valor: string }) {
   return (
     <div className="cartao flex min-h-[6.6rem] flex-col justify-between p-3.5">
