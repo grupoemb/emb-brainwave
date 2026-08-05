@@ -2,7 +2,15 @@ import { Link } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 
 /** Trilha de navegação da área de Métricas: Painel › Métricas › aba atual. */
-export function TrilhaMetricas({ aba }: { aba: string }) {
+export function TrilhaMetricas({
+  aba,
+  dias,
+  origem,
+}: {
+  aba: string;
+  dias: number;
+  origem: string;
+}) {
   return (
     <nav
       aria-label="Trilha"
@@ -13,12 +21,10 @@ export function TrilhaMetricas({ aba }: { aba: string }) {
       </Link>
       <ChevronRight size={13} aria-hidden="true" />
       <Link
-        from="/metricas"
         to="/metricas"
-        search={(prev) => ({ ...prev, aba: "geral" })}
+        search={{ dias, origem, aba: "geral" }}
         className="text-azureClaro hover:underline"
       >
-
         Métricas
       </Link>
       <ChevronRight size={13} aria-hidden="true" />
