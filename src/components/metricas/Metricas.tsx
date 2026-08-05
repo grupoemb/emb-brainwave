@@ -18,6 +18,7 @@ import {
   Send,
   Sparkle,
   Target,
+  UserPlus,
   Users,
 
   Zap,
