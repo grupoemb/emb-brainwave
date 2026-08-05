@@ -4,12 +4,12 @@ import {
   ItemOpcao,
   MenuFiltro,
   PainelFiltro,
-  GatilhoFiltro,
   type OpcaoFiltro,
 } from "@/components/filtros/MenuFiltro";
 import { Popover, PopoverTrigger } from "@/components/ui/popover";
 import { useState } from "react";
-import { rotuloFormato, type Formato } from "@/lib/metricas";
+import type { Formato } from "@/lib/conteudo";
+import { rotuloFormato } from "@/lib/metricas";
 import {
   FAIXAS_RX,
   METRICAS_TABELA,
@@ -196,8 +196,4 @@ export function FiltrosTabelaPosts({
       </div>
     </div>
   );
-}
-
-export function GatilhoInvisivel() {
-  return <GatilhoFiltro rotulo="" valor="" destacado={false} aberto={false} />;
 }
