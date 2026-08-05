@@ -18,6 +18,8 @@ import {
   Send,
   Sparkle,
   Target,
+  Users,
+
   Zap,
 } from "lucide-react";
 
