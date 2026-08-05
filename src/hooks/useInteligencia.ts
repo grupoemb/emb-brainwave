@@ -140,6 +140,7 @@ export function usePautas() {
     ultimaRodada,
     aceitar,
     descartar,
+    gerar,
   };
 }
 
