@@ -4,17 +4,19 @@ import { useServerFn } from "@tanstack/react-start";
 import { useOrg } from "@/hooks/useOrg";
 import { carregarPainel } from "@/lib/painel.functions";
 
-export type DiasOutliers = 7 | 14 | 30;
+export type DiasPainel = 7 | 14 | 30 | 90;
+/** @deprecated use DiasPainel */
+export type DiasOutliers = DiasPainel;
 
-export function usePainel(diasOutliers: DiasOutliers = 7) {
+export function usePainel(dias: DiasPainel = 7) {
   const { organizationId } = useOrg();
   const buscar = useServerFn(carregarPainel);
 
   const q = useQuery({
-    queryKey: ["painel", organizationId, diasOutliers],
+    queryKey: ["painel", organizationId, dias],
     enabled: !!organizationId,
     placeholderData: keepPreviousData,
-    queryFn: () => buscar({ data: { organizationId: organizationId!, diasOutliers } }),
+    queryFn: () => buscar({ data: { organizationId: organizationId!, dias } }),
   });
 
   return {

@@ -46,13 +46,13 @@ export function usePautas() {
   const definir = (p: Partial<EstadoFiltros>) =>
     navigate({
       to: "/pautas",
-      search: (prev: EstadoFiltros) => ({ ...prev, ...p }),
+      search: (prev: Partial<EstadoFiltros>) => ({ q: "", status: "new", tipo: "todos", pilar: "todos", ...prev, ...p }),
       replace: true,
     });
   const limpar = () =>
     navigate({
       to: "/pautas",
-      search: (prev: EstadoFiltros) => ({ ...prev, q: "", tipo: "todos", pilar: "todos" }),
+      search: (prev: Partial<EstadoFiltros>) => ({ status: "new", ...prev, q: "", tipo: "todos", pilar: "todos" }),
       replace: true,
     });
 
