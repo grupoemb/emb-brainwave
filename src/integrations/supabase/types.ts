@@ -334,6 +334,41 @@ export type Database = {
           },
         ]
       }
+      follower_history: {
+        Row: {
+          captured_at: string
+          dia: string
+          followers: number
+          handle: string
+          id: string
+          organization_id: string
+        }
+        Insert: {
+          captured_at?: string
+          dia?: string
+          followers: number
+          handle: string
+          id?: string
+          organization_id: string
+        }
+        Update: {
+          captured_at?: string
+          dia?: string
+          followers?: number
+          handle?: string
+          id?: string
+          organization_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "follower_history_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       insights: {
         Row: {
           evidence: Json | null
@@ -871,6 +906,35 @@ export type Database = {
           },
         ]
       }
+      radar_leituras: {
+        Row: {
+          created_at: string
+          id: string
+          organization_id: string
+          payload: Json
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          organization_id: string
+          payload: Json
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          organization_id?: string
+          payload?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "radar_leituras_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       references_lib: {
         Row: {
           created_at: string
@@ -1054,6 +1118,7 @@ export type Database = {
     }
     Functions: {
       accounts_overview: { Args: { p_org: string }; Returns: Json }
+      followers_overview: { Args: { p_org: string }; Returns: Json }
       get_library_insights: { Args: { p_org: string }; Returns: Json }
       get_own_reels: {
         Args: { p_handle: string; p_org: string }
