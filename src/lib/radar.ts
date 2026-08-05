@@ -7,6 +7,8 @@ export type ReelColetado = {
   vx: number | null;
   likes: number | null;
   comments: number | null;
+  reach: number | null;
+  saves: number | null;
   duration_s: number | null;
   cover: string | null;
   caption: string | null;
@@ -16,8 +18,10 @@ export type RespostaScan = {
   handle: string;
   count: number;
   median: number | null;
+  source: string | null;
   reels: ReelColetado[];
 };
+
 
 function num(v: unknown): number | null {
   if (v === null || v === undefined || v === "") return null;
