@@ -18,15 +18,18 @@ export function GraficoAlcance({
   dados,
   acumulado,
   onToggle,
+  aoSelecionar,
 }: {
   dados: { dia: string; alcance: number; acumulado: number }[];
   acumulado: boolean;
   onToggle: () => void;
+  aoSelecionar?: (dia: string) => void;
 }) {
   return (
     <div className="cartao p-4 lg:col-span-2">
       <div className="mb-3 flex items-center justify-between gap-3">
         <span className="rotulo">Alcance por dia</span>
+
         <button
           type="button"
           onClick={onToggle}
