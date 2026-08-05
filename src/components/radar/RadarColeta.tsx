@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { getRouteApi, useNavigate } from "@tanstack/react-router";
 import { Info, Loader2, Plus, Search } from "lucide-react";
 import { toast } from "sonner";
 
@@ -8,14 +9,20 @@ import { EstadoVazio } from "@/components/ui/EstadoVazio";
 import { useEnviarBiblioteca, useRadarScan } from "@/hooks/useRadarScan";
 import { handleDaUrl, type RespostaScan } from "@/lib/radar";
 
+const rota = getRouteApi("/_authenticated/radar");
+
 export function RadarColeta() {
-  const [perfil, setPerfil] = useState("");
+  const { handle: handleBusca } = rota.useSearch();
+  const navigate = useNavigate();
+
+  const [perfil, setPerfil] = useState(handleBusca ? `@${handleBusca}` : "");
   const [dialogo, setDialogo] = useState(false);
   const [nicho, setNicho] = useState("");
   const [resultado, setResultado] = useState<RespostaScan | null>(null);
   const [selecionados, setSelecionados] = useState<Set<string>>(new Set());
   const [erro, setErro] = useState<string | null>(null);
   const [segundos, setSegundos] = useState(0);
+  const disparado = useRef<string | null>(null);
 
   const scan = useRadarScan();
   const envio = useEnviarBiblioteca();
@@ -29,10 +36,11 @@ export function RadarColeta() {
     return () => clearInterval(t);
   }, [scan.isPending]);
 
-  function analisar() {
-    if (!perfil.trim() || scan.isPending) return;
+  function analisar(alvoUrl?: string) {
+    const url = (alvoUrl ?? perfil).trim();
+    if (!url || scan.isPending) return;
     setErro(null);
-    scan.mutate(perfil, {
+    scan.mutate(url, {
       onSuccess: (r) => {
         setResultado(r);
         setSelecionados(new Set(r.reels.slice(0, 5).map((x) => x.id)));
