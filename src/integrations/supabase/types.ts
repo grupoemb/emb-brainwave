@@ -1376,13 +1376,14 @@ export type Database = {
         }[]
       }
       radar_ranking: {
-        Args: { p_dias?: number; p_org: string }
+        Args: { p_dias?: number; p_handle?: string; p_org: string }
         Returns: {
           caption: string
           comments: number
           eng_pr: number
           handle: string
           hook: string
+          hook_pct: number
           id: string
           intent: string
           lever: string
@@ -1402,6 +1403,7 @@ export type Database = {
           theme: string
           url: string
           vx: number
+          watch_s: number
         }[]
       }
       recompute_baselines: { Args: never; Returns: undefined }
