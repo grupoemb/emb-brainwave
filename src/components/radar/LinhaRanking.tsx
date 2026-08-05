@@ -53,10 +53,14 @@ export function LinhaRanking({ reel, posicao }: { reel: ReelRanking; posicao: nu
         <span className="hidden shrink-0 md:block">
           <ChipAlavanca reel={reel} />
         </span>
+        <span className="numero hidden shrink-0 text-xs text-muted sm:block">
+          {compacto(reel.plays ?? 0)} views
+        </span>
         <span className="numero shrink-0 text-sm font-semibold text-txt">
           {reel.score === null ? "—" : numero(reel.score, 1)}
         </span>
         <PillVx vx={reel.vx} />
+
       </button>
 
       {aberto ? (
@@ -83,12 +87,25 @@ export function LinhaRanking({ reel, posicao }: { reel: ReelRanking; posicao: nu
             </div>
           ) : null}
 
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
             <Taxa rotulo="Compart / alcance" valor={reel.shares_pr} />
             <Taxa rotulo="Salv / alcance" valor={reel.saves_pr} />
             <Taxa rotulo="Engaj / alcance" valor={reel.eng_pr} />
             <Taxa rotulo="Alcance / seguidores" valor={reel.reach_rate} />
+            <div className="rounded-[.5rem] border border-line px-2.5 py-2">
+              <p className="rotulo text-[.62rem]">Watch médio</p>
+              <p className="numero mt-0.5 text-sm">
+                {reel.watch_s === null ? "—" : `${numero(reel.watch_s, 0)}s`}
+              </p>
+            </div>
+            <div className="rounded-[.5rem] border border-line px-2.5 py-2">
+              <p className="rotulo text-[.62rem]">Gancho 3s</p>
+              <p className="numero mt-0.5 text-sm">
+                {reel.hook_pct === null ? "—" : `${numero(reel.hook_pct, 1)}%`}
+              </p>
+            </div>
           </div>
+
 
           <div className="flex flex-wrap items-center gap-1.5 text-[.72rem]">
             <span className="pill bg-white/6 text-corpo">Gancho: {rotuloGancho(reel.hook)}</span>

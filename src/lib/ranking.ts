@@ -25,7 +25,10 @@ export type ReelRanking = {
   intent: string | null;
   rank_geral: number | null;
   rank_perfil: number | null;
+  watch_s: number | null;
+  hook_pct: number | null;
 };
+
 
 export type Alavanca = {
   rotulo: string;
