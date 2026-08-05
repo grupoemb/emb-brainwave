@@ -25,6 +25,43 @@ function normalizar(t: string) {
     .replace(/[\u0300-\u036f]/g, "");
 }
 
+/** Divide o texto destacando as ocorrências do termo (ignora acentos e caixa). */
+function Realce({ texto, termo }: { texto: string; termo: string }) {
+  const alvo = normalizar(termo.trim());
+  if (!alvo) return <>{texto}</>;
+
+  const base = normalizar(texto);
+  const partes: Array<{ t: string; hit: boolean }> = [];
+  let i = 0;
+  while (i < texto.length) {
+    const achou = base.indexOf(alvo, i);
+    if (achou === -1) {
+      partes.push({ t: texto.slice(i), hit: false });
+      break;
+    }
+    if (achou > i) partes.push({ t: texto.slice(i, achou), hit: false });
+    partes.push({ t: texto.slice(achou, achou + alvo.length), hit: true });
+    i = achou + alvo.length;
+  }
+
+  return (
+    <>
+      {partes.map((p, idx) =>
+        p.hit ? (
+          <mark
+            key={idx}
+            className="rounded-[.2rem] bg-azure/25 px-0.5 text-azureClaro"
+          >
+            {p.t}
+          </mark>
+        ) : (
+          <span key={idx}>{p.t}</span>
+        ),
+      )}
+    </>
+  );
+}
+
 function useAtalho(abrir: () => void) {
   useEffect(() => {
     function aoTeclar(e: KeyboardEvent) {
@@ -251,9 +288,13 @@ function PainelBusca({ aoFechar }: { aoFechar: () => void }) {
                       <Icone size={14} />
                     </span>
                     <span className="min-w-0">
-                      <span className="block truncate text-sm text-txt">{r.titulo}</span>
+                      <span className="block truncate text-sm text-txt">
+                        <Realce texto={r.titulo} termo={termo} />
+                      </span>
                       {r.detalhe ? (
-                        <span className="block truncate text-[.72rem] text-muted">{r.detalhe}</span>
+                        <span className="block truncate text-[.72rem] text-muted">
+                          <Realce texto={r.detalhe} termo={termo} />
+                        </span>
                       ) : null}
                     </span>
                     {ativo ? (
