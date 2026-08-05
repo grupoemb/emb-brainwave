@@ -1,3 +1,5 @@
+import { Fragment } from "react";
+
 import { numero } from "@/lib/metricas";
 import type { CelulaCalorPainel, MixFormato } from "@/lib/painel.tipos";
 
@@ -45,8 +47,8 @@ export function JanelaPublicacao({
           </span>
         ))}
         {DIAS.map((d, dia) => (
-          <>
-            <span key={d} className="numero self-center text-[.62rem] text-muted">
+          <Fragment key={d}>
+            <span className="numero self-center text-[.62rem] text-muted">
               {d}
             </span>
             {FAIXAS.map((_, faixa) => {
@@ -71,7 +73,7 @@ export function JanelaPublicacao({
                 />
               );
             })}
-          </>
+          </Fragment>
         ))}
       </div>
     </div>
