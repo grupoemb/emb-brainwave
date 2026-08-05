@@ -38,11 +38,11 @@ export function ClustersKpi({ dados }: { dados: DadosPainel }) {
           dica={GLOSSARIO.alcancePeriodo}
         />
         <CartaoKpiPainel
-          rotulo="Impressões"
+          rotulo="Views"
           compactar
           valor={k.impressoes}
           anterior={a?.impressoes ?? null}
-          dica="Soma das impressões da leitura mais recente de cada post do período."
+          dica="Soma das visualizações (antigas impressões) da leitura mais recente de cada post do período."
         />
         <CartaoKpiPainel
           rotulo="Novos seguidores"

@@ -15,6 +15,7 @@ import { ControlesPainel } from "@/components/painel/ControlesPainel";
 import { DestaquesPeriodo } from "@/components/painel/DestaquesPeriodo";
 import { Dica } from "@/components/painel/Dica";
 import { EvolucaoAlcance } from "@/components/painel/EvolucaoAlcance";
+import { Inteligencia } from "@/components/painel/Inteligencia";
 import { LinhaHerois } from "@/components/painel/LinhaHerois";
 import { OQueMudou } from "@/components/painel/OQueMudou";
 import { Podio } from "@/components/painel/Podio";
@@ -260,6 +261,11 @@ export function Painel() {
         {/* Métricas secundárias agrupadas */}
         <div className="secao-entrada">
           <ClustersKpi dados={dados} />
+        </div>
+
+        {/* Inteligência: taxas, janela de publicação e alertas */}
+        <div className="secao-entrada">
+          <Inteligencia dias={dias} perfil={perfil} />
         </div>
 
         <div className="secao-entrada grid gap-3 lg:grid-cols-3">
