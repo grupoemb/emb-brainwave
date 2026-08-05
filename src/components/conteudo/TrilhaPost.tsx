@@ -34,7 +34,7 @@ export function TrilhaPost() {
     ) : origem === "metricas" ? (
       <Link
         to="/metricas"
-        search={busca.dias ? { dias: busca.dias } : undefined}
+        search={{ dias: busca.dias ?? 30 }}
         className="text-azureClaro hover:underline"
       >
         {rotulo}
@@ -63,7 +63,7 @@ export function TrilhaPost() {
     ) : origem === "metricas" ? (
       <Link
         to="/metricas"
-        search={busca.dias ? { dias: busca.dias } : undefined}
+        search={{ dias: busca.dias ?? 30 }}
         className="btn inline-flex items-center gap-1 px-2 py-1 text-xs"
       >
         <ChevronLeft size={14} />
