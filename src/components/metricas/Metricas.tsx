@@ -256,18 +256,26 @@ export function Metricas() {
             />
           </div>
 
-          <div className="secao-entrada flex flex-wrap items-center justify-between gap-3">
-            <SubAbas
-              aba={aba}
-              setAba={setAba}
-              contadores={{ conteudo: k.publicados, contas: m.porConta.length }}
-            />
-            {comparando ? (
-              <span className="text-xs text-muted">
-                {rotuloIntervalo(m.intervalo)} <span className="text-corpo">vs</span> {rotuloComp}
-              </span>
-            ) : null}
+          <div className="secao-entrada space-y-2">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <SubAbas
+                aba={aba}
+                setAba={setAba}
+                contadores={{
+                  conteudo: k.publicados,
+                  contas: m.porConta.length,
+                  benchmark: m.baselines.length,
+                }}
+              />
+              {comparando ? (
+                <span className="text-xs text-muted">
+                  {rotuloIntervalo(m.intervalo)} <span className="text-corpo">vs</span> {rotuloComp}
+                </span>
+              ) : null}
+            </div>
+            <p className="text-xs text-muted">{abaAtual.contexto}</p>
           </div>
+
 
           {aba === "geral" ? (
             <>
