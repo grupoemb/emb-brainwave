@@ -320,7 +320,7 @@ export function Kanban() {
       )}
 
 
-      <div className="secao-entrada flex gap-3 overflow-x-auto pb-2">
+      <div className="secao-entrada flex items-start gap-3 overflow-x-auto pb-3 max-h-[calc(100dvh-12rem)]">
 
         {COLUNAS.map((coluna) => {
           const todos = porStatus.get(coluna.status) ?? [];
@@ -344,14 +344,14 @@ export function Kanban() {
               onDragLeave={() => setSobre((s) => (s === coluna.status ? null : s))}
               onDrop={(e) => void soltar(coluna.status, e)}
               className={
-                "w-[272px] shrink-0 self-start rounded-xl bg-bg2 p-3 transition-colors " +
+                "w-[272px] shrink-0 flex flex-col max-h-full rounded-xl bg-bg2 p-3 transition-colors " +
                 (sobre === coluna.status ? "ring-1 ring-azure/50 " : "") +
                 (emFoco ? "ring-1 ring-azure/40 " : "") +
                 (apagada ? "opacity-45" : "")
               }
             >
 
-              <header className="mb-3 flex items-center gap-2">
+              <header className="mb-3 flex shrink-0 items-center gap-2">
                 <span
                   className="h-2 w-2 shrink-0 rounded-full"
                   style={{ background: coluna.cor }}
@@ -365,7 +365,7 @@ export function Kanban() {
               {apagada ? (
                 <p className="py-2 text-xs text-muted">sem cards neste recorte</p>
               ) : (
-                <div className="flex flex-col gap-[10px]">
+                <div className="flex flex-col gap-[10px] overflow-y-auto min-h-0 pr-1 -mr-1">
                   {lista.map((p) => (
                     <CartaoPost
                       key={p.id}
