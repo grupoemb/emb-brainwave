@@ -1,20 +1,24 @@
 import { useMemo, useState } from "react";
-import { useNavigate, useSearch } from "@tanstack/react-router";
+import { Link, useNavigate, useSearch } from "@tanstack/react-router";
 
 import {
   AlertTriangle,
   BarChart3,
   Bookmark,
+  CalendarRange,
   Eye,
+  Filter,
   Flame,
   Heart,
   Layers,
   MessageCircle,
+  Satellite,
   Send,
   Sparkle,
   Target,
   Zap,
 } from "lucide-react";
+
 
 import { Revelar } from "@/components/Revelar";
 import { CabecalhoTela } from "@/components/ui/CabecalhoTela";
