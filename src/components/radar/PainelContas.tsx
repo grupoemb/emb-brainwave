@@ -248,7 +248,10 @@ export function PainelContas() {
       <section className="cartao overflow-hidden">
         <div className="flex items-baseline justify-between gap-3 px-3 py-3">
           <h2 className="text-sm font-bold text-txt">Top 10 do período</h2>
-          <span className="text-xs text-muted">todos os perfis · {DIAS} dias</span>
+          <span className="text-xs text-muted">
+            {perfil ? `@${perfil}` : "todos os perfis"} · {dias} dias
+          </span>
+
         </div>
         {ranking.isPending ? (
           <div className="space-y-2 p-3">
