@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+import { FileText } from "lucide-react";
 
+import { EstadoVazio } from "@/components/ui/EstadoVazio";
 import { Switch } from "@/components/ui/switch";
 import { useTemplates } from "@/hooks/useAjustes";
 import { useOrg } from "@/hooks/useOrg";
