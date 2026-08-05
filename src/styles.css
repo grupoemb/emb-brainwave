@@ -516,3 +516,12 @@
     overflow: hidden;
   }
 }
+
+@keyframes barra-radar {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(320%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .barra-radar { animation: none; width: 100%; }
+}

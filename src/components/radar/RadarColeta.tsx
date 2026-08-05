@@ -125,7 +125,7 @@ export function RadarColeta() {
                   Não feche esta aba — <span className="numero">{segundos}</span>s de leitura.
                 </p>
                 <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/10">
-                  <div className="h-full w-1/3 animate-[barra_1.4s_ease-in-out_infinite] rounded-full bg-gradient-to-r from-royal to-cyan" />
+                  <div className="h-full w-1/3 barra-radar animate-[barra-radar_1.4s_ease-in-out_infinite] rounded-full bg-gradient-to-r from-royal to-cyan" />
                 </div>
               </div>
             </div>
