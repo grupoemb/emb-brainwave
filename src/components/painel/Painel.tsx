@@ -6,23 +6,26 @@ import { Revelar } from "@/components/Revelar";
 import { CabecalhoTela } from "@/components/ui/CabecalhoTela";
 import { EstadoVazio } from "@/components/ui/EstadoVazio";
 import { LogoB7 } from "@/components/ui/LogoB7";
-import { KpiSeguidores } from "@/components/ui/KpiSeguidores";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
-import { JanelaPublicacao, MixDeFormatos } from "@/components/painel/BlocosAnaliticos";
-import { CartaoKpiPainel } from "@/components/painel/CartaoKpiPainel";
+import { JanelaPublicacao } from "@/components/painel/BlocosAnaliticos";
+import { ClustersKpi } from "@/components/painel/ClustersKpi";
+import { ComposicaoPerfis } from "@/components/painel/ComposicaoPerfis";
+import { ControlesPainel } from "@/components/painel/ControlesPainel";
 import { DestaquesPeriodo } from "@/components/painel/DestaquesPeriodo";
 import { Dica } from "@/components/painel/Dica";
 import { EvolucaoAlcance } from "@/components/painel/EvolucaoAlcance";
+import { LinhaHerois } from "@/components/painel/LinhaHerois";
+import { OQueMudou } from "@/components/painel/OQueMudou";
 import { Podio } from "@/components/painel/Podio";
 
 import { usePainel, type DiasPainel } from "@/hooks/usePainel";
 import { COLUNAS, comAlfa, corDoCanal, type Canal } from "@/lib/conteudo";
 import { GLOSSARIO } from "@/lib/glossario";
 import { compacto, numero, textoFrescor } from "@/lib/metricas";
+import { heroisDoFoco, manchetes, type Foco } from "@/lib/painel.leitura";
 
 const TZ = "America/Sao_Paulo";
-const JANELAS: DiasPainel[] = [7, 14, 30, 90];
 
 function saudacao(d: Date) {
   const hora = Number(
@@ -112,7 +115,9 @@ function CartaoOperacional({
 
 export function Painel() {
   const [dias, setDias] = useState<DiasPainel>(7);
-  const { dados, carregando, recalculando } = usePainel(dias);
+  const [perfil, setPerfil] = useState<string | null>(null);
+  const [foco, setFoco] = useState<Foco>("crescimento");
+  const { dados, carregando, recalculando } = usePainel(dias, perfil);
   const agora = new Date();
   const primeiroNome = (dados?.nome ?? "").trim().split(/\s+/)[0] ?? "";
   const coleta = dados?.ultimaColeta ? new Date(dados.ultimaColeta).getTime() : null;
@@ -121,11 +126,12 @@ export function Painel() {
     return (
       <Revelar className="space-y-4">
         <div className="secao-entrada esqueleto h-12 w-72 rounded" />
-        <div className="secao-entrada grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
-          {Array.from({ length: 12 }).map((_, i) => (
-            <div key={i} className="cartao min-h-[6.6rem] p-3.5">
+        <div className="secao-entrada esqueleto h-9 w-full max-w-2xl rounded" />
+        <div className="secao-entrada grid gap-3 md:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="cartao min-h-[9.5rem] p-4">
               <div className="esqueleto h-3 w-20 rounded" />
-              <div className="esqueleto mt-6 h-6 w-16 rounded" />
+              <div className="esqueleto mt-6 h-8 w-24 rounded" />
             </div>
           ))}
         </div>
@@ -141,141 +147,56 @@ export function Painel() {
   }
 
   const k = dados.kpis;
-  const a = dados.anterior;
   const op = dados.operacao;
+  const herois = heroisDoFoco(dados, foco);
+  const leitura = manchetes(dados);
+  const chaveTransicao = `${dias}-${perfil ?? "todos"}-${foco}`;
 
   return (
     <TooltipProvider delayDuration={200}>
       <Revelar className="space-y-4">
-        <CabecalhoTela
-          titulo={`${saudacao(agora)}${primeiroNome ? `, ${primeiroNome}` : ""}`}
-          descricao={<span className="capitalize">{dataPorExtenso(agora)}</span>}
-          acoes={
-            <div className="flex items-center gap-3">
-              <span className="text-xs text-muted">{textoFrescor(coleta)}</span>
-              <span aria-hidden className="hidden h-5 w-px bg-line sm:block" />
-              <LogoB7 altura={20} className="hidden opacity-70 sm:block" />
-            </div>
-          }
-        />
-
-        <div className="secao-entrada flex flex-wrap items-center justify-between gap-2">
-          <span className="text-xs text-muted">
-            Todos os indicadores abaixo consideram os últimos {dias} dias, comparados com os {dias}{" "}
-            dias anteriores.
-          </span>
-          <div className="flex items-center gap-1">
-            {JANELAS.map((d) => {
-              const ativo = d === dias;
-              return (
-                <button
-                  key={d}
-                  type="button"
-                  onClick={() => setDias(d)}
-                  aria-pressed={ativo}
-                  className={
-                    "numero rounded-[.5rem] px-2.5 py-1 text-xs transition-colors " +
-                    (ativo
-                      ? "bg-azure/14 font-semibold text-txt"
-                      : "text-muted hover:bg-white/6 hover:text-corpo")
-                  }
-                >
-                  {d}d
-                </button>
-              );
-            })}
-          </div>
+        <div className="sticky top-0 z-20 -mx-4 space-y-3 border-b border-line bg-bg/92 px-4 pb-3 pt-1 backdrop-blur lg:-mx-6 lg:px-6">
+          <CabecalhoTela
+            titulo={`${saudacao(agora)}${primeiroNome ? `, ${primeiroNome}` : ""}`}
+            descricao={<span className="capitalize">{dataPorExtenso(agora)}</span>}
+            acoes={
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-muted">{textoFrescor(coleta)}</span>
+                <span aria-hidden className="hidden h-5 w-px bg-line sm:block" />
+                <LogoB7 altura={20} className="hidden opacity-70 sm:block" />
+              </div>
+            }
+          />
+          <ControlesPainel
+            dias={dias}
+            aoMudarDias={setDias}
+            perfis={dados.perfis}
+            perfil={perfil}
+            aoMudarPerfil={setPerfil}
+            foco={foco}
+            aoMudarFoco={setFoco}
+          />
         </div>
 
-        {/* Faixa de performance */}
-        <div className="secao-entrada grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
-          <KpiSeguidores />
-          <CartaoKpiPainel
-            rotulo="Alcance"
-            compactar
-            valor={k.alcance}
-            anterior={a?.alcance ?? null}
-            dica={GLOSSARIO.alcancePeriodo}
-            serie={dados.serie}
-          />
-          <CartaoKpiPainel
-            rotulo="Impressões"
-            compactar
-            valor={k.impressoes}
-            anterior={a?.impressoes ?? null}
-            dica="Soma das impressões da leitura mais recente de cada post do período."
-          />
-          <CartaoKpiPainel
-            rotulo="Interações"
-            compactar
-            valor={k.interacoes}
-            anterior={a?.interacoes ?? null}
-            dica="Curtidas + comentários + salvamentos + compartilhamentos."
-          />
-          <CartaoKpiPainel
-            rotulo="Engajamento"
-            valor={k.engajamento}
-            anterior={a?.engajamento ?? null}
-            casas={2}
-            sufixo="%"
-            dica={GLOSSARIO.engajamento}
-          />
-          <CartaoKpiPainel
-            rotulo="rx médio"
-            valor={k.rxMedio}
-            anterior={a?.rxMedio ?? null}
-            casas={2}
-            sufixo="×"
-            dica={`${GLOSSARIO.rx} ${GLOSSARIO.rxMedio}`}
-          />
-          <CartaoKpiPainel
-            rotulo="Fora da curva"
-            valor={k.outliers}
-            anterior={a?.outliers ?? null}
-            dica={GLOSSARIO.foraDaCurvaBloco}
-          />
-          <CartaoKpiPainel
-            rotulo="Salvamentos"
-            compactar
-            valor={k.saves}
-            anterior={a?.saves ?? null}
-            dica="Sinal mais forte de conteúdo de valor: quantas pessoas guardaram o post."
-          />
-          <CartaoKpiPainel
-            rotulo="Compartilhamentos"
-            compactar
-            valor={k.shares}
-            anterior={a?.shares ?? null}
-            dica="Principal motor de alcance novo no Instagram."
-          />
-          <CartaoKpiPainel
-            rotulo="Comentários"
-            compactar
-            valor={k.comments}
-            anterior={a?.comments ?? null}
-            dica="Total de comentários das leituras mais recentes do período."
-          />
-          <CartaoKpiPainel
-            rotulo="Novos seguidores"
-            compactar
-            valor={k.seguidores}
-            anterior={a?.seguidores ?? null}
-            dica="Soma do saldo de seguidores atribuído aos posts do período."
-          />
-          <CartaoKpiPainel
-            rotulo="Posts publicados"
-            valor={k.publicados}
-            anterior={a?.publicados ?? null}
-            dica="Quantidade de posts publicados dentro da janela."
-          />
-          <CartaoKpiPainel
-            rotulo="Ritmo semanal"
-            valor={k.frequencia}
-            anterior={a?.frequencia ?? null}
-            casas={1}
-            sufixo="/sem"
-            dica="Média de posts publicados por semana dentro da janela."
-          />
+        <div key={chaveTransicao} className="space-y-4 animar-troca">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <span className="text-xs text-muted">
+              Últimos {dias} dias{perfil ? ` · @${perfil}` : " · todos os perfis"}, comparados com
+              os {dias} dias anteriores.
+            </span>
+            {recalculando ? <span className="text-xs text-muted">atualizando…</span> : null}
+          </div>
+
+          <OQueMudou itens={leitura} />
+
+          <LinhaHerois herois={herois} />
+
+          <div className="grid gap-3 lg:grid-cols-3">
+            <div className="lg:col-span-2">
+              <EvolucaoAlcance serie={dados.serie} serieAnterior={dados.serieAnterior} />
+            </div>
+            <ComposicaoPerfis contas={dados.contas} mix={dados.mixFormatos} perfil={perfil} />
+          </div>
         </div>
 
         {/* Operação */}
@@ -331,15 +252,14 @@ export function Painel() {
           ) : (
             <>
               <DestaquesPeriodo destaques={dados.destaques} dias={dias} />
-              <Podio contas={dados.contas} dias={dias} />
+              {perfil ? null : <Podio contas={dados.contas} dias={dias} />}
             </>
           )}
         </div>
 
-        {/* Analítico */}
-        <div className="secao-entrada grid gap-3 lg:grid-cols-3">
-          <EvolucaoAlcance serie={dados.serie} />
-          <MixDeFormatos mix={dados.mixFormatos} />
+        {/* Métricas secundárias agrupadas */}
+        <div className="secao-entrada">
+          <ClustersKpi dados={dados} />
         </div>
 
         <div className="secao-entrada grid gap-3 lg:grid-cols-3">
@@ -502,7 +422,8 @@ export function Painel() {
             Produção agora
             <span className="inline-flex items-center gap-1 text-[.62rem] font-normal normal-case tracking-normal text-muted">
               <Bookmark size={11} /> {compacto(k.saves)} salvos · <Share2 size={11} />{" "}
-              {compacto(k.shares)} compart. · <UserPlus size={11} /> {compacto(k.seguidores)} seguidores
+              {compacto(k.shares)} compart. · <UserPlus size={11} /> {compacto(k.seguidores)}{" "}
+              seguidores
             </span>
           </h2>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
