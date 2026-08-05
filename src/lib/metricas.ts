@@ -155,6 +155,11 @@ export function montarLinhas(
       shares: l?.shares ?? null,
       comments: l?.comments ?? null,
       likes: l?.likes ?? null,
+      followers_delta: l?.followers_delta ?? null,
+      clicks: l?.clicks ?? null,
+      retention_pct: l?.retention_pct ?? null,
+      watch_time_s: l?.watch_time_s ?? null,
+
 
       rx: reach !== null && mediana !== null ? Number((reach / mediana).toFixed(2)) : null,
     };
