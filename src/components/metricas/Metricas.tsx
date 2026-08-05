@@ -1,20 +1,28 @@
 import { useMemo, useState } from "react";
-import { useNavigate, useSearch } from "@tanstack/react-router";
+import { Link, useNavigate, useSearch } from "@tanstack/react-router";
 
 import {
   AlertTriangle,
   BarChart3,
   Bookmark,
+  CalendarRange,
+  Clock,
+
   Eye,
+  Filter,
   Flame,
   Heart,
   Layers,
   MessageCircle,
+  Satellite,
   Send,
   Sparkle,
   Target,
+  Users,
+
   Zap,
 } from "lucide-react";
+
 
 import { Revelar } from "@/components/Revelar";
 import { CabecalhoTela } from "@/components/ui/CabecalhoTela";
@@ -36,7 +44,14 @@ import { MapaDeCalor } from "@/components/metricas/MapaDeCalor";
 import { PainelResultado } from "@/components/metricas/PainelResultado";
 import { RadarDesempenho } from "@/components/metricas/RadarDesempenho";
 import { RitmoPublicacao } from "@/components/metricas/RitmoPublicacao";
-import { SubAbas, type Aba } from "@/components/metricas/SubAbas";
+import {
+  ABA_POR_VALOR,
+  SubAbas,
+  ehAba,
+  type Aba,
+} from "@/components/metricas/SubAbas";
+import { TrilhaMetricas } from "@/components/metricas/TrilhaMetricas";
+
 import { TabelaPosts } from "@/components/metricas/TabelaPosts";
 import { FaixaDeContexto } from "@/components/painel/FaixaDeContexto";
 import { rotuloIntervalo } from "@/lib/metricas";
@@ -54,7 +69,7 @@ function TituloBloco({ titulo, leitura }: { titulo: string; leitura: string }) {
 }
 
 export function Metricas() {
-  const { dias: diasUrl, origem } = useSearch({ from: "/_authenticated/metricas" });
+  const { dias: diasUrl, origem, aba: abaUrl } = useSearch({ from: "/_authenticated/metricas" });
   const navigate = useNavigate();
   const diasInicial: Periodo = ([7, 14, 30, 90] as const).includes(diasUrl as Periodo)
     ? (diasUrl as Periodo)
@@ -65,13 +80,24 @@ export function Metricas() {
   const [acumulado, setAcumulado] = useState(false);
   const [modo, setModo] = useState<"top" | "piores">("top");
   const [soOutliers, setSoOutliers] = useState(false);
-  const [aba, setAba] = useState<Aba>("geral");
+
+  const aba: Aba = ehAba(abaUrl) ? abaUrl : "geral";
+  const setAba = (a: Aba) => {
+    void navigate({
+      to: "/metricas",
+      search: { dias: diasUrl, origem, aba: a },
+      replace: true,
+    });
+  };
+  const abaAtual = ABA_POR_VALOR.get(aba)!;
 
   const doPainel = origem === "painel";
   const faixa = doPainel ? (
     <FaixaDeContexto
       recorte={`últimos ${m.dias} dias`}
-      onLimpar={() => void navigate({ to: "/metricas", search: { dias: 30, origem: "" } })}
+      onLimpar={() =>
+        void navigate({ to: "/metricas", search: { dias: 30, origem: "", aba } })
+      }
     />
   ) : null;
 
@@ -81,7 +107,9 @@ export function Metricas() {
   const ta = m.taxasComparadas;
   const comparando = !!m.intervaloComparado;
   const semPosts = !m.carregando && m.linhas.length === 0;
+  const comRecorte = m.conta !== "todas" || m.pilar !== "todos";
   const rotuloComp = m.intervaloComparado ? rotuloIntervalo(m.intervaloComparado) : undefined;
+
 
   const porPilar = useMemo(
     () =>
@@ -110,12 +138,14 @@ export function Metricas() {
 
   return (
     <Revelar className="space-y-4">
+      {m.carregando ? null : <TrilhaMetricas aba={abaAtual.rotulo} dias={diasUrl} origem={origem} />}
       <CabecalhoTela
         icone={<BarChart3 size={17} />}
         titulo="Métricas"
         descricao="Desempenho das contas, ritmo de publicação e comparação com o mercado."
       />
       {faixa}
+
 
       <div className="secao-entrada sticky top-14 z-20 -mx-4 border-b border-line bg-bg/92 px-4 py-2 backdrop-blur lg:-mx-6 lg:px-6">
         <FiltrosMetricas
@@ -158,21 +188,65 @@ export function Metricas() {
           />
         </div>
       ) : semPosts ? (
-        <div className="cartao secao-entrada flex flex-col items-center gap-3 p-8 text-center">
-          <p className="text-sm text-muted">
-            {doPainel && m.dias === 7
-              ? "Sem leituras de métricas nos últimos 7 dias."
-              : m.houveColeta
-                ? "Nenhum post no período selecionado"
-                : "Aguardando a primeira coleta das contas"}
-          </p>
-          {doPainel && m.dias === 7 ? (
-            <button className="btn px-3 py-1.5 text-xs" onClick={() => m.setDias(30)}>
-              ver 30 dias
-            </button>
-          ) : null}
+        <div className="secao-entrada">
+          {comRecorte && m.houveColeta ? (
+            <EstadoVazio
+              variante="filtro"
+              icone={<Filter size={16} />}
+              titulo="Nenhum post com os recortes atuais"
+              descricao="Os filtros de conta e pilar deixaram o período sem posts. Limpe os recortes para ver tudo."
+              acao={
+                <button
+                  type="button"
+                  className="btn px-3 py-1.5 text-xs"
+                  onClick={() => {
+                    m.setConta("todas");
+                    m.setPilar("todos");
+                  }}
+                >
+                  Limpar recortes
+                </button>
+              }
+            />
+          ) : m.houveColeta ? (
+            <EstadoVazio
+              icone={<CalendarRange size={16} />}
+              titulo="Nenhum post neste período"
+              descricao={`Não há posts publicados nos últimos ${m.dias} dias. Amplie a janela para encontrar conteúdo.`}
+              acao={
+                <div className="flex flex-wrap items-center justify-center gap-2">
+                  <button
+                    type="button"
+                    className="btn px-3 py-1.5 text-xs"
+                    onClick={() => m.setDias(30)}
+                  >
+                    Ver 30 dias
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-primario px-3 py-1.5 text-xs"
+                    onClick={() => m.setDias(90)}
+                  >
+                    Ver 90 dias
+                  </button>
+                </div>
+              }
+            />
+          ) : (
+            <EstadoVazio
+              icone={<Satellite size={16} />}
+              titulo="Aguardando a primeira coleta"
+              descricao="As contas conectadas ainda não trouxeram leituras de métricas. Confira as conexões em Ajustes."
+              acao={
+                <Link to="/ajustes" className="btn-primario px-3 py-1.5 text-xs">
+                  Abrir Ajustes › Contas
+                </Link>
+              }
+            />
+          )}
         </div>
       ) : (
+
         <>
           <div className="secao-entrada">
             <PainelResultado
@@ -186,18 +260,26 @@ export function Metricas() {
             />
           </div>
 
-          <div className="secao-entrada flex flex-wrap items-center justify-between gap-3">
-            <SubAbas
-              aba={aba}
-              setAba={setAba}
-              contadores={{ conteudo: k.publicados, contas: m.porConta.length }}
-            />
-            {comparando ? (
-              <span className="text-xs text-muted">
-                {rotuloIntervalo(m.intervalo)} <span className="text-corpo">vs</span> {rotuloComp}
-              </span>
-            ) : null}
+          <div className="secao-entrada space-y-2">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <SubAbas
+                aba={aba}
+                setAba={setAba}
+                contadores={{
+                  conteudo: k.publicados,
+                  contas: m.porConta.length,
+                  benchmark: m.baselines.length,
+                }}
+              />
+              {comparando ? (
+                <span className="text-xs text-muted">
+                  {rotuloIntervalo(m.intervalo)} <span className="text-corpo">vs</span> {rotuloComp}
+                </span>
+              ) : null}
+            </div>
+            <p className="text-xs text-muted">{abaAtual.contexto}</p>
           </div>
+
 
           {aba === "geral" ? (
             <>
@@ -445,46 +527,100 @@ export function Metricas() {
           ) : null}
 
           {aba === "ritmo" ? (
-            <>
+            m.calor.max === 0 ? (
               <div className="secao-entrada">
-                <MapaDeCalor grade={m.calor.grade} max={m.calor.max} melhor={m.calor.melhor} />
-              </div>
-              <div className="secao-entrada">
-                <RitmoPublicacao cadencia={m.cadencia} maturacao={m.maturacao} />
-              </div>
-              <div className="secao-entrada">
-                <BarrasDimensao
-                  titulo="Desempenho por intenção"
-                  descricao="Educar, vender, engajar: o que a audiência responde melhor."
-                  itens={m.porIntencao}
-                  vazio="Nenhum post do período tem intenção classificada."
+                <EstadoVazio
+                  icone={<Clock size={16} />}
+                  titulo="Ainda sem leitura de horários"
+                  descricao="Precisamos de posts com data e alcance coletado para montar o mapa de calor deste período."
+                  acao={
+                    <button
+                      type="button"
+                      className="btn px-3 py-1.5 text-xs"
+                      onClick={() => m.setDias(90)}
+                    >
+                      Ver 90 dias
+                    </button>
+                  }
                 />
               </div>
-            </>
+            ) : (
+              <>
+                <div className="secao-entrada">
+                  <MapaDeCalor grade={m.calor.grade} max={m.calor.max} melhor={m.calor.melhor} />
+                </div>
+                <div className="secao-entrada">
+                  <RitmoPublicacao cadencia={m.cadencia} maturacao={m.maturacao} />
+                </div>
+                <div className="secao-entrada">
+                  <BarrasDimensao
+                    titulo="Desempenho por intenção"
+                    descricao="Educar, vender, engajar: o que a audiência responde melhor."
+                    itens={m.porIntencao}
+                    vazio="Nenhum post do período tem intenção classificada."
+                  />
+                </div>
+              </>
+            )
           ) : null}
 
           {aba === "contas" ? (
-            <div className="secao-entrada space-y-4">
-              <ComparativoContas contas={m.porConta} />
-              <BarrasDimensao
-                titulo="rx médio por conta"
-                descricao="Performance relativa à mediana do formato, conta a conta."
-                itens={m.porConta}
-                vazio="Nenhuma conta identificada nos posts do período."
-              />
-            </div>
+            m.porConta.length === 0 ? (
+              <div className="secao-entrada">
+                <EstadoVazio
+                  icone={<Users size={16} />}
+                  titulo="Nenhuma conta identificada"
+                  descricao="Os posts do período não têm conta de origem registrada. Conecte ou revise as contas em Ajustes."
+                  acao={
+                    <Link to="/ajustes" className="btn-primario px-3 py-1.5 text-xs">
+                      Abrir Ajustes › Contas
+                    </Link>
+                  }
+                />
+              </div>
+            ) : (
+              <div className="secao-entrada space-y-4">
+                <ComparativoContas contas={m.porConta} />
+                <BarrasDimensao
+                  titulo="rx médio por conta"
+                  descricao="Performance relativa à mediana do formato, conta a conta."
+                  itens={m.porConta}
+                  vazio="Nenhuma conta identificada nos posts do período."
+                />
+              </div>
+            )
           ) : null}
 
           {aba === "benchmark" ? (
-            <Benchmark
-              linhas={m.linhas}
-              baselines={m.baselines}
-              taxas={t}
-              publicados={k.publicados}
-              porSemana={m.cadencia.porSemana}
-              porConta={m.porConta}
-            />
+            m.baselines.length === 0 ? (
+              <div className="secao-entrada">
+                <EstadoVazio
+                  icone={<Target size={16} />}
+                  titulo="Base de comparação ainda vazia"
+                  descricao="Sem medianas por formato não dá para posicionar você nas faixas de mercado. Elas aparecem depois das primeiras coletas."
+                  acao={
+                    <button
+                      type="button"
+                      className="btn px-3 py-1.5 text-xs"
+                      onClick={m.atualizar}
+                    >
+                      Atualizar dados
+                    </button>
+                  }
+                />
+              </div>
+            ) : (
+              <Benchmark
+                linhas={m.linhas}
+                baselines={m.baselines}
+                taxas={t}
+                publicados={k.publicados}
+                porSemana={m.cadencia.porSemana}
+                porConta={m.porConta}
+              />
+            )
           ) : null}
+
         </>
       )}
     </Revelar>
