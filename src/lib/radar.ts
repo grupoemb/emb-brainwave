@@ -7,6 +7,8 @@ export type ReelColetado = {
   vx: number | null;
   likes: number | null;
   comments: number | null;
+  reach: number | null;
+  saves: number | null;
   duration_s: number | null;
   cover: string | null;
   caption: string | null;
@@ -16,8 +18,10 @@ export type RespostaScan = {
   handle: string;
   count: number;
   median: number | null;
+  source: string | null;
   reels: ReelColetado[];
 };
+
 
 function num(v: unknown): number | null {
   if (v === null || v === undefined || v === "") return null;
@@ -43,6 +47,8 @@ export function normalizarScan(bruto: unknown): RespostaScan {
       vx: num(x["vx"]),
       likes: num(x["likes"]),
       comments: num(x["comments"]),
+      reach: num(x["reach"]),
+      saves: num(x["saves"]),
       duration_s: num(x["duration_s"]),
       cover: texto(x["cover"]),
       caption: texto(x["caption"]),
@@ -53,8 +59,10 @@ export function normalizarScan(bruto: unknown): RespostaScan {
     handle: (texto(o["handle"]) ?? "perfil").replace(/^@/, ""),
     count: num(o["count"]) ?? reels.length,
     median: num(o["median"]),
+    source: texto(o["source"]),
     reels,
   };
+
 }
 
 /** Classe da pill de vx: verde ≥1.3, neutra 0.7–1.3, coral <0.7. */

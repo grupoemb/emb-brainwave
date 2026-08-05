@@ -4,18 +4,19 @@ import { Users } from "lucide-react";
 import { BarrasContas } from "@/components/radar/BarrasContas";
 import { CartaoConta } from "@/components/radar/CartaoConta";
 import { DrawerConta } from "@/components/radar/DrawerConta";
-import { TopReelsContas } from "@/components/radar/TopReelsContas";
+import { RankingReels } from "@/components/radar/RankingReels";
 import { CabecalhoTela } from "@/components/ui/CabecalhoTela";
 import { EstadoVazio } from "@/components/ui/EstadoVazio";
 import { useContas } from "@/hooks/useContas";
+import { useTopReels } from "@/hooks/useTopReels";
 import { haQuantoTempo } from "@/lib/contas";
 
 export function PainelContas() {
   const { data, isPending, error } = useContas();
+  const top = useTopReels(12);
   const [aberta, setAberta] = useState<string | null>(null);
 
   const contas = data?.contas ?? [];
-  const topReels = data?.topReels ?? [];
   const frescor = haQuantoTempo(data?.ultimaColeta ?? null);
 
   return (
@@ -55,6 +56,8 @@ export function PainelContas() {
             ))}
           </div>
 
+          <RankingReels reels={top.data ?? []} carregando={top.isPending} />
+
           <div className="grid gap-3 lg:grid-cols-2">
             <BarrasContas
               id="gradContasViews"
@@ -71,8 +74,6 @@ export function PainelContas() {
               dados={contas.map((c) => ({ rotulo: `@${c.handle}`, valor: c.engPct ?? 0 }))}
             />
           </div>
-
-          <TopReelsContas reels={topReels} />
         </>
       )}
 
