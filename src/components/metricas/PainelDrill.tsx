@@ -9,6 +9,7 @@ import {
   classeVariacao,
   ehOutlier,
   filtrarPorRecorte,
+  compacto,
   numero,
   resumoRecorte,
   rotuloFormato,
@@ -130,7 +131,7 @@ function ListaPosts({
               <span aria-hidden>·</span>
               <span className="numero">{data(l.published_at)}</span>
               <span aria-hidden>·</span>
-              <span className="numero text-corpo">{numero(l.reach)} alc.</span>
+              <span className="numero text-corpo">{compacto(l.reach)} alc.</span>
               <span className={"pill numero ml-auto text-[.66rem] " + classeRx(l.rx)}>
                 {l.rx === null ? "—" : `${numero(l.rx, 2)}×`}
               </span>
@@ -361,8 +362,8 @@ export function PainelDrill({
             ) : (
               <div className="mt-3 grid grid-cols-2 gap-2">
                 <Resumo rotulo="posts" valor={String(listaA.length)} />
-                <Resumo rotulo="alcance total" valor={numero(resA?.alcance ?? null)} />
-                <Resumo rotulo="alcance médio" valor={numero(resA?.alcanceMedio ?? null)} />
+                <Resumo rotulo="alcance total" valor={compacto(resA?.alcance ?? null)} />
+                <Resumo rotulo="alcance médio" valor={compacto(resA?.alcanceMedio ?? null)} />
                 <Resumo
                   rotulo="rx médio"
                   valor={
