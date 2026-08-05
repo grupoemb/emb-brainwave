@@ -36,6 +36,18 @@ export function RadarColeta() {
     return () => clearInterval(t);
   }, [scan.isPending]);
 
+  // Vindo do Painel: preenche o handle, dispara a coleta uma vez e limpa a URL.
+  useEffect(() => {
+    if (!handleBusca || disparado.current === handleBusca) return;
+    disparado.current = handleBusca;
+    setPerfil(`@${handleBusca}`);
+    analisar(handleBusca);
+    void navigate({ to: "/radar", search: { aba: "radar" }, replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [handleBusca]);
+
+
+
   function analisar(alvoUrl?: string) {
     const url = (alvoUrl ?? perfil).trim();
     if (!url || scan.isPending) return;
