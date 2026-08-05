@@ -107,10 +107,18 @@ export function infoMetrica(m: MetricaMeta) {
 export const STATUS: Record<StatusMeta, { rotulo: string; cor: string; classe: string }> = {
   batido: { rotulo: "batido", cor: "#3ecf8e", classe: "pill pill-bom" },
   adiantado: { rotulo: "adiantado", cor: "#3ecf8e", classe: "pill pill-bom" },
-  no_ritmo: { rotulo: "no ritmo", cor: "#00a4ff", classe: "pill pill-azure" },
+  no_ritmo: { rotulo: "no ritmo", cor: "#00a4ff", classe: "pill bg-azure/14 text-azureClaro" },
   atrasado: { rotulo: "atrasado", cor: "#ff7a6b", classe: "pill pill-ruim" },
-  encerrado: { rotulo: "encerrado", cor: "#8294ab", classe: "pill pill-neutro" },
+  encerrado: { rotulo: "encerrado", cor: "#8294ab", classe: "pill bg-white/6 text-muted" },
 };
+
+export const ORDEM_STATUS: StatusMeta[] = [
+  "batido",
+  "adiantado",
+  "no_ritmo",
+  "atrasado",
+  "encerrado",
+];
 
 export const MODOS: { valor: ModoMeta; rotulo: string; ajuda: string }[] = [
   { valor: "increase", rotulo: "Ganhar N novos", ajuda: "O alvo é o ganho líquido no período." },
