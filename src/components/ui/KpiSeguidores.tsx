@@ -52,7 +52,7 @@ export function KpiSeguidores({
         ) : (
           <span className={delta >= 0 ? "text-bom" : "text-ruim"}>
             {delta >= 0 ? "+" : "−"}
-            {compacto(Math.abs(delta))} <span className="text-muted">(7d)</span>
+            {compacto(Math.abs(delta))} <span className="text-muted">({rotuloDelta})</span>
           </span>
         )}
       </p>
