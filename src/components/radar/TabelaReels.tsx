@@ -1,6 +1,6 @@
 import { Flame, Image as IconeImagem } from "lucide-react";
 
-import { numero } from "@/lib/metricas";
+import { compacto, numero } from "@/lib/metricas";
 import { classeVx, ehVxFlame, formatarDuracao, type ReelColetado } from "@/lib/radar";
 
 export function TabelaReels({
@@ -29,7 +29,7 @@ export function TabelaReels({
         <h2 className="rotulo">Reels encontrados</h2>
         <span className="text-xs text-corpo">
           @{handle} · <span className="numero">{total}</span> reels · mediana{" "}
-          <span className="numero">{numero(mediana)}</span> views
+          <span className="numero">{compacto(mediana)}</span> views
         </span>
       </div>
 
@@ -108,14 +108,14 @@ export function TabelaReels({
                       <span className="line-clamp-1 text-corpo">{r.caption ?? "—"}</span>
                     )}
                   </td>
-                  <td className="numero px-2 py-2 text-right text-txt">{numero(r.views)}</td>
+                  <td className="numero px-2 py-2 text-right text-txt">{compacto(r.views)}</td>
                   {temAlcance ? (
                     <>
                       <td className="numero px-2 py-2 text-right text-corpo">
-                        {numero(r.reach)}
+                        {compacto(r.reach)}
                       </td>
                       <td className="numero px-2 py-2 text-right text-corpo">
-                        {numero(r.saves)}
+                        {compacto(r.saves)}
                       </td>
                     </>
                   ) : null}
