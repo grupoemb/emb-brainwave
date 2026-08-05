@@ -64,6 +64,8 @@ import {
 } from "@/lib/metricas";
 import { usePilares } from "@/hooks/useConteudo";
 import { useContasConectadas, useMetricas, type Periodo } from "@/hooks/useMetricas";
+import { useSeguidoresPeriodo } from "@/hooks/useSeguidoresPeriodo";
+
 
 /** Título + linha de leitura acima de um bloco analítico. */
 function TituloBloco({ titulo, leitura }: { titulo: string; leitura: string }) {
