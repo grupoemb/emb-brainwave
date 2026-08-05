@@ -103,7 +103,7 @@ export function RadarColeta() {
             />
             <button
               type="button"
-              onClick={analisar}
+              onClick={() => analisar()}
               className="btn-primario flex items-center gap-1.5 px-4 py-2 text-xs"
               disabled={!perfil.trim() || scan.isPending}
             >
@@ -144,7 +144,7 @@ export function RadarColeta() {
           <div className="rounded-[.6rem] border border-line border-l-[3px] border-l-[#ff7a6b] bg-white/[.03] p-3">
             <p className="rotulo text-[.6rem] text-[#ff7a6b]">falha na coleta</p>
             <p className="mt-1 text-xs text-corpo">{erro}</p>
-            <button type="button" onClick={analisar} className="btn mt-2 px-3 py-1.5 text-xs">
+            <button type="button" onClick={() => analisar()} className="btn mt-2 px-3 py-1.5 text-xs">
               Tentar de novo
             </button>
           </div>
