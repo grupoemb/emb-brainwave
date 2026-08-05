@@ -1051,6 +1051,20 @@ export type Database = {
     }
     Functions: {
       get_library_insights: { Args: { p_org: string }; Returns: Json }
+      get_own_reels: {
+        Args: { p_handle: string; p_org: string }
+        Returns: {
+          caption: string
+          comments: number
+          id: string
+          likes: number
+          published_at: string
+          reach: number
+          saves: number
+          url: string
+          views: number
+        }[]
+      }
       get_perf_aggregates: { Args: { p_org: string }; Returns: Json }
       get_post_performance: {
         Args: { p_org: string }
