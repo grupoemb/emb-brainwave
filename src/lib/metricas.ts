@@ -736,7 +736,7 @@ export type DefMetrica = {
   formata: (v: number | null) => string;
 };
 
-const taxa = (num: number | null, den: number | null) =>
+const pctDe = (num: number | null, den: number | null) =>
   num === null || den === null || den <= 0 ? null : Number(((num / den) * 100).toFixed(2));
 
 const fmtNum = (v: number | null) => (v === null ? "—" : compacto(v));
@@ -790,7 +790,7 @@ export const METRICAS_TABELA: DefMetrica[] = [
     valor: (l) => {
       const inter = [l.likes, l.comments, l.saves, l.shares];
       if (inter.every((v) => v === null)) return null;
-      return taxa(
+      return pctDe(
         inter.reduce<number>((s, v) => s + (v ?? 0), 0),
         l.reach,
       );
@@ -801,21 +801,21 @@ export const METRICAS_TABELA: DefMetrica[] = [
     chave: "saves_pct",
     rotulo: "Salvos %",
     grupo: "desempenho",
-    valor: (l) => taxa(l.saves, l.reach),
+    valor: (l) => pctDe(l.saves, l.reach),
     formata: fmtPct,
   },
   {
     chave: "shares_pct",
     rotulo: "Shares %",
     grupo: "desempenho",
-    valor: (l) => taxa(l.shares, l.reach),
+    valor: (l) => pctDe(l.shares, l.reach),
     formata: fmtPct,
   },
   {
     chave: "comments_pct",
     rotulo: "Coment. %",
     grupo: "desempenho",
-    valor: (l) => taxa(l.comments, l.reach),
+    valor: (l) => pctDe(l.comments, l.reach),
     formata: fmtPct,
   },
   {
