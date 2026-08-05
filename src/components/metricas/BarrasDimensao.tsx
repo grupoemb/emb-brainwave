@@ -20,12 +20,14 @@ export function BarrasDimensao({
   itens,
   vazio = "Sem dados classificados no período.",
   limite = 6,
+  aoSelecionar,
 }: {
   titulo: string;
   descricao?: string;
   itens: ItemDimensao[];
   vazio?: string;
   limite?: number;
+  aoSelecionar?: (item: ItemDimensao) => void;
 }) {
   const lista = itens.slice(0, limite);
   const max = Math.max(1.35, lista.reduce((m, i) => Math.max(m, i.rxMedio ?? 0), 0));
@@ -43,8 +45,8 @@ export function BarrasDimensao({
           <ul className="mt-3 space-y-2.5">
             {lista.map((i) => {
               const cor = corRx(i.rxMedio);
-              return (
-                <li key={i.chave}>
+              const conteudo = (
+                <>
                   <div className="flex items-baseline justify-between gap-2 text-xs">
                     <span className="truncate font-medium text-corpo">{i.rotulo}</span>
                     <span className="flex shrink-0 items-center gap-2">
@@ -70,9 +72,32 @@ export function BarrasDimensao({
                       style={{ left: `${marca}%` }}
                     />
                   </div>
+                </>
+              );
+
+              return (
+                <li key={i.chave}>
+                  {aoSelecionar ? (
+                    <button
+                      type="button"
+                      onClick={() => aoSelecionar(i)}
+                      title={`Ver os ${i.n} posts de ${i.rotulo}`}
+                      className="w-full rounded-[.55rem] px-1.5 py-1 text-left transition-colors hover:bg-white/6"
+                    >
+                      {conteudo}
+                    </button>
+                  ) : (
+                    <div className="px-1.5 py-1">{conteudo}</div>
+                  )}
                 </li>
               );
             })}
+          </ul>
+          <p className="mt-3 text-[.65rem] text-muted">
+            A linha vertical marca 1,00× — a mediana do formato.
+          </p>
+        </>
+
           </ul>
           <p className="mt-3 text-[.65rem] text-muted">
             A linha vertical marca 1,00× — a mediana do formato.
