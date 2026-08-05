@@ -928,6 +928,7 @@ export type Database = {
           connected_at: string | null
           created_at: string
           external_id: string | null
+          followers: number | null
           handle: string
           id: string
           is_active: boolean
@@ -940,6 +941,7 @@ export type Database = {
           connected_at?: string | null
           created_at?: string
           external_id?: string | null
+          followers?: number | null
           handle: string
           id?: string
           is_active?: boolean
@@ -952,6 +954,7 @@ export type Database = {
           connected_at?: string | null
           created_at?: string
           external_id?: string | null
+          followers?: number | null
           handle?: string
           id?: string
           is_active?: boolean
@@ -1050,6 +1053,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accounts_overview: { Args: { p_org: string }; Returns: Json }
       get_library_insights: { Args: { p_org: string }; Returns: Json }
       get_own_reels: {
         Args: { p_handle: string; p_org: string }
@@ -1094,6 +1098,32 @@ export type Database = {
       }
       is_org_member: { Args: { org: string }; Returns: boolean }
       join_organization: { Args: { p_code?: string }; Returns: Json }
+      radar_own_reels: {
+        Args: { p_handle: string; p_org: string }
+        Returns: {
+          caption: string
+          comments: number
+          id: string
+          likes: number
+          published_at: string
+          reach: number
+          saves: number
+          url: string
+          views: number
+          vx: number
+        }[]
+      }
+      radar_own_top_reels: {
+        Args: { p_limit?: number; p_org: string }
+        Returns: {
+          caption: string
+          handle: string
+          id: string
+          url: string
+          views: number
+          vx: number
+        }[]
+      }
       recompute_baselines: { Args: never; Returns: undefined }
       set_social_token: {
         Args: { p_secret: string; p_secret_name: string }
