@@ -1,3 +1,4 @@
+import { EstadoVazio } from "@/components/ui/EstadoVazio";
 import { numero, type ItemDimensao } from "@/lib/metricas";
 
 export function ComparativoContas({ contas }: { contas: ItemDimensao[] }) {
@@ -11,9 +12,9 @@ export function ComparativoContas({ contas }: { contas: ItemDimensao[] }) {
       </p>
 
       {contas.length === 0 ? (
-        <p className="py-6 text-center text-sm text-muted">
-          Nenhuma conta identificada nos posts do período.
-        </p>
+        <div className="mt-3">
+          <EstadoVazio compacto titulo="Nenhuma conta identificada nos posts do período." />
+        </div>
       ) : (
         <div className="mt-4 space-y-4">
           {contas.map((c) => (

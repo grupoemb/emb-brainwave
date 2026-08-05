@@ -1,5 +1,6 @@
 import { Instagram, Linkedin, Music2, Youtube, type LucideIcon } from "lucide-react";
 
+import { EstadoVazio } from "@/components/ui/EstadoVazio";
 import { Switch } from "@/components/ui/switch";
 import { useContasSociais } from "@/hooks/useAjustes";
 import { useOrg } from "@/hooks/useOrg";
@@ -35,9 +36,14 @@ export function AbaContas() {
             ))}
           </div>
         ) : contas.length === 0 ? (
-          <p className="p-6 text-sm text-muted">
-            Nenhuma conta cadastrada. O administrador conecta as contas pelo backend.
-          </p>
+          <div className="p-2">
+            <EstadoVazio
+              compacto
+              icone={<Instagram size={16} />}
+              titulo="Nenhuma conta cadastrada"
+              descricao="O administrador conecta as contas pelo backend."
+            />
+          </div>
         ) : (
           <ul className="divide-y divide-line">
             {contas.map((c) => {

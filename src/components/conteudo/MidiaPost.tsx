@@ -1,3 +1,4 @@
+import { EstadoVazio } from "@/components/ui/EstadoVazio";
 import { useRef, useState } from "react";
 import { FileText, Trash2, UploadCloud } from "lucide-react";
 import { toast } from "sonner";
@@ -130,7 +131,9 @@ export function MidiaPost({
       )}
 
       {!carregando && assets.length === 0 && !enviando && (
-        <p className="mt-3 text-xs text-muted">Nenhum arquivo por aqui.</p>
+        <div className="mt-3">
+          <EstadoVazio compacto marca={false} titulo="Nenhum arquivo por aqui." />
+        </div>
       )}
 
       {(assets.length > 0 || enviando) && (

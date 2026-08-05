@@ -1,3 +1,4 @@
+import { EstadoVazio } from "@/components/ui/EstadoVazio";
 import { Link } from "@tanstack/react-router";
 import { Flame, Sparkles } from "lucide-react";
 import { useState } from "react";
@@ -120,7 +121,7 @@ function MiniKpi({
 
 
 function BlocoVazio({ children }: { children: React.ReactNode }) {
-  return <p className="text-xs text-muted">{children}</p>;
+  return <EstadoVazio compacto marca={false} titulo={String(children)} />;
 }
 
 const JANELAS: DiasOutliers[] = [7, 14, 30];
@@ -164,7 +165,7 @@ export function Painel() {
           <div className="flex items-center gap-3">
             <span className="text-xs text-muted">{textoFrescor(coleta)}</span>
             <span aria-hidden className="hidden h-5 w-px bg-line sm:block" />
-            <LogoB7 altura={16} className="hidden opacity-70 sm:block" />
+            <LogoB7 altura={20} className="hidden opacity-70 sm:block" />
           </div>
         }
 

@@ -1,3 +1,4 @@
+import { EstadoVazio } from "@/components/ui/EstadoVazio";
 import {
   CLASSE_PRIORIDADE,
   ROTULO_FAIXA,
@@ -16,10 +17,12 @@ export function Recomendacoes({ itens }: { itens: Recomendacao[] }) {
       </p>
 
       {itens.length === 0 ? (
-        <p className="py-8 text-center text-sm text-muted">
-          Nenhum indicador abaixo do padrão neste recorte — mantenha o ritmo e suba a régua nas
-          metas.
-        </p>
+        <div className="mt-4">
+          <EstadoVazio
+            titulo="Nenhum indicador abaixo do padrão neste recorte"
+            descricao="Mantenha o ritmo e suba a régua nas metas."
+          />
+        </div>
       ) : (
         <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {itens.map((r) => {

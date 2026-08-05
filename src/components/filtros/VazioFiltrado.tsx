@@ -1,6 +1,8 @@
+import { EstadoVazio } from "@/components/ui/EstadoVazio";
+
 /**
  * Estado vazio padrão para listas com filtros aplicados.
- * Mesmo padrão de saída usado em Métricas: mensagem + atalho pra desfazer o recorte.
+ * Invólucro fino sobre EstadoVazio (variante "filtro").
  */
 export function VazioFiltrado({
   mensagem,
@@ -13,16 +15,27 @@ export function VazioFiltrado({
   acao?: string | undefined;
   onAcao?: (() => void) | undefined;
 }) {
-
   return (
-    <div className="cartao secao-entrada flex flex-col items-center gap-3 p-8 text-center">
-      <p className="text-sm text-muted">{mensagem}</p>
-      {detalhe ? <p className="text-xs text-muted/80">{detalhe}</p> : null}
-      {acao && onAcao ? (
-        <button type="button" className="btn px-3 py-1.5 text-xs" onClick={onAcao}>
-          {acao}
-        </button>
-      ) : null}
+    <div className="secao-entrada">
+      <EstadoVazio
+        variante="filtro"
+        compacto
+        titulo={mensagem}
+        {...(detalhe ? { descricao: detalhe } : {})}
+        {...(acao && onAcao
+          ? {
+              acao: (
+                <button
+                  type="button"
+                  className="btn px-3 py-1.5 text-xs"
+                  onClick={onAcao}
+                >
+                  {acao}
+                </button>
+              ),
+            }
+          : {})}
+      />
     </div>
   );
 }

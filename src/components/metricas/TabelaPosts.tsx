@@ -1,3 +1,4 @@
+import { EstadoVazio } from "@/components/ui/EstadoVazio";
 import { useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { ArrowDown, ArrowUp, Flame, Search } from "lucide-react";
@@ -149,19 +150,29 @@ export function TabelaPosts({
       </div>
 
       {vazio ? (
-        <div className="space-y-2 py-6 text-center">
-          <p className="text-sm text-muted">
-            {soOutliers
-              ? "Nenhum post fora da curva neste período."
-              : busca
-                ? "Nenhum post corresponde à busca."
-                : "Sem leituras disponíveis para os posts do período."}
-          </p>
-          {soOutliers ? (
-            <button type="button" onClick={aoLimparOutliers} className="btn px-3 py-1.5 text-xs">
-              mostrar todos
-            </button>
-          ) : null}
+        <div className="mt-3">
+          <EstadoVazio
+            titulo={
+              soOutliers
+                ? "Nenhum post fora da curva neste período."
+                : busca
+                  ? "Nenhum post corresponde à busca."
+                  : "Sem leituras disponíveis para os posts do período."
+            }
+            {...(soOutliers
+              ? {
+                  acao: (
+                    <button
+                      type="button"
+                      onClick={aoLimparOutliers}
+                      className="btn px-3 py-1.5 text-xs"
+                    >
+                      mostrar todos
+                    </button>
+                  ),
+                }
+              : {})}
+          />
         </div>
       ) : (
         <div className="overflow-x-auto">

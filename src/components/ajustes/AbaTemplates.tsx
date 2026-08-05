@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+import { FileText } from "lucide-react";
 
+import { EstadoVazio } from "@/components/ui/EstadoVazio";
 import { Switch } from "@/components/ui/switch";
 import { useTemplates } from "@/hooks/useAjustes";
 import { useOrg } from "@/hooks/useOrg";
@@ -40,7 +42,13 @@ export function AbaTemplates() {
             ))}
           </div>
         ) : templates.length === 0 ? (
-          <p className="p-6 text-sm text-muted">Nenhum template cadastrado ainda.</p>
+          <div className="p-2">
+            <EstadoVazio
+              compacto
+              icone={<FileText size={16} />}
+              titulo="Nenhum template cadastrado ainda."
+            />
+          </div>
         ) : (
           <ul className="divide-y divide-line">
             {templates.map((t) => (

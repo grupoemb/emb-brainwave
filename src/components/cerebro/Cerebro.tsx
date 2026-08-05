@@ -1,3 +1,4 @@
+import { EstadoVazio } from "@/components/ui/EstadoVazio";
 import { useState } from "react";
 import { Brain, ChevronDown } from "lucide-react";
 import { CabecalhoTela } from "@/components/ui/CabecalhoTela";
@@ -39,9 +40,11 @@ export function Cerebro() {
               <Markdown>{playbook}</Markdown>
             </div>
           ) : (
-            <p className="text-sm text-muted">
-              O playbook ainda não foi escrito pela análise semanal.
-            </p>
+            <EstadoVazio
+              compacto
+              titulo="O playbook ainda não foi escrito"
+              descricao="Ele nasce da análise semanal automática."
+            />
           )}
           <p className="text-xs text-muted">Atualizado automaticamente pela análise semanal.</p>
         </div>
@@ -61,9 +64,11 @@ export function Cerebro() {
               </div>
             ))
           ) : ativos.length === 0 && historico.length === 0 ? (
-            <div className="cartao p-8 text-sm text-muted">
-              O cérebro ainda não tem aprendizados. Eles nascem da análise automática sobre os posts
-              coletados.
+            <div className="cartao p-4">
+              <EstadoVazio
+                titulo="O cérebro ainda não tem aprendizados"
+                descricao="Eles nascem da análise automática sobre os posts coletados."
+              />
             </div>
           ) : (
             <>

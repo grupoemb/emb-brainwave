@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { Trash2 } from "lucide-react";
+import { Trash2, Users } from "lucide-react";
+
+import { EstadoVazio } from "@/components/ui/EstadoVazio";
 
 import {
   AlertDialog,
@@ -49,7 +51,9 @@ export function AbaEquipe() {
             ))}
           </div>
         ) : membros.length === 0 ? (
-          <p className="p-6 text-sm text-muted">Nenhum membro na equipe ainda.</p>
+          <div className="p-2">
+            <EstadoVazio compacto icone={<Users size={16} />} titulo="Nenhum membro na equipe ainda." />
+          </div>
         ) : (
           <ul className="divide-y divide-line">
             {membros.map((m) => (

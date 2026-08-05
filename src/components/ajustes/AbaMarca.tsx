@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Pencil, Plus, Trash2 } from "lucide-react";
+import { EstadoVazio } from "@/components/ui/EstadoVazio";
 
 import {
   Dialog,
@@ -131,9 +132,13 @@ export function AbaMarca() {
             ))}
           </div>
         ) : pilares.length === 0 ? (
-          <p className="mt-4 text-sm text-muted">
-            Nenhum pilar ainda. Os pilares organizam o conteúdo por tema.
-          </p>
+          <div className="mt-4">
+            <EstadoVazio
+              compacto
+              titulo="Nenhum pilar ainda"
+              descricao="Os pilares organizam o conteúdo por tema."
+            />
+          </div>
         ) : (
           <ul className="mt-4 divide-y divide-line">
             {pilares.map((p) => (
