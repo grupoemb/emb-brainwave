@@ -369,6 +369,62 @@ export type Database = {
           },
         ]
       }
+      goals: {
+        Row: {
+          baseline: number | null
+          created_at: string
+          created_by: string | null
+          end_date: string
+          handle: string | null
+          id: string
+          label: string | null
+          metric: string
+          mode: string
+          organization_id: string
+          start_date: string
+          target: number
+          updated_at: string
+        }
+        Insert: {
+          baseline?: number | null
+          created_at?: string
+          created_by?: string | null
+          end_date: string
+          handle?: string | null
+          id?: string
+          label?: string | null
+          metric: string
+          mode?: string
+          organization_id: string
+          start_date: string
+          target: number
+          updated_at?: string
+        }
+        Update: {
+          baseline?: number | null
+          created_at?: string
+          created_by?: string | null
+          end_date?: string
+          handle?: string | null
+          id?: string
+          label?: string | null
+          metric?: string
+          mode?: string
+          organization_id?: string
+          start_date?: string
+          target?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "goals_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       insights: {
         Row: {
           evidence: Json | null
@@ -1157,12 +1213,26 @@ export type Database = {
         }[]
       }
       get_social_token: { Args: { p_secret_name: string }; Returns: string }
+      goals_overview: { Args: { p_org: string }; Returns: Json }
       has_org_role: {
         Args: { org: string; roles: Database["public"]["Enums"]["org_role"][] }
         Returns: boolean
       }
       is_org_member: { Args: { org: string }; Returns: boolean }
       join_organization: { Args: { p_code?: string }; Returns: Json }
+      metric_daily: {
+        Args: {
+          p_from: string
+          p_handle: string
+          p_metric: string
+          p_org: string
+          p_to: string
+        }
+        Returns: {
+          d: string
+          valor: number
+        }[]
+      }
       radar_own_reels: {
         Args: { p_handle: string; p_org: string }
         Returns: {
