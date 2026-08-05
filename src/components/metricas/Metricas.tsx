@@ -54,7 +54,7 @@ function TituloBloco({ titulo, leitura }: { titulo: string; leitura: string }) {
 }
 
 export function Metricas() {
-  const { dias: diasUrl, origem } = useSearch({ from: "/_authenticated/metricas" });
+  const { dias: diasUrl, origem, aba: abaUrl } = useSearch({ from: "/_authenticated/metricas" });
   const navigate = useNavigate();
   const diasInicial: Periodo = ([7, 14, 30, 90] as const).includes(diasUrl as Periodo)
     ? (diasUrl as Periodo)
@@ -65,13 +65,24 @@ export function Metricas() {
   const [acumulado, setAcumulado] = useState(false);
   const [modo, setModo] = useState<"top" | "piores">("top");
   const [soOutliers, setSoOutliers] = useState(false);
-  const [aba, setAba] = useState<Aba>("geral");
+
+  const aba: Aba = ehAba(abaUrl) ? abaUrl : "geral";
+  const setAba = (a: Aba) => {
+    void navigate({
+      to: "/metricas",
+      search: { dias: diasUrl, origem, aba: a },
+      replace: true,
+    });
+  };
+  const abaAtual = ABA_POR_VALOR.get(aba)!;
 
   const doPainel = origem === "painel";
   const faixa = doPainel ? (
     <FaixaDeContexto
       recorte={`últimos ${m.dias} dias`}
-      onLimpar={() => void navigate({ to: "/metricas", search: { dias: 30, origem: "" } })}
+      onLimpar={() =>
+        void navigate({ to: "/metricas", search: { dias: 30, origem: "", aba } })
+      }
     />
   ) : null;
 
@@ -81,7 +92,9 @@ export function Metricas() {
   const ta = m.taxasComparadas;
   const comparando = !!m.intervaloComparado;
   const semPosts = !m.carregando && m.linhas.length === 0;
+  const comRecorte = m.conta !== "todas" || m.pilar !== "todos";
   const rotuloComp = m.intervaloComparado ? rotuloIntervalo(m.intervaloComparado) : undefined;
+
 
   const porPilar = useMemo(
     () =>
