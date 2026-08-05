@@ -17,7 +17,7 @@ import { useContas } from "@/hooks/useContas";
 import { useRanking } from "@/hooks/useRanking";
 import { useTopReels } from "@/hooks/useTopReels";
 import { haQuantoTempo } from "@/lib/contas";
-import { numero } from "@/lib/metricas";
+import { compacto, numero } from "@/lib/metricas";
 import {
   alavancaDe,
   inteligenciaRapida,
@@ -27,9 +27,47 @@ import {
   topPorPerfil,
 } from "@/lib/ranking";
 
-const DIAS = 90;
+const PERIODOS = [7, 14, 30, 90];
 
 const rota = getRouteApi("/_authenticated/radar");
+
+function Segmented<T extends string | number | null>({
+  rotulo,
+  opcoes,
+  valor,
+  aoMudar,
+}: {
+  rotulo: string;
+  opcoes: { chave: string; texto: string; valor: T }[];
+  valor: T;
+  aoMudar: (v: T) => void;
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="rotulo text-[.62rem]">{rotulo}</span>
+      <div className="flex flex-wrap gap-1 rounded-[.6rem] border border-line p-1">
+        {opcoes.map((o) => {
+          const ativo = o.valor === valor;
+          return (
+            <button
+              key={o.chave}
+              type="button"
+              onClick={() => aoMudar(o.valor)}
+              aria-pressed={ativo}
+              className={
+                "rounded-[.45rem] px-2.5 py-1 text-xs transition-colors " +
+                (ativo ? "bg-azure/18 text-azureClaro" : "text-muted hover:bg-white/6")
+              }
+            >
+              {o.texto}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 
 
 function CartaoKpiSimples({ rotulo, valor }: { rotulo: string; valor: string }) {
