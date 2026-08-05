@@ -140,6 +140,14 @@ export function Metricas() {
     comparando ? ((v ?? null) as number | null) : undefined;
   const extras = { comparando: m.comparando, rotuloComparacao: rotuloComp };
 
+  const segAtual = useSeguidoresPeriodo(m.intervalo, m.conta);
+  const segAnterior = useSeguidoresPeriodo(m.intervaloComparado, m.conta);
+  const novosSeguidores = segAtual.dados.delta;
+  const semBaseSeguidores = novosSeguidores === null;
+  const rotuloPeriodo = `${m.dias}d`;
+  const sparkSeguidores = segAtual.dados.serie.map((p) => ({ valor: p.valor }));
+
+
   const totalInteracoes = t.interacoes ?? 0;
   const parte = (v: number | null) =>
     totalInteracoes > 0 && v !== null ? (v / totalInteracoes) * 100 : null;
