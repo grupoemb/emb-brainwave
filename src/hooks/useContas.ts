@@ -2,10 +2,16 @@ import { useQuery } from "@tanstack/react-query";
 
 import { useOrg } from "@/hooks/useOrg";
 import { supabase } from "@/integrations/supabase/client";
-import { normalizarContas, type ContaVisao } from "@/lib/contas";
+import {
+  normalizarContas,
+  normalizarReels,
+  type ContaVisao,
+  type ReelProprio,
+} from "@/lib/contas";
 
 export type PainelContasDados = {
   contas: ContaVisao[];
+  topReels: ReelProprio[];
   ultimaColeta: string | null;
 };
 
@@ -17,8 +23,9 @@ export function useContas() {
     enabled: !!organizationId,
     staleTime: 60_000,
     queryFn: async () => {
-      const [visao, coleta] = await Promise.all([
+      const [visao, top, coleta] = await Promise.all([
         supabase.rpc("accounts_overview", { p_org: organizationId! }),
+        supabase.rpc("radar_own_top_reels", { p_org: organizationId!, p_limit: 12 }),
         supabase
           .from("post_metrics")
           .select("captured_at")
@@ -30,8 +37,28 @@ export function useContas() {
 
       return {
         contas: normalizarContas(visao.data),
+        topReels: top.error ? [] : normalizarReels(top.data),
         ultimaColeta: coleta.data?.[0]?.captured_at ?? null,
       };
+    },
+  });
+}
+
+/** Ranking completo de reels de uma conta própria — só quando o drawer abre. */
+export function useReelsDaConta(handle: string | null) {
+  const { organizationId } = useOrg();
+
+  return useQuery<ReelProprio[]>({
+    queryKey: ["contas-reels", organizationId, handle],
+    enabled: !!organizationId && !!handle,
+    staleTime: 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("radar_own_reels", {
+        p_org: organizationId!,
+        p_handle: handle!,
+      });
+      if (error) throw new Error(error.message);
+      return normalizarReels(data);
     },
   });
 }
