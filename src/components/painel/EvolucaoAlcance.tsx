@@ -1,6 +1,6 @@
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
-import { numero } from "@/lib/metricas";
+import { compacto, numero } from "@/lib/metricas";
 import type { PontoSerie } from "@/lib/painel.tipos";
 
 function rotuloDia(dia: string) {
@@ -35,7 +35,7 @@ export function EvolucaoAlcance({ serie }: { serie: PontoSerie[] }) {
               axisLine={false}
               tickLine={false}
               width={54}
-              tickFormatter={(v: number) => numero(v)}
+              tickFormatter={(v: number) => compacto(v)}
             />
             <Tooltip
               contentStyle={{
@@ -45,7 +45,7 @@ export function EvolucaoAlcance({ serie }: { serie: PontoSerie[] }) {
                 fontSize: 12,
               }}
               labelStyle={{ color: "#8294ab" }}
-              formatter={(v: number) => [numero(v), "alcance"]}
+              formatter={(v: number) => [compacto(v), "alcance"]}
             />
             <Area
               type="monotone"

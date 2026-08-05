@@ -2,7 +2,7 @@ import { ArrowDownRight, ArrowUpRight, Minus } from "lucide-react";
 
 import { Dica } from "@/components/painel/Dica";
 import { Sparkline } from "@/components/metricas/Sparkline";
-import { numero } from "@/lib/metricas";
+import { compacto, numero } from "@/lib/metricas";
 import type { PontoSerie } from "@/lib/painel.tipos";
 
 export function Delta({ atual, anterior }: { atual: number | null; anterior: number | null }) {
@@ -33,6 +33,7 @@ export function CartaoKpiPainel({
   anterior,
   sufixo,
   casas = 0,
+  compactar = false,
   dica,
   serie,
   cor,
@@ -42,6 +43,7 @@ export function CartaoKpiPainel({
   anterior?: number | null;
   sufixo?: string;
   casas?: number;
+  compactar?: boolean;
   dica?: string;
   serie?: PontoSerie[];
   cor?: string;
@@ -52,9 +54,12 @@ export function CartaoKpiPainel({
         {rotulo}
         {dica ? <Dica texto={dica} /> : null}
       </span>
-      <div className="mt-2 flex items-end justify-between gap-2">
+      <div
+        className="mt-2 flex items-end justify-between gap-2"
+        title={compactar && valor !== null ? numero(valor) : undefined}
+      >
         <span className={"numero text-2xl " + (valor === null ? "text-muted" : "")}>
-          {valor === null ? "—" : numero(valor, casas)}
+          {valor === null ? "—" : compactar ? compacto(valor) : numero(valor, casas)}
           {valor !== null && sufixo ? (
             <span className="text-sm text-muted">{sufixo}</span>
           ) : null}

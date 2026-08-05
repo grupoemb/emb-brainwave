@@ -37,15 +37,15 @@ const LINHAS_RESUMO: {
   fmt: (v: number | null) => string;
 }[] = [
   { chave: "posts", rotulo: "posts", fmt: (v) => (v === null ? "—" : String(v)) },
-  { chave: "alcance", rotulo: "alcance", fmt: (v) => numero(v) },
-  { chave: "alcanceMedio", rotulo: "alcance médio", fmt: (v) => numero(v) },
+  { chave: "alcance", rotulo: "alcance", fmt: (v) => compacto(v) },
+  { chave: "alcanceMedio", rotulo: "alcance médio", fmt: (v) => compacto(v) },
   { chave: "rxMedio", rotulo: "rx médio", fmt: (v) => (v === null ? "—" : `${numero(v, 2)}×`) },
   {
     chave: "engajamento",
     rotulo: "engajamento",
     fmt: (v) => (v === null ? "—" : `${numero(v, 1)}%`),
   },
-  { chave: "interacoes", rotulo: "interações", fmt: (v) => numero(v) },
+  { chave: "interacoes", rotulo: "interações", fmt: (v) => compacto(v) },
 ];
 
 function Resumo({ rotulo, valor }: { rotulo: string; valor: string }) {

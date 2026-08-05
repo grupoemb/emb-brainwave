@@ -3,7 +3,7 @@ import { Bookmark, Flame, Heart, ShieldCheck, TrendingUp, UserPlus } from "lucid
 
 import { Dica } from "@/components/painel/Dica";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { numero } from "@/lib/metricas";
+import { compacto, numero } from "@/lib/metricas";
 import { GLOSSARIO } from "@/lib/glossario";
 import type { DestaquesPainel, MelhorPost } from "@/lib/painel.functions";
 

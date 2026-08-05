@@ -8,7 +8,7 @@ import { EstadoVazio } from "@/components/ui/EstadoVazio";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { corDoCanal, type Canal } from "@/lib/conteudo";
 import { GLOSSARIO } from "@/lib/glossario";
-import { numero } from "@/lib/metricas";
+import { compacto, numero } from "@/lib/metricas";
 import type { ContaPainel } from "@/lib/painel.tipos";
 
 const BRONZE = { cor: "#cd8b57", fundo: "rgba(205,139,87,.14)", rotulo: "3º lugar" };

@@ -11,7 +11,7 @@ import {
   ROTULO_GANCHO,
   type ItemBiblioteca,
 } from "@/lib/biblioteca";
-import { numero } from "@/lib/metricas";
+import { compacto, numero } from "@/lib/metricas";
 
 function Chip({ children }: { children: React.ReactNode }) {
   return (

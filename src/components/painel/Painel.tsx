@@ -18,7 +18,7 @@ import { Podio } from "@/components/painel/Podio";
 import { usePainel, type DiasPainel } from "@/hooks/usePainel";
 import { COLUNAS, comAlfa, corDoCanal, type Canal } from "@/lib/conteudo";
 import { GLOSSARIO } from "@/lib/glossario";
-import { numero, textoFrescor } from "@/lib/metricas";
+import { compacto, numero, textoFrescor } from "@/lib/metricas";
 
 const TZ = "America/Sao_Paulo";
 const JANELAS: DiasPainel[] = [7, 14, 30, 90];
@@ -190,6 +190,7 @@ export function Painel() {
         <div className="secao-entrada grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
           <CartaoKpiPainel
             rotulo="Alcance"
+            compactar
             valor={k.alcance}
             anterior={a?.alcance ?? null}
             dica={GLOSSARIO.alcancePeriodo}
@@ -197,12 +198,14 @@ export function Painel() {
           />
           <CartaoKpiPainel
             rotulo="Impressões"
+            compactar
             valor={k.impressoes}
             anterior={a?.impressoes ?? null}
             dica="Soma das impressões da leitura mais recente de cada post do período."
           />
           <CartaoKpiPainel
             rotulo="Interações"
+            compactar
             valor={k.interacoes}
             anterior={a?.interacoes ?? null}
             dica="Curtidas + comentários + salvamentos + compartilhamentos."
@@ -231,24 +234,28 @@ export function Painel() {
           />
           <CartaoKpiPainel
             rotulo="Salvamentos"
+            compactar
             valor={k.saves}
             anterior={a?.saves ?? null}
             dica="Sinal mais forte de conteúdo de valor: quantas pessoas guardaram o post."
           />
           <CartaoKpiPainel
             rotulo="Compartilhamentos"
+            compactar
             valor={k.shares}
             anterior={a?.shares ?? null}
             dica="Principal motor de alcance novo no Instagram."
           />
           <CartaoKpiPainel
             rotulo="Comentários"
+            compactar
             valor={k.comments}
             anterior={a?.comments ?? null}
             dica="Total de comentários das leituras mais recentes do período."
           />
           <CartaoKpiPainel
             rotulo="Novos seguidores"
+            compactar
             valor={k.seguidores}
             anterior={a?.seguidores ?? null}
             dica="Soma do saldo de seguidores atribuído aos posts do período."
@@ -492,8 +499,8 @@ export function Painel() {
           <h2 className="rotulo mb-3 flex items-center gap-2">
             Produção agora
             <span className="inline-flex items-center gap-1 text-[.62rem] font-normal normal-case tracking-normal text-muted">
-              <Bookmark size={11} /> {numero(k.saves)} salvos · <Share2 size={11} />{" "}
-              {numero(k.shares)} compart. · <UserPlus size={11} /> {numero(k.seguidores)} seguidores
+              <Bookmark size={11} /> {compacto(k.saves)} salvos · <Share2 size={11} />{" "}
+              {compacto(k.shares)} compart. · <UserPlus size={11} /> {compacto(k.seguidores)} seguidores
             </span>
           </h2>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
