@@ -188,6 +188,7 @@ export function Painel() {
 
         {/* Faixa de performance */}
         <div className="secao-entrada grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
+          <KpiSeguidores />
           <CartaoKpiPainel
             rotulo="Alcance"
             compactar
