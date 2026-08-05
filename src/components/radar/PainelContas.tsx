@@ -35,7 +35,15 @@ function CartaoKpiSimples({ rotulo, valor }: { rotulo: string; valor: string }) 
   );
 }
 
-function MiniStat({ rotulo, valor, cor }: { rotulo: string; valor: string; cor?: string }) {
+function MiniStat({
+  rotulo,
+  valor,
+  cor,
+}: {
+  rotulo: string;
+  valor: string;
+  cor?: string | undefined;
+}) {
   return (
     <div className="rounded-[.6rem] border border-line px-3 py-2.5">
       <p className="rotulo text-[.64rem]">{rotulo}</p>
