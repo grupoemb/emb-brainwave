@@ -1,11 +1,14 @@
 import { useMemo, useState } from "react";
+import { getRouteApi, useNavigate } from "@tanstack/react-router";
 import { ChevronDown, Users } from "lucide-react";
 
 import { BarrasContas } from "@/components/radar/BarrasContas";
+import { BuscaPerfil } from "@/components/radar/BuscaPerfil";
 import { CartaoConta } from "@/components/radar/CartaoConta";
 import { DrawerConta } from "@/components/radar/DrawerConta";
 import { LeituraSemana } from "@/components/radar/LeituraSemana";
 import { LinhaCompacta, LinhaRanking } from "@/components/radar/LinhaRanking";
+
 import { RankingReels } from "@/components/radar/RankingReels";
 import { CabecalhoTela } from "@/components/ui/CabecalhoTela";
 import { EstadoVazio } from "@/components/ui/EstadoVazio";
