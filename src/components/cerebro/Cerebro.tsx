@@ -1,6 +1,6 @@
 import { EstadoVazio } from "@/components/ui/EstadoVazio";
 import { useState } from "react";
-import { Brain, ChevronDown } from "lucide-react";
+import { Brain, ChevronDown, Lightbulb } from "lucide-react";
 import { CabecalhoTela } from "@/components/ui/CabecalhoTela";
 
 import Markdown from "react-markdown";
@@ -8,12 +8,16 @@ import Markdown from "react-markdown";
 import { Revelar } from "@/components/Revelar";
 import { AudienciaPede } from "@/components/cerebro/AudienciaPede";
 import { CartaoInsight } from "@/components/cerebro/CartaoInsight";
+import { Ideias } from "@/components/cerebro/Ideias";
+import { useIdeias } from "@/hooks/useIdeias";
 import { haQuanto } from "@/components/pautas/CartaoPauta";
 import { useCerebro } from "@/hooks/useInteligencia";
 
 export function Cerebro() {
   const { carregando, playbook, ativos, historico, ultimaAnalise } = useCerebro();
   const [aberto, setAberto] = useState(false);
+  const [aba, setAba] = useState<"aprendizados" | "ideias">("aprendizados");
+  const { ideias } = useIdeias();
 
   return (
     <Revelar className="space-y-4">
@@ -25,6 +29,48 @@ export function Cerebro() {
       />
 
 
+      <div
+        role="tablist"
+        aria-label="Seções do Cérebro"
+        className="secao-entrada flex items-center gap-1 rounded-[.7rem] border border-line bg-bg2/70 p-1"
+      >
+        {([
+          { valor: "aprendizados", rotulo: "Aprendizados", icone: <Brain size={14} /> },
+          { valor: "ideias", rotulo: "Ideias", icone: <Lightbulb size={14} /> },
+        ] as const).map((a) => {
+          const ativo = aba === a.valor;
+          return (
+            <button
+              key={a.valor}
+              type="button"
+              role="tab"
+              aria-selected={ativo}
+              onClick={() => setAba(a.valor)}
+              className={
+                "flex h-9 items-center gap-2 rounded-[.55rem] px-3 text-xs transition-colors " +
+                (ativo
+                  ? "bg-azure/16 font-semibold text-txt shadow-[inset_0_0_0_1px_rgba(0,164,255,.35)]"
+                  : "text-muted hover:bg-white/5 hover:text-corpo")
+              }
+            >
+              {a.icone}
+              <span className="whitespace-nowrap">{a.rotulo}</span>
+              {a.valor === "ideias" && ideias.length > 0 ? (
+                <span
+                  className={
+                    "numero rounded-full px-1.5 py-px text-[.62rem] " +
+                    (ativo ? "bg-azure/22 text-azureClaro" : "bg-white/6 text-muted")
+                  }
+                >
+                  {ideias.length}
+                </span>
+              ) : null}
+            </button>
+          );
+        })}
+      </div>
+
+      {aba === "ideias" ? <Ideias /> : (
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="secao-entrada space-y-4">
         <div className="cartao space-y-3 p-5">
@@ -97,6 +143,7 @@ export function Cerebro() {
           )}
         </div>
       </div>
+      )}
     </Revelar>
   );
 }
