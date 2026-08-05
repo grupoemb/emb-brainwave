@@ -1,3 +1,4 @@
+import { EstadoVazio } from "@/components/ui/EstadoVazio";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { KanbanSquare, Plus } from "lucide-react";
@@ -305,11 +306,16 @@ export function Kanban() {
       )}
 
       {trabalhoVazio && !carregando && !focoVazio && (
-        <div className="cartao secao-entrada flex flex-col items-center gap-3 p-8 text-center">
-          <p className="text-sm text-muted">Nenhuma ideia por aqui. Peça pautas ao cérebro.</p>
-          <button className="btn-primario" onClick={() => void navigate({ to: "/pautas" })}>
-            Gerar pautas
-          </button>
+        <div className="secao-entrada">
+          <EstadoVazio
+            titulo="Nenhuma ideia por aqui"
+            descricao="Peça pautas ao cérebro para começar a fila de conteúdo."
+            acao={
+              <button className="btn-primario" onClick={() => void navigate({ to: "/pautas" })}>
+                Gerar pautas
+              </button>
+            }
+          />
         </div>
       )}
 

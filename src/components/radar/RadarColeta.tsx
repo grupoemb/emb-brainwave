@@ -1,3 +1,4 @@
+import { EstadoVazio } from "@/components/ui/EstadoVazio";
 import { useState } from "react";
 import { Info, Plus } from "lucide-react";
 
@@ -62,8 +63,11 @@ export function RadarColeta() {
             </thead>
             <tbody>
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-xs text-muted">
-                  Nenhum reel coletado ainda — a coleta automática entra em breve.
+                <td colSpan={5} className="px-4 py-4">
+                  <EstadoVazio
+                    titulo="Nenhum reel coletado ainda"
+                    descricao="A coleta automática entra em breve."
+                  />
                 </td>
               </tr>
             </tbody>

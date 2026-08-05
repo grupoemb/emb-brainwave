@@ -1,3 +1,4 @@
+import { EstadoVazio } from "@/components/ui/EstadoVazio";
 import { useMemo } from "react";
 
 import { MetasSugeridas } from "@/components/metricas/MetasSugeridas";
@@ -95,9 +96,9 @@ export function Benchmark({
         </p>
 
         {porConta.length === 0 ? (
-          <p className="py-6 text-center text-sm text-muted">
-            Nenhuma conta identificada nos posts do período.
-          </p>
+          <div className="mt-3">
+            <EstadoVazio compacto titulo="Nenhuma conta identificada nos posts do período." />
+          </div>
         ) : (
           <div className="mt-3 overflow-x-auto">
             <table className="w-full min-w-[620px] text-left text-xs">
