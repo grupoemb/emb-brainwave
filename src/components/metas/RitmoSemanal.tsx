@@ -24,14 +24,14 @@ export function RitmoSemanal({ meta }: { meta: Meta }) {
   return (
     <div>
       <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-        <h3 className="rotulo">Ritmo por semana</h3>
+        <span className="rotulo text-[.55rem]">por semana</span>
         {necessario > 0 ? (
           <span className="text-[.66rem] text-muted">
             precisa de <span className="numero text-corpo">{compacto(necessario)}</span> por semana
           </span>
         ) : null}
       </div>
-      <div style={{ height: 130 }} className="w-full">
+      <div style={{ height: 118 }} className="w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={dados} margin={{ top: 6, right: 8, bottom: 0, left: -18 }}>
             <CartesianGrid stroke="rgba(148,163,184,.12)" vertical={false} />
