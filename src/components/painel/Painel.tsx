@@ -6,6 +6,7 @@ import { Revelar } from "@/components/Revelar";
 import { CabecalhoTela } from "@/components/ui/CabecalhoTela";
 import { EstadoVazio } from "@/components/ui/EstadoVazio";
 import { LogoB7 } from "@/components/ui/LogoB7";
+import { KpiSeguidores } from "@/components/ui/KpiSeguidores";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 import { JanelaPublicacao, MixDeFormatos } from "@/components/painel/BlocosAnaliticos";
