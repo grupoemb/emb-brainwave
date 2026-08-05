@@ -319,7 +319,8 @@
     background: linear-gradient(
       90deg,
       transparent,
-      rgb(255 255 255 / 0.07),
+      rgb(0 164 255 / 0.1),
+      rgb(102 199 255 / 0.06),
       transparent
     );
     animation: brilho 1.5s ease-in-out infinite;
