@@ -1124,6 +1124,35 @@ export type Database = {
           vx: number
         }[]
       }
+      radar_ranking: {
+        Args: { p_dias?: number; p_org: string }
+        Returns: {
+          caption: string
+          comments: number
+          eng_pr: number
+          handle: string
+          hook: string
+          id: string
+          intent: string
+          lever: string
+          lever_pct: number
+          likes: number
+          plays: number
+          published_at: string
+          rank_geral: number
+          rank_perfil: number
+          reach: number
+          reach_rate: number
+          saves: number
+          saves_pr: number
+          score: number
+          shares: number
+          shares_pr: number
+          theme: string
+          url: string
+          vx: number
+        }[]
+      }
       recompute_baselines: { Args: never; Returns: undefined }
       set_social_token: {
         Args: { p_secret: string; p_secret_name: string }
