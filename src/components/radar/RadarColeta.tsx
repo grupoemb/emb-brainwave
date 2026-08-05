@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { getRouteApi, useNavigate } from "@tanstack/react-router";
 import { Info, Loader2, Plus, Search } from "lucide-react";
 import { toast } from "sonner";
 
@@ -8,14 +9,20 @@ import { EstadoVazio } from "@/components/ui/EstadoVazio";
 import { useEnviarBiblioteca, useRadarScan } from "@/hooks/useRadarScan";
 import { handleDaUrl, type RespostaScan } from "@/lib/radar";
 
+const rota = getRouteApi("/_authenticated/radar");
+
 export function RadarColeta() {
-  const [perfil, setPerfil] = useState("");
+  const { handle: handleBusca } = rota.useSearch();
+  const navigate = useNavigate();
+
+  const [perfil, setPerfil] = useState(handleBusca ? `@${handleBusca}` : "");
   const [dialogo, setDialogo] = useState(false);
   const [nicho, setNicho] = useState("");
   const [resultado, setResultado] = useState<RespostaScan | null>(null);
   const [selecionados, setSelecionados] = useState<Set<string>>(new Set());
   const [erro, setErro] = useState<string | null>(null);
   const [segundos, setSegundos] = useState(0);
+  const disparado = useRef<string | null>(null);
 
   const scan = useRadarScan();
   const envio = useEnviarBiblioteca();
@@ -29,10 +36,23 @@ export function RadarColeta() {
     return () => clearInterval(t);
   }, [scan.isPending]);
 
-  function analisar() {
-    if (!perfil.trim() || scan.isPending) return;
+  // Vindo do Painel: preenche o handle, dispara a coleta uma vez e limpa a URL.
+  useEffect(() => {
+    if (!handleBusca || disparado.current === handleBusca) return;
+    disparado.current = handleBusca;
+    setPerfil(`@${handleBusca}`);
+    analisar(handleBusca);
+    void navigate({ to: "/radar", search: { aba: "radar" }, replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [handleBusca]);
+
+
+
+  function analisar(alvoUrl?: string) {
+    const url = (alvoUrl ?? perfil).trim();
+    if (!url || scan.isPending) return;
     setErro(null);
-    scan.mutate(perfil, {
+    scan.mutate(url, {
       onSuccess: (r) => {
         setResultado(r);
         setSelecionados(new Set(r.reels.slice(0, 5).map((x) => x.id)));
@@ -95,7 +115,7 @@ export function RadarColeta() {
             />
             <button
               type="button"
-              onClick={analisar}
+              onClick={() => analisar()}
               className="btn-primario flex items-center gap-1.5 px-4 py-2 text-xs"
               disabled={!perfil.trim() || scan.isPending}
             >
@@ -136,7 +156,7 @@ export function RadarColeta() {
           <div className="rounded-[.6rem] border border-line border-l-[3px] border-l-[#ff7a6b] bg-white/[.03] p-3">
             <p className="rotulo text-[.6rem] text-[#ff7a6b]">falha na coleta</p>
             <p className="mt-1 text-xs text-corpo">{erro}</p>
-            <button type="button" onClick={analisar} className="btn mt-2 px-3 py-1.5 text-xs">
+            <button type="button" onClick={() => analisar()} className="btn mt-2 px-3 py-1.5 text-xs">
               Tentar de novo
             </button>
           </div>
