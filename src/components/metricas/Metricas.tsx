@@ -669,8 +669,15 @@ export function Metricas() {
             )
           ) : null}
 
+          <PainelDrill
+            recorte={drill}
+            linhas={m.linhas}
+            aoFechar={() => setDrill(null)}
+            aoVerNaTabela={verNaTabela}
+          />
         </>
       )}
+
     </Revelar>
   );
 }
