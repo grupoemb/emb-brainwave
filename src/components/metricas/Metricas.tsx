@@ -33,6 +33,7 @@ import { BarrasDimensao } from "@/components/metricas/BarrasDimensao";
 import { PainelDrill } from "@/components/metricas/PainelDrill";
 import { Benchmark } from "@/components/metricas/Benchmark";
 import { CartaoKpi } from "@/components/metricas/CartaoKpi";
+import { KpiSeguidores } from "@/components/ui/KpiSeguidores";
 import { ComparativoContas } from "@/components/metricas/ComparativoContas";
 import { DonutFormatos } from "@/components/metricas/DonutFormatos";
 import { EsqueletoMetricas } from "@/components/metricas/EsqueletoMetricas";
@@ -304,6 +305,7 @@ export function Metricas() {
                   descricao="quantas pessoas viram e quantas vezes"
                   colunas="grid-cols-2 lg:grid-cols-4"
                 >
+                  <KpiSeguidores compactoVisual />
                   <CartaoKpi
                     familia="alcance"
                     destaque
