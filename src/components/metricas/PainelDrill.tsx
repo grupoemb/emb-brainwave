@@ -65,8 +65,8 @@ function Chip({
   children,
 }: {
   ativo: boolean;
-  desativado?: boolean;
-  title?: string;
+  desativado?: boolean | undefined;
+  title?: string | undefined;
   onClick: () => void;
   children: React.ReactNode;
 }) {
