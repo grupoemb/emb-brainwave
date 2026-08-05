@@ -2,7 +2,7 @@ import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis } from "recharts";
 import { Eye, TrendingDown, TrendingUp, Minus } from "lucide-react";
 
 import { Medidor } from "@/components/metricas/Medidor";
-import { classeVariacao, numero, textoVariacao, variacao, type Taxas } from "@/lib/metricas";
+import { compacto, classeVariacao, numero, textoVariacao, variacao, type Taxas } from "@/lib/metricas";
 
 function Seta({ delta }: { delta: number | null }) {
   if (delta === null) return <Minus size={12} aria-hidden />;
@@ -77,7 +77,7 @@ export function PainelResultado({
           </div>
 
           <p className="numero grad mt-2 text-[2.75rem] leading-none sm:text-6xl">
-            {taxas.alcance === null ? "—" : numero(taxas.alcance)}
+            {taxas.alcance === null ? "—" : compacto(taxas.alcance)}
           </p>
 
           <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
@@ -88,7 +88,7 @@ export function PainelResultado({
                   {textoVariacao(delta)}
                 </span>
                 <span className="text-muted">
-                  vs {rotuloComparacao ?? "período anterior"} ({numero(taxasAnterior.alcance)})
+                  vs {rotuloComparacao ?? "período anterior"} ({compacto(taxasAnterior.alcance)})
                 </span>
               </>
             ) : (
