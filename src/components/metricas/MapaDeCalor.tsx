@@ -26,10 +26,12 @@ export function MapaDeCalor({
   grade,
   max,
   melhor,
+  aoSelecionar,
 }: {
   grade: CelulaCalor[];
   max: number;
   melhor: CelulaCalor | null;
+  aoSelecionar?: (celula: CelulaCalor) => void;
 }) {
   return (
     <div className="cartao p-4">
@@ -68,6 +70,7 @@ export function MapaDeCalor({
                 grade={grade}
                 max={max}
                 melhor={melhor}
+                {...(aoSelecionar ? { aoSelecionar } : {})}
               />
             ))}
           </div>
@@ -94,12 +97,14 @@ function Linha({
   grade,
   max,
   melhor,
+  aoSelecionar,
 }: {
   dia: string;
   d: number;
   grade: CelulaCalor[];
   max: number;
   melhor: CelulaCalor | null;
+  aoSelecionar?: (celula: CelulaCalor) => void;
 }) {
   return (
     <>
@@ -110,15 +115,18 @@ function Linha({
         const t = v && max > 0 ? Math.max(0.06, v / max) : 0;
         const eMelhor = !!melhor && melhor.dia === d && melhor.faixa === f;
         return (
-          <div
+          <button
             key={f}
+            type="button"
+            disabled={!aoSelecionar || !c?.n}
+            onClick={() => c && aoSelecionar?.(c)}
             title={
               c && c.n
                 ? `${dia} ${FAIXAS_HORA[f]}h · ${c.n} ${c.n === 1 ? "post" : "posts"} · ${numero(v)} de alcance médio`
                 : `${dia} ${FAIXAS_HORA[f]}h · sem publicações`
             }
             className={
-              "relative h-8 rounded-[.4rem] border transition-transform hover:scale-[1.06] " +
+              "relative h-8 w-full rounded-[.4rem] border transition-transform enabled:hover:scale-[1.06] disabled:cursor-default " +
               (eMelhor ? "border-dourado" : "border-line/50")
             }
             style={{ background: t ? corDaEscala(t) : "rgba(255,255,255,.02)" }}
@@ -130,7 +138,7 @@ function Linha({
                 aria-hidden
               />
             ) : null}
-          </div>
+          </button>
         );
       })}
     </>

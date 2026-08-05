@@ -617,3 +617,49 @@ export function funilInteracao(linhas: LinhaMetrica[]) {
   ];
 }
 
+
+/* ---------- Drill-down: recortes clicáveis nos gráficos ---------- */
+
+export type Recorte =
+  | { tipo: "dia"; dia: string }
+  | { tipo: "dimensao"; dimensao: Dimensao; chave: string; rotulo: string }
+  | { tipo: "formatoNome"; nome: string }
+  | { tipo: "calor"; dia: number; faixa: number };
+
+/** Texto curto que descreve o recorte clicado. */
+export function rotuloRecorte(r: Recorte) {
+  if (r.tipo === "dia") return `Dia ${r.dia}`;
+  if (r.tipo === "formatoNome") return `Formato · ${r.nome}`;
+  if (r.tipo === "calor") return `${DIAS_SEMANA[r.dia]} · ${FAIXAS_HORA[r.faixa]}h`;
+  const nomes: Record<Dimensao, string> = {
+    format: "Formato",
+    hook: "Gancho",
+    pillar_id: "Pilar",
+    theme: "Tema",
+    intent: "Intenção",
+    conta: "Conta",
+  };
+  return `${nomes[r.dimensao]} · ${r.rotulo}`;
+}
+
+/** Filtra as linhas já carregadas para o recorte selecionado. */
+export function filtrarPorRecorte(linhas: LinhaMetrica[], r: Recorte) {
+  if (r.tipo === "dia") {
+    return linhas.filter((l) => {
+      if (!l.published_at) return false;
+      const [, m, d] = l.published_at.slice(0, 10).split("-");
+      return `${d}/${m}` === r.dia;
+    });
+  }
+  if (r.tipo === "formatoNome") {
+    return linhas.filter((l) => rotuloFormato(l.format) === r.nome);
+  }
+  if (r.tipo === "calor") {
+    return linhas.filter((l) => {
+      if (!l.published_at) return false;
+      const p = partesSaoPaulo(l.published_at);
+      return p.dia === r.dia && p.faixa === r.faixa;
+    });
+  }
+  return linhas.filter((l) => (l[r.dimensao] as string | null) === r.chave);
+}

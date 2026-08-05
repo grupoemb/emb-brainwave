@@ -2,13 +2,22 @@ import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 import { PALETA } from "@/lib/metricas";
 
-export function DonutFormatos({ dados }: { dados: { nome: string; valor: number }[] }) {
+export function DonutFormatos({
+  dados,
+  aoSelecionar,
+}: {
+  dados: { nome: string; valor: number }[];
+  aoSelecionar?: (nome: string) => void;
+}) {
   const total = dados.reduce((s, d) => s + d.valor, 0);
 
   return (
     <div className="cartao p-4">
       <span className="rotulo">Posts por formato</span>
-      <p className="mt-1 text-xs text-muted">Como o volume do período se divide entre formatos.</p>
+      <p className="mt-1 text-xs text-muted">
+        Como o volume do período se divide entre formatos.
+        {aoSelecionar ? " Clique para ver os posts." : ""}
+      </p>
 
       <div className="relative mt-2 h-[210px] w-full">
         <ResponsiveContainer width="100%" height="100%">
@@ -22,7 +31,13 @@ export function DonutFormatos({ dados }: { dados: { nome: string; valor: number 
               paddingAngle={2}
               cornerRadius={4}
               stroke="none"
+              className={aoSelecionar ? "cursor-pointer" : ""}
+              onClick={(d: unknown) => {
+                const nome = (d as { name?: string; nome?: string })?.nome ?? (d as { name?: string })?.name;
+                if (aoSelecionar && nome) aoSelecionar(nome);
+              }}
               isAnimationActive={false}
+
             >
               {dados.map((_, i) => (
                 <Cell key={i} fill={PALETA[i % PALETA.length]} />
@@ -46,20 +61,29 @@ export function DonutFormatos({ dados }: { dados: { nome: string; valor: number 
         </div>
       </div>
 
-      <ul className="mt-3 space-y-1.5">
+      <ul className="mt-3 space-y-1">
         {dados.map((d, i) => (
-          <li key={d.nome} className="flex items-center gap-2 text-xs text-corpo">
-            <span
-              className="h-2.5 w-2.5 shrink-0 rounded-[3px]"
-              style={{ background: PALETA[i % PALETA.length] }}
-            />
-            <span className="flex-1 truncate">{d.nome}</span>
-            <span className="text-[.68rem] text-muted">
-              {total ? Math.round((d.valor / total) * 100) : 0}%
-            </span>
-            <span className="numero w-6 text-right text-txt">{d.valor}</span>
+          <li key={d.nome}>
+            <button
+              type="button"
+              disabled={!aoSelecionar}
+              onClick={() => aoSelecionar?.(d.nome)}
+              title={aoSelecionar ? `Ver os posts de ${d.nome}` : undefined}
+              className="flex w-full items-center gap-2 rounded-[.5rem] px-1.5 py-1 text-left text-xs text-corpo transition-colors enabled:hover:bg-white/6 disabled:cursor-default"
+            >
+              <span
+                className="h-2.5 w-2.5 shrink-0 rounded-[3px]"
+                style={{ background: PALETA[i % PALETA.length] }}
+              />
+              <span className="flex-1 truncate">{d.nome}</span>
+              <span className="text-[.68rem] text-muted">
+                {total ? Math.round((d.valor / total) * 100) : 0}%
+              </span>
+              <span className="numero w-6 text-right text-txt">{d.valor}</span>
+            </button>
           </li>
         ))}
+
         {!dados.length ? <li className="text-xs text-muted">Sem posts no período.</li> : null}
       </ul>
     </div>

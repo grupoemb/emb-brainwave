@@ -18,15 +18,18 @@ export function GraficoAlcance({
   dados,
   acumulado,
   onToggle,
+  aoSelecionar,
 }: {
   dados: { dia: string; alcance: number; acumulado: number }[];
   acumulado: boolean;
   onToggle: () => void;
+  aoSelecionar?: (dia: string) => void;
 }) {
   return (
     <div className="cartao p-4 lg:col-span-2">
       <div className="mb-3 flex items-center justify-between gap-3">
         <span className="rotulo">Alcance por dia</span>
+
         <button
           type="button"
           onClick={onToggle}
@@ -43,7 +46,16 @@ export function GraficoAlcance({
 
       <div className="h-[260px] w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={dados} margin={{ top: 6, right: 6, bottom: 0, left: -12 }}>
+          <AreaChart
+            data={dados}
+            margin={{ top: 6, right: 6, bottom: 0, left: -12 }}
+            className={aoSelecionar ? "cursor-pointer" : ""}
+            onClick={(e: unknown) => {
+              const rotulo = (e as { activeLabel?: string } | null)?.activeLabel;
+              if (aoSelecionar && rotulo) aoSelecionar(rotulo);
+            }}
+          >
+
             <defs>
               <linearGradient id="gradAlcance" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#00a4ff" stopOpacity={0.34} />
