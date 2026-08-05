@@ -4,6 +4,7 @@ import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 
 import { useOrg } from "@/hooks/useOrg";
+import { supabase } from "@/integrations/supabase/client";
 import {
   aceitarSugestao,
   audienciaDoPost,
@@ -181,3 +182,150 @@ export function useAudienciaPost(postId: string) {
 
   return { carregando: q.isPending, nota: q.data ?? null };
 }
+
+/* ─────────────── Inteligência do Painel (RPCs + alertas) ─────────────── */
+
+export type TaxasPainel = {
+  taxas: Record<string, number | null>;
+  conteudo: Record<string, number | null>;
+};
+
+export type JanelaHorario = {
+  dia: string | null;
+  faixa: string | null;
+  rx_medio: number | null;
+  alcance_medio: number | null;
+};
+
+export type AlertaPainel = {
+  id: string;
+  kind: string;
+  severity: string;
+  title: string;
+  body: string | null;
+  handle: string | null;
+  seen: boolean;
+  created_at: string;
+};
+
+function comoObjeto(v: unknown): Record<string, unknown> {
+  return v && typeof v === "object" && !Array.isArray(v) ? (v as Record<string, unknown>) : {};
+}
+
+function comoNumero(v: unknown): number | null {
+  const n = typeof v === "string" ? Number(v) : v;
+  return typeof n === "number" && Number.isFinite(n) ? n : null;
+}
+
+function normalizarNumeros(v: unknown): Record<string, number | null> {
+  const fonte = comoObjeto(v);
+  const saida: Record<string, number | null> = {};
+  for (const [k, valor] of Object.entries(fonte)) saida[k] = comoNumero(valor);
+  return saida;
+}
+
+/** Taxas do período (ERR, save/share/reach rate) e indicadores de conteúdo. */
+export function useTaxasPainel(dias: number, handle: string | null) {
+  const { organizationId } = useOrg();
+
+  return useQuery<TaxasPainel>({
+    queryKey: ["painel-taxas", organizationId, dias, handle],
+    enabled: !!organizationId,
+    staleTime: 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("kpis_taxas", {
+        p_org: organizationId!,
+        ...(handle ? { p_handle: handle } : {}),
+        p_dias: dias,
+      });
+      if (error) throw new Error(error.message);
+      const raiz = comoObjeto(data);
+      return {
+        taxas: normalizarNumeros(raiz["taxas"]),
+        conteudo: normalizarNumeros(raiz["conteudo"]),
+      };
+    },
+  });
+}
+
+/** Melhores janelas de publicação segundo o histórico da organização. */
+export function useMelhorHorario(handle: string | null) {
+  const { organizationId } = useOrg();
+
+  return useQuery<JanelaHorario[]>({
+    queryKey: ["painel-horario", organizationId, handle],
+    enabled: !!organizationId,
+    staleTime: 5 * 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("best_time_recommendation", {
+        p_org: organizationId!,
+        ...(handle ? { p_handle: handle } : {}),
+      });
+      if (error) throw new Error(error.message);
+      const lista = comoObjeto(data)["melhores"];
+      if (!Array.isArray(lista)) return [];
+      return lista.map((item) => {
+        const o = comoObjeto(item);
+        return {
+          dia: typeof o["dia"] === "string" ? o["dia"] : null,
+          faixa: typeof o["faixa"] === "string" ? o["faixa"] : String(o["faixa"] ?? "") || null,
+          rx_medio: comoNumero(o["rx_medio"]),
+          alcance_medio: comoNumero(o["alcance_medio"]),
+        };
+      });
+    },
+  });
+}
+
+/** Últimos alertas da organização + ação de marcar como visto. */
+export function useAlertas() {
+  const { organizationId } = useOrg();
+  const qc = useQueryClient();
+  const chave = ["painel-alertas", organizationId];
+
+  const q = useQuery<AlertaPainel[]>({
+    queryKey: chave,
+    enabled: !!organizationId,
+    staleTime: 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("alerts")
+        .select("*")
+        .eq("organization_id", organizationId!)
+        .order("created_at", { ascending: false })
+        .limit(8);
+      if (error) throw new Error(error.message);
+      return (data ?? []) as AlertaPainel[];
+    },
+  });
+
+  const marcarVisto = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("alerts").update({ seen: true }).eq("id", id);
+      if (error) throw new Error(error.message);
+    },
+    onMutate: async (id: string) => {
+      await qc.cancelQueries({ queryKey: chave });
+      const antes = qc.getQueryData<AlertaPainel[]>(chave);
+      qc.setQueryData<AlertaPainel[]>(chave, (lista) =>
+        (lista ?? []).map((a) => (a.id === id ? { ...a, seen: true } : a)),
+      );
+      return { antes };
+    },
+    onError: (_e, _id, ctx) => {
+      if (ctx?.antes) qc.setQueryData(chave, ctx.antes);
+    },
+    onSettled: () => qc.invalidateQueries({ queryKey: chave }),
+  });
+
+  const alertas = q.data ?? [];
+
+  return {
+    alertas,
+    naoVistos: alertas.filter((a) => !a.seen).length,
+    carregando: q.isPending,
+    erro: q.error instanceof Error ? q.error.message : null,
+    marcarVisto,
+  };
+}
+
