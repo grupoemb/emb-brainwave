@@ -7,7 +7,9 @@ import { Metricas } from "@/components/metricas/Metricas";
 const buscaMetricas = z.object({
   dias: fallback(z.number().int(), 30).default(30),
   origem: fallback(z.string(), "").default(""),
+  aba: fallback(z.string(), "geral").default("geral"),
 });
+
 
 export const Route = createFileRoute("/_authenticated/metricas")({
   validateSearch: zodValidator(buscaMetricas),
