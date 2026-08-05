@@ -221,9 +221,9 @@ export function Biblioteca() {
       ) : filtrados.length === 0 ? (
         <EstadoVazio
           titulo={temFiltro ? "Nenhum item com esse recorte." : "Sua biblioteca está vazia"}
-          descricao={
-            temFiltro ? undefined : "No Radar, adicione os reels que valem estudar."
-          }
+          {...(temFiltro
+            ? {}
+            : { descricao: "No Radar, adicione os reels que valem estudar." })}
           {...(temFiltro
             ? {
                 acao: (
