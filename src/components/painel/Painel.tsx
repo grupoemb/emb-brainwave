@@ -165,7 +165,7 @@ export function Painel() {
           <div className="flex items-center gap-3">
             <span className="text-xs text-muted">{textoFrescor(coleta)}</span>
             <span aria-hidden className="hidden h-5 w-px bg-line sm:block" />
-            <LogoB7 altura={16} className="hidden opacity-70 sm:block" />
+            <LogoB7 altura={20} className="hidden opacity-70 sm:block" />
           </div>
         }
 

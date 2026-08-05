@@ -77,7 +77,7 @@ function Navegacao({ aoNavegar }: { aoNavegar?: () => void }) {
 function Marca() {
   return (
     <div className="flex h-14 items-center gap-2.5 px-4">
-      <LogoB7 altura={18} className="shrink-0" />
+      <LogoB7 altura={20} className="shrink-0" />
       <span aria-hidden className="h-4 w-px shrink-0 bg-lineForte" />
       <span className="truncate text-sm font-bold">
         <span className="grad">Central</span> de Conteúdo
