@@ -1,7 +1,15 @@
+import type React from "react";
+
 import { EstadoVazio } from "@/components/ui/EstadoVazio";
 import { numero, type ItemDimensao } from "@/lib/metricas";
 
-export function ComparativoContas({ contas }: { contas: ItemDimensao[] }) {
+export function ComparativoContas({
+  contas,
+  aoSelecionar,
+}: {
+  contas: ItemDimensao[];
+  aoSelecionar?: (conta: ItemDimensao) => void;
+}) {
   const maxAlcance = contas.reduce((m, c) => Math.max(m, c.alcance), 0) || 1;
 
   return (
@@ -18,7 +26,25 @@ export function ComparativoContas({ contas }: { contas: ItemDimensao[] }) {
       ) : (
         <div className="mt-4 space-y-4">
           {contas.map((c) => (
-            <div key={c.chave}>
+            <div
+              key={c.chave}
+              {...(aoSelecionar
+                ? {
+                    role: "button" as const,
+                    tabIndex: 0,
+                    title: `Ver os ${c.n} posts de ${c.rotulo}`,
+                    onClick: () => aoSelecionar(c),
+                    onKeyDown: (e: React.KeyboardEvent) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        aoSelecionar(c);
+                      }
+                    },
+                    className:
+                      "cursor-pointer rounded-[.6rem] px-1.5 py-1 transition-colors hover:bg-white/6",
+                  }
+                : {})}
+            >
               <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <span className="text-sm text-txt">{c.rotulo}</span>
                 <span className="flex items-center gap-3 text-xs text-muted">
