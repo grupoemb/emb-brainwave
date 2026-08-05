@@ -304,6 +304,7 @@ export function Metricas() {
                   descricao="quantas pessoas viram e quantas vezes"
                   colunas="grid-cols-2 lg:grid-cols-4"
                 >
+                  <KpiSeguidores compactoVisual />
                   <CartaoKpi
                     familia="alcance"
                     destaque
