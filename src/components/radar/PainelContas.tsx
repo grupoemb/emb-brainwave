@@ -1,11 +1,14 @@
 import { useMemo, useState } from "react";
+import { getRouteApi, useNavigate } from "@tanstack/react-router";
 import { ChevronDown, Users } from "lucide-react";
 
 import { BarrasContas } from "@/components/radar/BarrasContas";
+import { BuscaPerfil } from "@/components/radar/BuscaPerfil";
 import { CartaoConta } from "@/components/radar/CartaoConta";
 import { DrawerConta } from "@/components/radar/DrawerConta";
 import { LeituraSemana } from "@/components/radar/LeituraSemana";
 import { LinhaCompacta, LinhaRanking } from "@/components/radar/LinhaRanking";
+
 import { RankingReels } from "@/components/radar/RankingReels";
 import { CabecalhoTela } from "@/components/ui/CabecalhoTela";
 import { EstadoVazio } from "@/components/ui/EstadoVazio";
@@ -25,6 +28,9 @@ import {
 } from "@/lib/ranking";
 
 const DIAS = 90;
+
+const rota = getRouteApi("/_authenticated/radar");
+
 
 function CartaoKpiSimples({ rotulo, valor }: { rotulo: string; valor: string }) {
   return (
@@ -69,7 +75,26 @@ export function PainelContas() {
   const porPerfil = useMemo(() => topPorPerfil(reels, 3), [reels]);
   const inteligencia = useMemo(() => inteligenciaRapida(reels), [reels]);
 
+  const busca = rota.useSearch().handle ?? "";
+  const navigate = useNavigate();
+  const definirBusca = (v: string) => {
+    void navigate({
+      to: "/radar",
+      replace: true,
+      search: (prev) => ({ ...prev, handle: v.trim() ? v.trim() : undefined }),
+    });
+  };
+
+  const alvo = busca.trim().toLowerCase().replace(/^@/, "");
+  const perfisFiltrados = useMemo(
+    () => (alvo ? porPerfil.filter((g) => g.handle.toLowerCase().includes(alvo)) : porPerfil),
+    [porPerfil, alvo],
+  );
+  const focado = alvo !== "" && perfisFiltrados.length === 1;
+
   const melhorAlavanca = alavancaDe(inteligencia.alavanca);
+
+
 
   return (
     <div className="space-y-5">
@@ -174,23 +199,59 @@ export function PainelContas() {
 
       {/* 5 · Top 3 por perfil */}
       {porPerfil.length > 0 ? (
-        <div className="grid gap-3 lg:grid-cols-2">
-          {porPerfil.map((g) => (
-            <section key={g.handle} className="cartao overflow-hidden">
-              <h2 className="px-3 py-2.5 text-sm font-bold text-txt">Top 3 · @{g.handle}</h2>
-              {g.reels.length === 0 ? (
-                <p className="px-3 pb-3 text-xs text-muted">Sem reels classificados nesta conta.</p>
-              ) : (
-                <ul className="border-t border-line">
-                  {g.reels.map((r, i) => (
-                    <LinhaCompacta key={r.id} reel={r} posicao={r.rank_perfil ?? i + 1} />
-                  ))}
-                </ul>
-              )}
-            </section>
-          ))}
+        <div className="space-y-3">
+          <BuscaPerfil
+            termo={busca}
+            aoMudar={definirBusca}
+            handles={porPerfil.map((g) => g.handle)}
+          />
+
+          {perfisFiltrados.length === 0 ? (
+            <EstadoVazio
+              compacto
+              marca={false}
+              titulo={`Nenhum perfil encontrado para "@${alvo}".`}
+              descricao="Confira o handle ou limpe a busca para ver todos os perfis."
+              acao={
+                <button type="button" className="btn px-3 py-1 text-xs" onClick={() => definirBusca("")}>
+                  Limpar busca
+                </button>
+              }
+            />
+          ) : (
+            <div className={focado ? "grid gap-3" : "grid gap-3 lg:grid-cols-2"}>
+              {perfisFiltrados.map((g) => (
+                <section key={g.handle} className="cartao overflow-hidden">
+                  <div className="flex items-center justify-between gap-3 px-3 py-2.5">
+                    <h2 className="text-sm font-bold text-txt">Top 3 · @{g.handle}</h2>
+                    {focado ? (
+                      <button
+                        type="button"
+                        className="btn px-2.5 py-1 text-xs"
+                        onClick={() => setAberta(g.handle)}
+                      >
+                        Ver ranking completo
+                      </button>
+                    ) : null}
+                  </div>
+                  {g.reels.length === 0 ? (
+                    <p className="px-3 pb-3 text-xs text-muted">
+                      Sem reels classificados nesta conta.
+                    </p>
+                  ) : (
+                    <ul className="border-t border-line">
+                      {g.reels.map((r, i) => (
+                        <LinhaCompacta key={r.id} reel={r} posicao={r.rank_perfil ?? i + 1} />
+                      ))}
+                    </ul>
+                  )}
+                </section>
+              ))}
+            </div>
+          )}
         </div>
       ) : null}
+
 
       {/* 6 · Visão geral das contas (secundária) */}
       <section className="cartao overflow-hidden">
