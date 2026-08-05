@@ -1,3 +1,4 @@
+import { EstadoVazio } from "@/components/ui/EstadoVazio";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -109,7 +110,7 @@ function AbaAprovacao({ postId }: { postId: string }) {
           </div>
         )}
         {!carregando && aprovacoes.length === 0 && (
-          <p className="text-xs text-muted">Nenhuma revisão ainda.</p>
+          <EstadoVazio compacto marca={false} titulo="Nenhuma revisão ainda." />
         )}
         {aprovacoes.map((a) => (
           <div key={a.id} className="flex gap-2">
@@ -148,7 +149,7 @@ function AbaVersoes({
         </>
       )}
       {!carregando && versoes.length === 0 && (
-        <p className="text-xs text-muted">Nenhuma versão salva ainda.</p>
+        <EstadoVazio compacto marca={false} titulo="Nenhuma versão salva ainda." />
       )}
 
       {versoes.map((v) => {

@@ -1,3 +1,4 @@
+import { EstadoVazio } from "@/components/ui/EstadoVazio";
 import { Sparkles } from "lucide-react";
 
 import { useAudienciaOrg } from "@/hooks/useInteligencia";
@@ -37,9 +38,11 @@ export function AudienciaPede() {
           <div className="h-3 w-2/3 esqueleto rounded" />
         </div>
       ) : vazio ? (
-        <p className="text-sm text-muted">
-          Aguardando leitura de comentários — permissão pendente nos tokens das contas.
-        </p>
+        <EstadoVazio
+          compacto
+          titulo="Aguardando leitura de comentários"
+          descricao="Permissão pendente nos tokens das contas."
+        />
       ) : (
         <div className="space-y-4">
           <Lista titulo="Perguntas recorrentes" itens={perguntas} />

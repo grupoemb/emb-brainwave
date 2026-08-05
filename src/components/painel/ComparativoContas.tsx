@@ -1,3 +1,4 @@
+import { EstadoVazio } from "@/components/ui/EstadoVazio";
 import { Link } from "@tanstack/react-router";
 import { ArrowDownRight, ArrowUpRight, Flame } from "lucide-react";
 
@@ -55,9 +56,11 @@ export function ComparativoContas({
     return (
       <div className="cartao p-4">
         <h2 className="rotulo mb-2">Comparativo de contas — {dias} dias</h2>
-        <p className="text-xs text-muted">
-          Nenhum post publicado nesta janela — experimente 30 dias.
-        </p>
+        <EstadoVazio
+          compacto
+          titulo="Nenhum post publicado nesta janela"
+          descricao="Experimente ampliar o período para 30 dias."
+        />
       </div>
     );
   }

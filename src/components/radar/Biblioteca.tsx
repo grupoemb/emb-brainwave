@@ -1,3 +1,4 @@
+import { EstadoVazio } from "@/components/ui/EstadoVazio";
 import { useMemo, useState } from "react";
 import { Plus, Search, Sparkles } from "lucide-react";
 
@@ -218,27 +219,30 @@ export function Biblioteca() {
           ))}
         </div>
       ) : filtrados.length === 0 ? (
-        <div className="cartao p-8 text-center text-sm text-muted">
-          {temFiltro ? (
-            <>
-              Nenhum item com esse recorte.{" "}
-              <button
-                type="button"
-                className="text-azureClaro hover:underline"
-                onClick={() => {
-                  setNicho("todos");
-                  setPerfil("todos");
-                  setGancho("todos");
-                  setBusca("");
-                }}
-              >
-                limpar filtros
-              </button>
-            </>
-          ) : (
-            "Sua biblioteca está vazia. No Radar, adicione os reels que valem estudar."
-          )}
-        </div>
+        <EstadoVazio
+          titulo={temFiltro ? "Nenhum item com esse recorte." : "Sua biblioteca está vazia"}
+          descricao={
+            temFiltro ? undefined : "No Radar, adicione os reels que valem estudar."
+          }
+          {...(temFiltro
+            ? {
+                acao: (
+                  <button
+                    type="button"
+                    className="btn px-3 py-1.5 text-xs"
+                    onClick={() => {
+                      setNicho("todos");
+                      setPerfil("todos");
+                      setGancho("todos");
+                      setBusca("");
+                    }}
+                  >
+                    limpar filtros
+                  </button>
+                ),
+              }
+            : {})}
+        />
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {filtrados.map((i) => (
