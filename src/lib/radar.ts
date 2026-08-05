@@ -47,6 +47,8 @@ export function normalizarScan(bruto: unknown): RespostaScan {
       vx: num(x["vx"]),
       likes: num(x["likes"]),
       comments: num(x["comments"]),
+      reach: num(x["reach"]),
+      saves: num(x["saves"]),
       duration_s: num(x["duration_s"]),
       cover: texto(x["cover"]),
       caption: texto(x["caption"]),
@@ -57,8 +59,10 @@ export function normalizarScan(bruto: unknown): RespostaScan {
     handle: (texto(o["handle"]) ?? "perfil").replace(/^@/, ""),
     count: num(o["count"]) ?? reels.length,
     median: num(o["median"]),
+    source: texto(o["source"]),
     reels,
   };
+
 }
 
 /** Classe da pill de vx: verde ≥1.3, neutra 0.7–1.3, coral <0.7. */
