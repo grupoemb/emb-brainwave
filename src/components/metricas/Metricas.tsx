@@ -523,46 +523,100 @@ export function Metricas() {
           ) : null}
 
           {aba === "ritmo" ? (
-            <>
+            m.calor.max === 0 ? (
               <div className="secao-entrada">
-                <MapaDeCalor grade={m.calor.grade} max={m.calor.max} melhor={m.calor.melhor} />
-              </div>
-              <div className="secao-entrada">
-                <RitmoPublicacao cadencia={m.cadencia} maturacao={m.maturacao} />
-              </div>
-              <div className="secao-entrada">
-                <BarrasDimensao
-                  titulo="Desempenho por intenção"
-                  descricao="Educar, vender, engajar: o que a audiência responde melhor."
-                  itens={m.porIntencao}
-                  vazio="Nenhum post do período tem intenção classificada."
+                <EstadoVazio
+                  icone={<Clock size={16} />}
+                  titulo="Ainda sem leitura de horários"
+                  descricao="Precisamos de posts com data e alcance coletado para montar o mapa de calor deste período."
+                  acao={
+                    <button
+                      type="button"
+                      className="btn px-3 py-1.5 text-xs"
+                      onClick={() => m.setDias(90)}
+                    >
+                      Ver 90 dias
+                    </button>
+                  }
                 />
               </div>
-            </>
+            ) : (
+              <>
+                <div className="secao-entrada">
+                  <MapaDeCalor grade={m.calor.grade} max={m.calor.max} melhor={m.calor.melhor} />
+                </div>
+                <div className="secao-entrada">
+                  <RitmoPublicacao cadencia={m.cadencia} maturacao={m.maturacao} />
+                </div>
+                <div className="secao-entrada">
+                  <BarrasDimensao
+                    titulo="Desempenho por intenção"
+                    descricao="Educar, vender, engajar: o que a audiência responde melhor."
+                    itens={m.porIntencao}
+                    vazio="Nenhum post do período tem intenção classificada."
+                  />
+                </div>
+              </>
+            )
           ) : null}
 
           {aba === "contas" ? (
-            <div className="secao-entrada space-y-4">
-              <ComparativoContas contas={m.porConta} />
-              <BarrasDimensao
-                titulo="rx médio por conta"
-                descricao="Performance relativa à mediana do formato, conta a conta."
-                itens={m.porConta}
-                vazio="Nenhuma conta identificada nos posts do período."
-              />
-            </div>
+            m.porConta.length === 0 ? (
+              <div className="secao-entrada">
+                <EstadoVazio
+                  icone={<Users size={16} />}
+                  titulo="Nenhuma conta identificada"
+                  descricao="Os posts do período não têm conta de origem registrada. Conecte ou revise as contas em Ajustes."
+                  acao={
+                    <Link to="/ajustes" className="btn-primario px-3 py-1.5 text-xs">
+                      Abrir Ajustes › Contas
+                    </Link>
+                  }
+                />
+              </div>
+            ) : (
+              <div className="secao-entrada space-y-4">
+                <ComparativoContas contas={m.porConta} />
+                <BarrasDimensao
+                  titulo="rx médio por conta"
+                  descricao="Performance relativa à mediana do formato, conta a conta."
+                  itens={m.porConta}
+                  vazio="Nenhuma conta identificada nos posts do período."
+                />
+              </div>
+            )
           ) : null}
 
           {aba === "benchmark" ? (
-            <Benchmark
-              linhas={m.linhas}
-              baselines={m.baselines}
-              taxas={t}
-              publicados={k.publicados}
-              porSemana={m.cadencia.porSemana}
-              porConta={m.porConta}
-            />
+            m.baselines.length === 0 ? (
+              <div className="secao-entrada">
+                <EstadoVazio
+                  icone={<Target size={16} />}
+                  titulo="Base de comparação ainda vazia"
+                  descricao="Sem medianas por formato não dá para posicionar você nas faixas de mercado. Elas aparecem depois das primeiras coletas."
+                  acao={
+                    <button
+                      type="button"
+                      className="btn px-3 py-1.5 text-xs"
+                      onClick={m.atualizar}
+                    >
+                      Atualizar dados
+                    </button>
+                  }
+                />
+              </div>
+            ) : (
+              <Benchmark
+                linhas={m.linhas}
+                baselines={m.baselines}
+                taxas={t}
+                publicados={k.publicados}
+                porSemana={m.cadencia.porSemana}
+                porConta={m.porConta}
+              />
+            )
           ) : null}
+
         </>
       )}
     </Revelar>
