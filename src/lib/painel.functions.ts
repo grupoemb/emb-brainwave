@@ -138,8 +138,16 @@ export const carregarPainel = createServerFn({ method: "GET" })
       }
     }
 
-    const publicados = (publicadosRes.data ?? []) as PostBrutoPainel[];
-    const anteriores = (anterioresRes.data ?? []) as PostBrutoPainel[];
+    const handleFiltro = data.handle?.trim() ? data.handle.trim() : null;
+    const doPerfil = (p: PostBrutoPainel) => {
+      const bruto = p.meta?.["source_handle"];
+      return typeof bruto === "string" && bruto === handleFiltro;
+    };
+
+    const publicadosTodos = (publicadosRes.data ?? []) as PostBrutoPainel[];
+    const anterioresTodos = (anterioresRes.data ?? []) as PostBrutoPainel[];
+    const publicados = handleFiltro ? publicadosTodos.filter(doPerfil) : publicadosTodos;
+    const anteriores = handleFiltro ? anterioresTodos.filter(doPerfil) : anterioresTodos;
     const baselines = (baseRes.data ?? []) as BaselineBruta[];
 
     const contasBrutas = (contasRes.data ?? []) as {
@@ -148,14 +156,23 @@ export const carregarPainel = createServerFn({ method: "GET" })
       meta: Record<string, unknown> | null;
       connected_at: string | null;
     }[];
+
+    const avatarDe = (meta: Record<string, unknown> | null) => {
+      const url = meta?.["avatar_url"];
+      return typeof url === "string" && url ? url : null;
+    };
+
+    /** Lista completa e estável de perfis — nunca sofre o filtro. */
+    const perfis = contasBrutas
+      .map((c) => ({ handle: c.handle, avatarUrl: avatarDe(c.meta) }))
+      .sort((a, b) => a.handle.localeCompare(b.handle));
+
     const contasInfo = new Map<string, { channel: string | null; avatarUrl: string | null }>();
     for (const c of contasBrutas) {
-      const url = c.meta?.["avatar_url"];
-      contasInfo.set(c.handle, {
-        channel: c.channel,
-        avatarUrl: typeof url === "string" && url ? url : null,
-      });
+      if (handleFiltro && c.handle !== handleFiltro) continue;
+      contasInfo.set(c.handle, { channel: c.channel, avatarUrl: avatarDe(c.meta) });
     }
+
 
     const [leiturasRes, leiturasAntRes] = await Promise.all([
       publicados.length
