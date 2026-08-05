@@ -2,13 +2,22 @@ import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 import { PALETA } from "@/lib/metricas";
 
-export function DonutFormatos({ dados }: { dados: { nome: string; valor: number }[] }) {
+export function DonutFormatos({
+  dados,
+  aoSelecionar,
+}: {
+  dados: { nome: string; valor: number }[];
+  aoSelecionar?: (nome: string) => void;
+}) {
   const total = dados.reduce((s, d) => s + d.valor, 0);
 
   return (
     <div className="cartao p-4">
       <span className="rotulo">Posts por formato</span>
-      <p className="mt-1 text-xs text-muted">Como o volume do período se divide entre formatos.</p>
+      <p className="mt-1 text-xs text-muted">
+        Como o volume do período se divide entre formatos.
+        {aoSelecionar ? " Clique para ver os posts." : ""}
+      </p>
 
       <div className="relative mt-2 h-[210px] w-full">
         <ResponsiveContainer width="100%" height="100%">
@@ -22,7 +31,13 @@ export function DonutFormatos({ dados }: { dados: { nome: string; valor: number 
               paddingAngle={2}
               cornerRadius={4}
               stroke="none"
+              className={aoSelecionar ? "cursor-pointer" : undefined}
+              onClick={(d: unknown) => {
+                const nome = (d as { name?: string; nome?: string })?.nome ?? (d as { name?: string })?.name;
+                if (aoSelecionar && nome) aoSelecionar(nome);
+              }}
               isAnimationActive={false}
+
             >
               {dados.map((_, i) => (
                 <Cell key={i} fill={PALETA[i % PALETA.length]} />
