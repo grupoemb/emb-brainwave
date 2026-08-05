@@ -1,5 +1,5 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
-import { Lightbulb } from "lucide-react";
+import { Lightbulb, Sparkles, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { CabecalhoTela } from "@/components/ui/CabecalhoTela";
@@ -30,6 +30,7 @@ export function Pautas() {
     ultimaRodada,
     aceitar,
     descartar,
+    gerar,
   } = usePautas();
 
   const ocupado = aceitar.isPending || descartar.isPending;
@@ -59,11 +60,36 @@ export function Pautas() {
       <CabecalhoTela
         icone={<Lightbulb size={17} />}
         titulo="Pautas"
-        descricao="O cérebro gera pautas novas toda segunda de manhã, e aprende com o resultado de cada pauta aceita."
+        descricao="O cérebro sugere pautas o tempo todo — sempre que aprende algo novo (post coletado, insight, post que bombou) — e aprende com cada pauta aceita."
         acoes={
-          <span className="text-xs text-muted">
-            última rodada {haQuanto(ultimaRodada)}
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-muted">
+              última rodada {haQuanto(ultimaRodada)}
+            </span>
+            <button
+              type="button"
+              className="btn btn-primario"
+              disabled={gerar.isPending}
+              onClick={() =>
+                gerar.mutate(undefined, {
+                  onSuccess: () => toast.success("Pautas novas geradas."),
+                  onError: (e: Error) => toast.error(e.message),
+                })
+              }
+            >
+              {gerar.isPending ? (
+                <>
+                  <Loader2 size={14} className="animate-spin" />
+                  Gerando…
+                </>
+              ) : (
+                <>
+                  <Sparkles size={14} />
+                  Gerar pautas agora
+                </>
+              )}
+            </button>
+          </div>
         }
       />
 
@@ -97,7 +123,7 @@ export function Pautas() {
           <VazioFiltrado
             mensagem={
               filtros.status === "new"
-                ? "Nenhuma pauta nova. A próxima rodada automática é segunda de manhã."
+                ? "Nenhuma pauta nova agora. O cérebro repõe sozinho ao longo do dia — ou clique em Gerar agora."
                 : "Nada por aqui ainda."
             }
             acao={doPainel ? "ver todas as pautas" : undefined}

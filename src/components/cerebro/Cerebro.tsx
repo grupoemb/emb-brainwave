@@ -24,7 +24,7 @@ export function Cerebro() {
       <CabecalhoTela
         icone={<Brain size={17} />}
         titulo="Cérebro"
-        descricao="O playbook vivo da marca e o que a análise semanal aprendeu."
+        descricao="O playbook vivo da marca e o que a análise contínua aprendeu."
         acoes={<span className="text-xs text-muted">última análise {haQuanto(ultimaAnalise)}</span>}
       />
 
@@ -89,10 +89,10 @@ export function Cerebro() {
             <EstadoVazio
               compacto
               titulo="O playbook ainda não foi escrito"
-              descricao="Ele nasce da análise semanal automática."
+              descricao="Ele nasce da análise contínua automática."
             />
           )}
-          <p className="text-xs text-muted">Atualizado automaticamente pela análise semanal.</p>
+          <p className="text-xs text-muted">Atualizado automaticamente pela análise contínua.</p>
         </div>
 
           <AudienciaPede />
