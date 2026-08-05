@@ -18,6 +18,7 @@ import { Route as AuthenticatedCerebroRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedConcorrentesRouteImport } from './routes/_authenticated/concorrentes'
 import { Route as AuthenticatedCriarRouteImport } from './routes/_authenticated/criar'
 import { Route as AuthenticatedKanbanRouteImport } from './routes/_authenticated/kanban'
+import { Route as AuthenticatedMetasRouteImport } from './routes/_authenticated/metas'
 import { Route as AuthenticatedMetricasRouteImport } from './routes/_authenticated/metricas'
 import { Route as AuthenticatedPautasRouteImport } from './routes/_authenticated/pautas'
 import { Route as AuthenticatedRadarRouteImport } from './routes/_authenticated/radar'
@@ -68,6 +69,11 @@ const AuthenticatedKanbanRoute = AuthenticatedKanbanRouteImport.update({
   path: '/kanban',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedMetasRoute = AuthenticatedMetasRouteImport.update({
+  id: '/metas',
+  path: '/metas',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedMetricasRoute = AuthenticatedMetricasRouteImport.update({
   id: '/metricas',
   path: '/metricas',
@@ -98,6 +104,7 @@ export interface FileRoutesByFullPath {
   '/concorrentes': typeof AuthenticatedConcorrentesRoute
   '/criar': typeof AuthenticatedCriarRoute
   '/kanban': typeof AuthenticatedKanbanRoute
+  '/metas': typeof AuthenticatedMetasRoute
   '/metricas': typeof AuthenticatedMetricasRoute
   '/pautas': typeof AuthenticatedPautasRoute
   '/radar': typeof AuthenticatedRadarRoute
@@ -111,6 +118,7 @@ export interface FileRoutesByTo {
   '/concorrentes': typeof AuthenticatedConcorrentesRoute
   '/criar': typeof AuthenticatedCriarRoute
   '/kanban': typeof AuthenticatedKanbanRoute
+  '/metas': typeof AuthenticatedMetasRoute
   '/metricas': typeof AuthenticatedMetricasRoute
   '/pautas': typeof AuthenticatedPautasRoute
   '/radar': typeof AuthenticatedRadarRoute
@@ -127,6 +135,7 @@ export interface FileRoutesById {
   '/_authenticated/concorrentes': typeof AuthenticatedConcorrentesRoute
   '/_authenticated/criar': typeof AuthenticatedCriarRoute
   '/_authenticated/kanban': typeof AuthenticatedKanbanRoute
+  '/_authenticated/metas': typeof AuthenticatedMetasRoute
   '/_authenticated/metricas': typeof AuthenticatedMetricasRoute
   '/_authenticated/pautas': typeof AuthenticatedPautasRoute
   '/_authenticated/radar': typeof AuthenticatedRadarRoute
@@ -144,6 +153,7 @@ export interface FileRouteTypes {
     | '/concorrentes'
     | '/criar'
     | '/kanban'
+    | '/metas'
     | '/metricas'
     | '/pautas'
     | '/radar'
@@ -157,6 +167,7 @@ export interface FileRouteTypes {
     | '/concorrentes'
     | '/criar'
     | '/kanban'
+    | '/metas'
     | '/metricas'
     | '/pautas'
     | '/radar'
@@ -172,6 +183,7 @@ export interface FileRouteTypes {
     | '/_authenticated/concorrentes'
     | '/_authenticated/criar'
     | '/_authenticated/kanban'
+    | '/_authenticated/metas'
     | '/_authenticated/metricas'
     | '/_authenticated/pautas'
     | '/_authenticated/radar'
@@ -249,6 +261,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedKanbanRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/metas': {
+      id: '/_authenticated/metas'
+      path: '/metas'
+      fullPath: '/metas'
+      preLoaderRoute: typeof AuthenticatedMetasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/metricas': {
       id: '/_authenticated/metricas'
       path: '/metricas'
@@ -287,6 +306,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedConcorrentesRoute: typeof AuthenticatedConcorrentesRoute
   AuthenticatedCriarRoute: typeof AuthenticatedCriarRoute
   AuthenticatedKanbanRoute: typeof AuthenticatedKanbanRoute
+  AuthenticatedMetasRoute: typeof AuthenticatedMetasRoute
   AuthenticatedMetricasRoute: typeof AuthenticatedMetricasRoute
   AuthenticatedPautasRoute: typeof AuthenticatedPautasRoute
   AuthenticatedRadarRoute: typeof AuthenticatedRadarRoute
@@ -301,6 +321,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedConcorrentesRoute: AuthenticatedConcorrentesRoute,
   AuthenticatedCriarRoute: AuthenticatedCriarRoute,
   AuthenticatedKanbanRoute: AuthenticatedKanbanRoute,
+  AuthenticatedMetasRoute: AuthenticatedMetasRoute,
   AuthenticatedMetricasRoute: AuthenticatedMetricasRoute,
   AuthenticatedPautasRoute: AuthenticatedPautasRoute,
   AuthenticatedRadarRoute: AuthenticatedRadarRoute,
@@ -318,13 +339,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

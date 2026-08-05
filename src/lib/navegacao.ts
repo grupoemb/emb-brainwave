@@ -5,6 +5,7 @@ import {
   PenLine,
   BarChart3,
   Lightbulb,
+  Target,
   Brain,
   Radar,
   Settings,
@@ -63,6 +64,13 @@ export const GRUPOS: { grupo: string; itens: ItemNav[] }[] = [
         icone: BarChart3,
         subtitulo: "Desempenho, ritmo e benchmark",
         sinonimos: ["alcance", "engajamento", "benchmark", "kpi", "rx"],
+      },
+      {
+        rotulo: "Metas",
+        to: "/metas",
+        icone: Target,
+        subtitulo: "Alvos, ritmo e projeção de cada KPI",
+        sinonimos: ["objetivo", "pace", "ritmo", "projecao", "meta"],
       },
       {
         rotulo: "Pautas",
