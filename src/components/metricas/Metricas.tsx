@@ -315,7 +315,35 @@ export function Metricas() {
                   descricao="quantas pessoas viram e quantas vezes"
                   colunas="grid-cols-2 lg:grid-cols-4"
                 >
-                  <KpiSeguidores compactoVisual />
+                  <KpiSeguidores
+                    compactoVisual
+                    delta={novosSeguidores}
+                    rotuloDelta={rotuloPeriodo}
+                  />
+                  <CartaoKpi
+                    familia="alcance"
+                    icone={<UserPlus size={13} />}
+                    rotulo="Novos seguidores"
+                    carregando={segAtual.carregando}
+                    {...(semBaseSeguidores
+                      ? {
+                          texto: segAtual.semContas ? null : "coletando",
+                          formula: segAtual.dados.primeiroDia
+                            ? `Histórico de seguidores começou em ${new Date(
+                                `${segAtual.dados.primeiroDia}T12:00:00`,
+                              ).toLocaleDateString("pt-BR")}. São necessários ao menos 2 dias de coleta para calcular o ganho do período.`
+                            : "Sem histórico de seguidores para as contas do recorte no período. O cálculo aparece assim que houver 2 dias de coleta.",
+                        }
+                      : {
+                          valor: novosSeguidores,
+                          valorAnterior: anterior(segAnterior.dados.delta),
+                          serie: sparkSeguidores,
+                          formula:
+                            "Seguidores no último dia do período menos os do primeiro dia com leitura, somando as contas do recorte.",
+                        })}
+                    {...extras}
+                  />
+
                   <CartaoKpi
                     familia="alcance"
                     destaque
