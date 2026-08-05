@@ -31,7 +31,7 @@ export function DonutFormatos({
               paddingAngle={2}
               cornerRadius={4}
               stroke="none"
-              className={aoSelecionar ? "cursor-pointer" : undefined}
+              className={aoSelecionar ? "cursor-pointer" : ""}
               onClick={(d: unknown) => {
                 const nome = (d as { name?: string; nome?: string })?.nome ?? (d as { name?: string })?.name;
                 if (aoSelecionar && nome) aoSelecionar(nome);
