@@ -180,21 +180,65 @@ export function Metricas() {
           />
         </div>
       ) : semPosts ? (
-        <div className="cartao secao-entrada flex flex-col items-center gap-3 p-8 text-center">
-          <p className="text-sm text-muted">
-            {doPainel && m.dias === 7
-              ? "Sem leituras de métricas nos últimos 7 dias."
-              : m.houveColeta
-                ? "Nenhum post no período selecionado"
-                : "Aguardando a primeira coleta das contas"}
-          </p>
-          {doPainel && m.dias === 7 ? (
-            <button className="btn px-3 py-1.5 text-xs" onClick={() => m.setDias(30)}>
-              ver 30 dias
-            </button>
-          ) : null}
+        <div className="secao-entrada">
+          {comRecorte && m.houveColeta ? (
+            <EstadoVazio
+              variante="filtro"
+              icone={<Filter size={16} />}
+              titulo="Nenhum post com os recortes atuais"
+              descricao="Os filtros de conta e pilar deixaram o período sem posts. Limpe os recortes para ver tudo."
+              acao={
+                <button
+                  type="button"
+                  className="btn px-3 py-1.5 text-xs"
+                  onClick={() => {
+                    m.setConta("todas");
+                    m.setPilar("todos");
+                  }}
+                >
+                  Limpar recortes
+                </button>
+              }
+            />
+          ) : m.houveColeta ? (
+            <EstadoVazio
+              icone={<CalendarRange size={16} />}
+              titulo="Nenhum post neste período"
+              descricao={`Não há posts publicados nos últimos ${m.dias} dias. Amplie a janela para encontrar conteúdo.`}
+              acao={
+                <div className="flex flex-wrap items-center justify-center gap-2">
+                  <button
+                    type="button"
+                    className="btn px-3 py-1.5 text-xs"
+                    onClick={() => m.setDias(30)}
+                  >
+                    Ver 30 dias
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-primario px-3 py-1.5 text-xs"
+                    onClick={() => m.setDias(90)}
+                  >
+                    Ver 90 dias
+                  </button>
+                </div>
+              }
+            />
+          ) : (
+            <EstadoVazio
+              icone={<Satellite size={16} />}
+              titulo="Aguardando a primeira coleta"
+              descricao="As contas conectadas ainda não trouxeram leituras de métricas. Confira as conexões em Ajustes."
+              acao={
+                <Link to="/ajustes" className="btn-primario px-3 py-1.5 text-xs">
+                  Abrir Ajustes › Contas
+                </Link>
+              }
+            />
+          )}
         </div>
       ) : (
+
         <>
           <div className="secao-entrada">
             <PainelResultado
