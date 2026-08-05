@@ -125,6 +125,8 @@ export type DadosPainel = {
   destaques: DestaquesPainel;
   producao: Record<string, number>;
   serie: PontoSerie[];
+  serieAnterior: PontoSerie[];
+
   mixFormatos: MixFormato[];
   calor: { grade: CelulaCalorPainel[]; max: number };
   audiencia: { temas: { texto: string; n: number }[]; perguntas: { texto: string; n: number }[] };
