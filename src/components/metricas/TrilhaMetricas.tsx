@@ -13,10 +13,12 @@ export function TrilhaMetricas({ aba }: { aba: string }) {
       </Link>
       <ChevronRight size={13} aria-hidden="true" />
       <Link
+        from="/metricas"
         to="/metricas"
         search={(prev) => ({ ...prev, aba: "geral" })}
         className="text-azureClaro hover:underline"
       >
+
         Métricas
       </Link>
       <ChevronRight size={13} aria-hidden="true" />
