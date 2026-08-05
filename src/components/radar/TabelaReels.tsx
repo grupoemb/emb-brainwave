@@ -109,6 +109,17 @@ export function TabelaReels({
                     )}
                   </td>
                   <td className="numero px-2 py-2 text-right text-txt">{numero(r.views)}</td>
+                  {temAlcance ? (
+                    <>
+                      <td className="numero px-2 py-2 text-right text-corpo">
+                        {numero(r.reach)}
+                      </td>
+                      <td className="numero px-2 py-2 text-right text-corpo">
+                        {numero(r.saves)}
+                      </td>
+                    </>
+                  ) : null}
+
                   <td className="px-2 py-2 text-right">
                     <span className="inline-flex items-center gap-1">
                       <span className={"pill numero text-[.68rem] " + classeVx(r.vx)}>
