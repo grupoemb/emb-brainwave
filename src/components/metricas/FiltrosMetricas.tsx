@@ -66,7 +66,7 @@ export function FiltrosMetricas({
     return contas.filter((c) => c.handle.toLowerCase().includes(termo));
   }, [contas, busca]);
 
-  const opcoesPeriodo: OpcaoFiltro<string>[] = [7, 30, 90].map((d) => ({
+  const opcoesPeriodo: OpcaoFiltro<string>[] = [7, 14, 30, 90].map((d) => ({
     valor: String(d),
     rotulo: `${d} dias`,
   }));

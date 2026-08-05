@@ -6,7 +6,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const entrada = z.object({
   organizationId: z.string().uuid(),
-  dias: z.union([z.literal(7), z.literal(30), z.literal(90)]),
+  dias: z.union([z.literal(7), z.literal(14), z.literal(30), z.literal(90)]),
   /** Intervalo explícito (usado no modo de comparação). */
   desde: z.string().optional(),
   ate: z.string().optional(),

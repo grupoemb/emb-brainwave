@@ -26,7 +26,7 @@ import {
 } from "@/lib/metricas";
 
 
-export type Periodo = 7 | 30 | 90;
+export type Periodo = 7 | 14 | 30 | 90;
 export type ModoComparacao = "off" | "anterior" | "custom";
 
 type Bruto = {
@@ -184,6 +184,7 @@ export function useMetricas(diasInicial: Periodo = 30) {
 
     comparando: qc.isFetching,
     carregando: q.isPending,
+    erro: q.error instanceof Error ? q.error.message : q.error ? "Não foi possível carregar as métricas." : null,
     atualizando: q.isFetching || qc.isFetching,
     atualizar: () => {
       void q.refetch();
