@@ -1,7 +1,7 @@
 import { EstadoVazio } from "@/components/ui/EstadoVazio";
 import { useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { ArrowDown, ArrowUp, Flame, Search } from "lucide-react";
+import { ArrowDown, ArrowUp, Filter, Flame, Search } from "lucide-react";
 
 import { classeRx, ehOutlier, numero, rotuloFormato, type LinhaMetrica } from "@/lib/metricas";
 
@@ -41,12 +41,16 @@ export function TabelaPosts({
   setModo,
   soOutliers,
   aoLimparOutliers,
+  recorte,
+  aoLimparRecorte,
 }: {
   linhas: LinhaMetrica[];
   modo: "top" | "piores";
   setModo: (m: "top" | "piores") => void;
   soOutliers?: boolean;
   aoLimparOutliers?: () => void;
+  recorte?: string | null;
+  aoLimparRecorte?: () => void;
 }) {
   const navigate = useNavigate();
   const [busca, setBusca] = useState("");
@@ -148,6 +152,22 @@ export function TabelaPosts({
           fora da curva
         </button>
       </div>
+
+      {recorte ? (
+        <div className="mb-3 flex flex-wrap items-center gap-2 rounded-[.6rem] border border-azure/30 bg-azure/10 px-3 py-2 text-xs text-corpo">
+          <Filter size={12} className="shrink-0 text-azureClaro" aria-hidden />
+          <span>
+            Recorte aplicado: <span className="font-semibold text-txt">{recorte}</span>
+          </span>
+          <button
+            type="button"
+            onClick={aoLimparRecorte}
+            className="ml-auto rounded-[.4rem] px-2 py-0.5 text-[.7rem] text-muted transition-colors hover:text-txt"
+          >
+            limpar recorte
+          </button>
+        </div>
+      ) : null}
 
       {vazio ? (
         <div className="mt-3">
