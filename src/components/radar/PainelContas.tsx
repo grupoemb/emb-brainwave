@@ -75,7 +75,26 @@ export function PainelContas() {
   const porPerfil = useMemo(() => topPorPerfil(reels, 3), [reels]);
   const inteligencia = useMemo(() => inteligenciaRapida(reels), [reels]);
 
+  const busca = rota.useSearch().handle ?? "";
+  const navigate = useNavigate();
+  const definirBusca = (v: string) => {
+    void navigate({
+      to: "/radar",
+      replace: true,
+      search: (prev) => ({ ...prev, handle: v.trim() ? v.trim() : undefined }),
+    });
+  };
+
+  const alvo = busca.trim().toLowerCase().replace(/^@/, "");
+  const perfisFiltrados = useMemo(
+    () => (alvo ? porPerfil.filter((g) => g.handle.toLowerCase().includes(alvo)) : porPerfil),
+    [porPerfil, alvo],
+  );
+  const focado = alvo !== "" && perfisFiltrados.length === 1;
+
   const melhorAlavanca = alavancaDe(inteligencia.alavanca);
+
+
 
   return (
     <div className="space-y-5">
