@@ -81,6 +81,18 @@ export function numero(v: number | null, casas = 0) {
   return v.toLocaleString("pt-BR", { minimumFractionDigits: casas, maximumFractionDigits: casas });
 }
 
+/** Número compacto em pt-BR: 8.420 → 8,4 mil · 1.240.000 → 1,2 mi. */
+export function compacto(v: number | null): string {
+  if (v === null || !Number.isFinite(v)) return "—";
+  const abs = Math.abs(v);
+  if (abs >= 1_000_000)
+    return `${(v / 1_000_000).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} mi`;
+  if (abs >= 1_000)
+    return `${(v / 1_000).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} mil`;
+  return v.toLocaleString("pt-BR", { maximumFractionDigits: 0 });
+}
+
+
 /** Deduplica leituras por post_id mantendo a mais recente (lista vem em captured_at desc). */
 export function ultimaLeituraPorPost(leituras: Leitura[]) {
   const mapa = new Map<string, Leitura>();
