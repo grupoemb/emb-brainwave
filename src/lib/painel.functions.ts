@@ -262,8 +262,11 @@ export const carregarPainel = createServerFn({ method: "GET" })
       nome: perfil?.full_name ?? null,
       ultimaColeta,
       dias,
+      perfis,
+      perfilAtivo: handleFiltro,
       kpis: atual.kpis,
       anterior,
+
       operacao: {
         agendados: agendadosBrutos.length,
         aguardandoAprovacao: producao["review"] ?? 0,
