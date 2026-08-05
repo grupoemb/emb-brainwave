@@ -1174,6 +1174,10 @@ export type Database = {
     }
     Functions: {
       accounts_overview: { Args: { p_org: string }; Returns: Json }
+      best_time_recommendation: {
+        Args: { p_handle?: string; p_org: string }
+        Returns: Json
+      }
       followers_overview: { Args: { p_org: string }; Returns: Json }
       get_library_insights: { Args: { p_org: string }; Returns: Json }
       get_own_reels: {
@@ -1220,6 +1224,10 @@ export type Database = {
       }
       is_org_member: { Args: { org: string }; Returns: boolean }
       join_organization: { Args: { p_code?: string }; Returns: Json }
+      kpis_taxas: {
+        Args: { p_dias?: number; p_handle?: string; p_org: string }
+        Returns: Json
+      }
       metric_daily: {
         Args: {
           p_from: string
