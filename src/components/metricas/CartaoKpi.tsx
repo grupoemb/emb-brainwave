@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from "react";
-import { HelpCircle } from "lucide-react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { HelpCircle, Minus, TrendingDown, TrendingUp } from "lucide-react";
 
 import { Esqueleto } from "@/components/conteudo/Esqueleto";
+import { ACENTO, type Familia } from "@/components/metricas/GrupoKpis";
+import { Sparkline } from "@/components/metricas/Sparkline";
 import { classeVariacao, numero, textoVariacao, variacao } from "@/lib/metricas";
-
 
 function reduzido() {
   return typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -38,6 +39,11 @@ function useContagem(alvo: number | null) {
   return valor;
 }
 
+function Seta({ delta }: { delta: number | null }) {
+  if (delta === null || delta === 0) return <Minus size={11} aria-hidden />;
+  return delta > 0 ? <TrendingUp size={11} aria-hidden /> : <TrendingDown size={11} aria-hidden />;
+}
+
 export function CartaoKpi({
   rotulo,
   valor,
@@ -53,6 +59,11 @@ export function CartaoKpi({
   aoClicar,
   ativo,
   dicaAcao,
+  familia = "alcance",
+  icone,
+  destaque,
+  serie,
+  participacao,
 }: {
   rotulo: string;
   /** valor numérico animado; null = sem base */
@@ -72,14 +83,22 @@ export function CartaoKpi({
   aoClicar?: (() => void) | undefined;
   ativo?: boolean | undefined;
   dicaAcao?: string | undefined;
+  /** cor de acento */
+  familia?: Familia;
+  icone?: ReactNode;
+  /** cartão principal do grupo: ocupa 2 colunas e número maior */
+  destaque?: boolean;
+  /** série curta para sparkline de tendência */
+  serie?: { valor: number }[] | undefined;
+  /** participação percentual dentro do grupo (mini barra) */
+  participacao?: number | null | undefined;
 }) {
   const numerico = typeof valor === "number" ? valor : null;
   const animado = useContagem(numerico);
   const comparaNumero = valorAnterior !== undefined;
   const comparaTexto = textoAnterior !== undefined;
   const delta = comparaNumero ? variacao(numerico, valorAnterior ?? null) : null;
-
-
+  const acento = ACENTO[familia];
 
   const conteudo = carregando ? null : texto !== undefined ? (
     texto === null ? (
@@ -107,14 +126,19 @@ export function CartaoKpi({
       {...(clicavel
         ? { type: "button" as const, onClick: aoClicar, "aria-pressed": !!ativo }
         : {})}
+      style={{ "--acento": acento } as React.CSSProperties}
       className={
-        "cartao group relative flex min-h-[5.9rem] flex-col justify-between p-3.5 text-left " +
-        (clicavel ? "cursor-pointer transition-colors hover:bg-white/4 " : "") +
-        (ativo ? "border-azure/50 bg-azure/8" : "")
+        "cartao-acento group relative flex flex-col justify-between p-3.5 text-left " +
+        (destaque ? "min-h-[7.6rem] sm:col-span-2 " : "min-h-[6.4rem] ") +
+        (clicavel ? "cursor-pointer transition-shadow hover:shadow-[var(--sombra-2)] " : "") +
+        (ativo ? "ring-1 ring-inset ring-[var(--acento)]" : "")
       }
     >
       <div className="flex items-start justify-between gap-2">
-        <span className="rotulo">{rotulo}</span>
+        <div className="flex min-w-0 items-center gap-2">
+          {icone ? <span className="pastilha">{icone}</span> : null}
+          <span className="rotulo truncate">{rotulo}</span>
+        </div>
         <HelpCircle
           size={13}
           className="shrink-0 text-muted opacity-0 transition-opacity group-hover:opacity-100"
@@ -125,16 +149,44 @@ export function CartaoKpi({
       {carregando ? (
         <Esqueleto className="h-7 w-24 rounded" />
       ) : (
-        <div className="numero text-2xl text-txt">{conteudo}</div>
+        <div className={"numero mt-2 text-txt " + (destaque ? "text-3xl sm:text-4xl" : "text-2xl")}>
+          {conteudo}
+        </div>
       )}
 
+      {serie && serie.length > 1 ? (
+        <div className="-mx-1 mt-1 opacity-80">
+          <Sparkline dados={serie} cor={acento === "var(--dourado)" ? "#f2c14e" : acento === "var(--cyan)" ? "#00e7ff" : "#00a4ff"} altura={destaque ? 40 : 26} />
+        </div>
+      ) : null}
+
+      {typeof participacao === "number" ? (
+        <div className="mt-2">
+          <div className="barra-trilho">
+            <div
+              className="h-full rounded-full transition-[width] duration-700 ease-out"
+              style={{
+                width: `${Math.max(2, Math.min(100, participacao))}%`,
+                background: acento,
+              }}
+            />
+          </div>
+          <p className="mt-1 text-[.65rem] text-muted">
+            {participacao.toFixed(1)}% das interações
+          </p>
+        </div>
+      ) : null}
+
       {comparaNumero || comparaTexto ? (
-        <div className="mt-1 flex items-center gap-1.5 text-[.7rem]">
+        <div className="mt-1.5 flex items-center gap-1.5 text-[.7rem]">
           {comparando ? (
             <Esqueleto className="h-3.5 w-24 rounded" />
           ) : comparaNumero ? (
             <>
-              <span className={"pill " + classeVariacao(delta)}>{textoVariacao(delta)}</span>
+              <span className={"pill inline-flex items-center gap-1 " + classeVariacao(delta)}>
+                <Seta delta={delta} />
+                {textoVariacao(delta)}
+              </span>
               <span className="text-muted">
                 antes {numero(valorAnterior ?? null, casas)}
                 {valorAnterior !== null && sufixo ? sufixo : ""}
