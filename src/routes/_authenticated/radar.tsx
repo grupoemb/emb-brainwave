@@ -5,7 +5,8 @@ import { z } from "zod";
 import { Radar } from "@/components/radar/Radar";
 
 const buscaRadar = z.object({
-  aba: fallback(z.enum(["radar", "biblioteca"]), "radar").default("radar"),
+  aba: fallback(z.string(), "painel").default("painel"),
+  handle: z.string().optional(),
 });
 
 export const Route = createFileRoute("/_authenticated/radar")({
