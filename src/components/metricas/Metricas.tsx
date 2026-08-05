@@ -672,6 +672,11 @@ export function Metricas() {
           <PainelDrill
             recorte={drill}
             linhas={m.linhas}
+            linhasComparadas={m.linhasComparadas}
+            rotuloPeriodo={rotuloIntervalo(m.intervalo)}
+            {...(rotuloComp ? { rotuloComparacao: rotuloComp } : {})}
+            contas={m.contasDisponiveis}
+            contaAtual={m.conta}
             aoFechar={() => setDrill(null)}
             aoVerNaTabela={verNaTabela}
           />
