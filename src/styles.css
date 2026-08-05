@@ -49,6 +49,7 @@
   --color-bom: var(--bom);
   --color-alerta: var(--alerta);
   --color-ruim: var(--ruim);
+  --color-dourado: var(--dourado);
 
   /* shadcn compatibility */
   --color-background: var(--bg);
