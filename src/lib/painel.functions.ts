@@ -294,6 +294,8 @@ export const carregarPainel = createServerFn({ method: "GET" })
       destaques: atual.destaques,
       producao,
       serie: atual.serie,
+      serieAnterior: anteriorAgregado?.serie ?? [],
+
       mixFormatos: atual.mixFormatos,
       calor: atual.calor,
       audiencia: { temas: contagem("themes"), perguntas: contagem("questions") },
