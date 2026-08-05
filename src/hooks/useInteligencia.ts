@@ -235,7 +235,7 @@ export function useTaxasPainel(dias: number, handle: string | null) {
     queryFn: async () => {
       const { data, error } = await supabase.rpc("kpis_taxas", {
         p_org: organizationId!,
-        p_handle: handle ?? undefined,
+        ...(handle ? { p_handle: handle } : {}),
         p_dias: dias,
       });
       if (error) throw new Error(error.message);
@@ -259,7 +259,7 @@ export function useMelhorHorario(handle: string | null) {
     queryFn: async () => {
       const { data, error } = await supabase.rpc("best_time_recommendation", {
         p_org: organizationId!,
-        p_handle: handle ?? undefined,
+        ...(handle ? { p_handle: handle } : {}),
       });
       if (error) throw new Error(error.message);
       const lista = comoObjeto(data)["melhores"];
