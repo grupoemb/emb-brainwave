@@ -10,6 +10,10 @@ export type Leitura = {
   comments: number | null;
   shares: number | null;
   saves: number | null;
+  followers_delta?: number | null;
+  clicks?: number | null;
+  retention_pct?: number | null;
+  watch_time_s?: number | null;
 };
 
 export type PostBruto = {
@@ -50,8 +54,13 @@ export type LinhaMetrica = {
   shares: number | null;
   comments: number | null;
   likes: number | null;
+  followers_delta: number | null;
+  clicks: number | null;
+  retention_pct: number | null;
+  watch_time_s: number | null;
   rx: number | null;
 };
+
 
 
 export const PALETA = ["#00a4ff", "#00e7ff", "#3ecf8e", "#f6bd24", "#a78bfa", "#ff7a6b"];
