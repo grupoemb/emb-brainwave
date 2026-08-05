@@ -66,6 +66,7 @@ export function useSalvarMeta() {
   return useMutation({
     mutationFn: async (f: FormularioMeta) => {
       if (!organizationId) throw new Error("organização não encontrada");
+      // Campos gravados; o id NUNCA entra aqui — ele só decide entre criar e editar.
       const linha = {
         organization_id: organizationId,
         handle: f.handle,
@@ -76,15 +77,22 @@ export function useSalvarMeta() {
         end_date: f.end_date,
         label: f.label,
       };
-      const { error } = f.id
-        ? await supabase.from("goals").update(linha).eq("id", f.id)
-        : await supabase.from("goals").insert(linha);
+
+      const editando = typeof f.id === "string" && f.id.length > 0;
+      if (editando) {
+        const { error } = await supabase.from("goals").update(linha).eq("id", f.id!);
+        if (error) throw new Error(error.message);
+        return { editando: true };
+      }
+
+      // Criar sempre insere uma linha nova e devolve a linha criada, para conferência.
+      const { data, error } = await supabase.from("goals").insert(linha).select("id").single();
       if (error) throw new Error(error.message);
-      return f;
+      return { editando: false, id: data?.id as string | undefined };
     },
-    onSuccess: (f) => {
+    onSuccess: (r) => {
       void qc.invalidateQueries({ queryKey: ["metas", organizationId] });
-      toast.success(f.id ? "Meta atualizada" : "Meta criada");
+      toast.success(r.editando ? "Meta atualizada" : "Meta criada");
     },
     onError: (e: Error) => toast.error("Não deu pra salvar a meta", { description: e.message }),
   });
