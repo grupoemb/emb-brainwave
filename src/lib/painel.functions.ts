@@ -33,9 +33,11 @@ export const carregarPainel = createServerFn({ method: "GET" })
       .object({
         organizationId: z.string().uuid(),
         dias: z.union([z.literal(7), z.literal(14), z.literal(30), z.literal(90)]).optional(),
+        handle: z.string().optional(),
       })
       .parse(input),
   )
+
   .handler(async ({ data, context }): Promise<DadosPainel> => {
     const db = context.supabase as unknown as SupabaseClient;
     const org = data.organizationId;
