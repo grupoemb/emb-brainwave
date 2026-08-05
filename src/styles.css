@@ -458,3 +458,61 @@
     transform: none !important;
   }
 }
+
+/* ---------- Métricas 3.0: acentos por família ---------- */
+@layer components {
+  /* Cartão com faixa superior colorida; a cor vem de --acento */
+  .cartao-acento {
+    position: relative;
+    background: linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--acento, var(--azure)) 7%, var(--card)),
+      var(--card)
+    );
+    border: 1px solid color-mix(in oklab, var(--acento, var(--azure)) 22%, var(--line));
+    border-radius: 0.85rem;
+    box-shadow: var(--sombra-1);
+    overflow: hidden;
+  }
+  .cartao-acento::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      var(--acento, var(--azure)),
+      color-mix(in oklab, var(--acento, var(--azure)) 25%, transparent)
+    );
+  }
+
+  /* Pastilha de ícone na cor da família */
+  .pastilha {
+    display: grid;
+    place-items: center;
+    height: 1.6rem;
+    width: 1.6rem;
+    flex: none;
+    border-radius: 0.5rem;
+    color: var(--acento, var(--azure));
+    background: color-mix(in oklab, var(--acento, var(--azure)) 14%, transparent);
+    border: 1px solid color-mix(in oklab, var(--acento, var(--azure)) 24%, transparent);
+  }
+
+  /* Título de grupo de KPIs */
+  .titulo-grupo {
+    font-family: "Montserrat", ui-sans-serif, sans-serif;
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: color-mix(in oklab, var(--acento, var(--azure)) 62%, var(--txt));
+  }
+
+  .barra-trilho {
+    height: 0.3rem;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.07);
+    overflow: hidden;
+  }
+}
