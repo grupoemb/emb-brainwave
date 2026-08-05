@@ -71,6 +71,53 @@ export type Database = {
           },
         ]
       }
+      alerts: {
+        Row: {
+          body: string | null
+          created_at: string
+          handle: string | null
+          id: string
+          kind: string
+          organization_id: string
+          payload: Json
+          seen: boolean
+          severity: string
+          title: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          handle?: string | null
+          id?: string
+          kind: string
+          organization_id: string
+          payload?: Json
+          seen?: boolean
+          severity?: string
+          title: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          handle?: string | null
+          id?: string
+          kind?: string
+          organization_id?: string
+          payload?: Json
+          seen?: boolean
+          severity?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alerts_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       approvals: {
         Row: {
           created_at: string
@@ -1179,6 +1226,7 @@ export type Database = {
         Returns: Json
       }
       followers_overview: { Args: { p_org: string }; Returns: Json }
+      generate_weekly_digest: { Args: never; Returns: number }
       get_library_insights: { Args: { p_org: string }; Returns: Json }
       get_own_reels: {
         Args: { p_handle: string; p_org: string }
