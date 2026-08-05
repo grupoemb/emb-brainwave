@@ -448,11 +448,13 @@
   .acesso-sobe,
   .acesso-fade,
   .acesso-halo,
-  .acesso-flutua {
+  .acesso-flutua,
+  .animar-troca {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
   }
+
 }
 
 @media (prefers-reduced-motion: reduce) {
