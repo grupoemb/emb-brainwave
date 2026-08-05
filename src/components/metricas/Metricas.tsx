@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 
-import { BarChart3 } from "lucide-react";
+import { AlertTriangle, BarChart3 } from "lucide-react";
 
 import { Revelar } from "@/components/Revelar";
 import { CabecalhoTela } from "@/components/ui/CabecalhoTela";
+import { EstadoVazio } from "@/components/ui/EstadoVazio";
 
 import { BarrasDimensao } from "@/components/metricas/BarrasDimensao";
 import { Benchmark } from "@/components/metricas/Benchmark";
@@ -28,7 +29,7 @@ import { useContasConectadas, useMetricas, type Periodo } from "@/hooks/useMetri
 export function Metricas() {
   const { dias: diasUrl, origem } = useSearch({ from: "/_authenticated/metricas" });
   const navigate = useNavigate();
-  const diasInicial: Periodo = ([7, 30, 90] as const).includes(diasUrl as Periodo)
+  const diasInicial: Periodo = ([7, 14, 30, 90] as const).includes(diasUrl as Periodo)
     ? (diasUrl as Periodo)
     : 30;
   const m = useMetricas(diasInicial);
@@ -106,6 +107,20 @@ export function Metricas() {
       {m.carregando ? (
         <div className="secao-entrada">
           <EsqueletoMetricas />
+        </div>
+      ) : m.erro ? (
+        <div className="secao-entrada">
+          <EstadoVazio
+            variante="erro"
+            icone={<AlertTriangle size={16} />}
+            titulo="Não foi possível carregar as métricas"
+            descricao="A consulta falhou. Tente novamente; se persistir, verifique sua conexão e acesso à organização."
+            acao={
+              <button type="button" className="btn-primario px-3 py-1.5 text-xs" onClick={m.atualizar}>
+                Tentar novamente
+              </button>
+            }
+          />
         </div>
       ) : semPosts ? (
         <div className="cartao secao-entrada flex flex-col items-center gap-3 p-8 text-center">

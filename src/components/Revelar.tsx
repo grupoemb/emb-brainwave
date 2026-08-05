@@ -35,28 +35,54 @@ export function Revelar({ children, className }: { children: ReactNode; classNam
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const alvos = el.querySelectorAll<HTMLElement>(".secao-entrada");
-    if (!alvos.length) return;
+    const revelados = new WeakSet<HTMLElement>();
+    const tweens: gsap.core.Tween[] = [];
+    const reduzirMovimento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      gsap.set(alvos, { opacity: 1, y: 0 });
-      return;
-    }
+    const revelar = (alvos: HTMLElement[]) => {
+      const novos = alvos.filter((alvo) => !revelados.has(alvo));
+      if (!novos.length) return;
+      novos.forEach((alvo) => revelados.add(alvo));
 
-    const tw = gsap.fromTo(
-      alvos,
-      { opacity: 0, y: 14 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.42,
-        ease: suave,
-        stagger: 0.045,
-        overwrite: true,
-      },
-    );
+      if (reduzirMovimento) {
+        gsap.set(novos, { opacity: 1, y: 0 });
+        return;
+      }
+
+      tweens.push(
+        gsap.fromTo(
+          novos,
+          { opacity: 0, y: 14 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.42,
+            ease: suave,
+            stagger: 0.045,
+            overwrite: true,
+          },
+        ),
+      );
+    };
+
+    revelar(Array.from(el.querySelectorAll<HTMLElement>(".secao-entrada")));
+
+    const observador = new MutationObserver((mutacoes) => {
+      const adicionados: HTMLElement[] = [];
+      for (const mutacao of mutacoes) {
+        for (const no of mutacao.addedNodes) {
+          if (!(no instanceof HTMLElement)) continue;
+          if (no.matches(".secao-entrada")) adicionados.push(no);
+          adicionados.push(...no.querySelectorAll<HTMLElement>(".secao-entrada"));
+        }
+      }
+      revelar(adicionados);
+    });
+    observador.observe(el, { childList: true, subtree: true });
+
     return () => {
-      tw.kill();
+      observador.disconnect();
+      tweens.forEach((tween) => tween.kill());
     };
   }, []);
 
