@@ -100,12 +100,17 @@ export type MixFormato = {
   rxMedio: number | null;
 };
 
+export type PerfilPainel = { handle: string; avatarUrl: string | null };
+
 export type DadosPainel = {
   nome: string | null;
   ultimaColeta: string | null;
   dias: number;
+  perfis: PerfilPainel[];
+  perfilAtivo: string | null;
   kpis: KpisPainel;
   anterior: KpisPainel | null;
+
   operacao: {
     agendados: number;
     aguardandoAprovacao: number;
