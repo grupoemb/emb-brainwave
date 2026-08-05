@@ -77,6 +77,17 @@ export function usePautas() {
     onSuccess: invalidar,
   });
 
+  const gerar = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase.functions.invoke("suggest", {
+        body: { organization_id: organizationId!, force: true },
+      });
+      if (error) throw new Error(error.message || "Não foi possível gerar pautas agora.");
+      return data as unknown;
+    },
+    onSuccess: invalidar,
+  });
+
   const todas = useMemo(() => q.data?.sugestoes ?? [], [q.data]);
   const termo = normalizar(filtros.q);
 
