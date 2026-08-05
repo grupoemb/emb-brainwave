@@ -21,6 +21,7 @@ export function TabelaReels({
   aoAlternarTodos: (marcar: boolean) => void;
 }) {
   const todos = reels.length > 0 && reels.every((r) => selecionados.has(r.id));
+  const temAlcance = reels.some((r) => r.reach !== null);
 
   return (
     <div className="cartao overflow-hidden">
@@ -48,10 +49,17 @@ export function TabelaReels({
               <th className="rotulo px-2 py-2 font-normal">capa</th>
               <th className="rotulo px-2 py-2 font-normal">legenda</th>
               <th className="rotulo px-2 py-2 text-right font-normal">views</th>
+              {temAlcance ? (
+                <>
+                  <th className="rotulo px-2 py-2 text-right font-normal">alcance</th>
+                  <th className="rotulo px-2 py-2 text-right font-normal">salv.</th>
+                </>
+              ) : null}
               <th className="rotulo px-2 py-2 text-right font-normal">vx</th>
               <th className="rotulo px-4 py-2 text-right font-normal">duração</th>
             </tr>
           </thead>
+
           <tbody>
             {reels.map((r) => {
               const marcado = selecionados.has(r.id);
