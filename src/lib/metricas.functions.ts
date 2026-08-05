@@ -90,12 +90,18 @@ export const carregarMetricas = createServerFn({ method: "GET" })
       comments: number | null;
       shares: number | null;
       saves: number | null;
+      followers_delta: number | null;
+      clicks: number | null;
+      retention_pct: number | null;
+      watch_time_s: number | null;
     }[] = [];
 
     if (ids.length) {
       const { data: linhasM, error: erroM } = await db
         .from("post_metrics")
-        .select("post_id, captured_at, reach, impressions, likes, comments, shares, saves")
+        .select(
+          "post_id, captured_at, reach, impressions, likes, comments, shares, saves, followers_delta, clicks, retention_pct, watch_time_s",
+        )
         .in("post_id", ids)
         .order("captured_at", { ascending: false })
         .limit(5000);
