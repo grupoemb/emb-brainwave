@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Flame, Heart, ShieldCheck, TrendingUp } from "lucide-react";
+import { Bookmark, Flame, Heart, ShieldCheck, TrendingUp, UserPlus } from "lucide-react";
 
 import { Dica } from "@/components/painel/Dica";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -57,7 +57,7 @@ export function DestaquesPeriodo({
   const d = destaques;
   return (
     <TooltipProvider delayDuration={200}>
-      <div className="cartao grid gap-1 p-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="cartao grid gap-1 p-3 sm:grid-cols-2 xl:grid-cols-3">
         <Item
           icone={<TrendingUp size={14} className="text-azureClaro" />}
           rotulo="Melhor alcance"
@@ -84,6 +84,22 @@ export function DestaquesPeriodo({
           dica={`${GLOSSARIO.rx} ${GLOSSARIO.maiorRx}`}
           post={d.maiorRx}
           valor={d.maiorRx?.rx != null ? `${numero(d.maiorRx.rx, 2)}×` : "—"}
+          dias={dias}
+        />
+        <Item
+          icone={<Bookmark size={14} className="text-azureClaro" />}
+          rotulo="Mais salvo"
+          dica="Post com o maior número de salvamentos na janela — o sinal mais forte de conteúdo de valor."
+          post={d.maisSalvo}
+          valor={numero(d.maisSalvo?.saves ?? null)}
+          dias={dias}
+        />
+        <Item
+          icone={<UserPlus size={14} className="text-bom" />}
+          rotulo="Mais seguidores"
+          dica="Post que mais trouxe seguidores novos na janela."
+          post={d.maisSeguidores}
+          valor={numero(d.maisSeguidores?.seguidores ?? null)}
           dias={dias}
         />
         <div className="flex min-w-0 items-center gap-2.5 px-2 py-1.5">
