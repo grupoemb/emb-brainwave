@@ -1,6 +1,6 @@
 import { ChevronDown } from "lucide-react";
 
-import { numero } from "@/lib/metricas";
+import { compacto, numero } from "@/lib/metricas";
 
 const CORES = ["#00a4ff", "#00e7ff", "#3ecf8e"];
 
@@ -53,7 +53,7 @@ export function FunilInteracao({
               >
                 <span className="truncate text-xs text-corpo">{e.rotulo}</span>
                 <span className="numero shrink-0 text-sm text-txt">
-                  {numero(e.valor)}
+                  {compacto(e.valor)}
                   <span className="ml-1.5 text-[.68rem] font-normal text-muted">
                     {e.pct.toLocaleString("pt-BR", { maximumFractionDigits: 2 })}%
                   </span>
