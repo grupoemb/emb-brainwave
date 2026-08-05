@@ -101,7 +101,10 @@ function MiniStat({
 export function PainelContas() {
   const { data, isPending, error } = useContas();
   const top = useTopReels(12);
-  const ranking = useRanking(DIAS);
+  const [dias, setDias] = useState(90);
+  const [perfil, setPerfil] = useState<string | null>(null);
+  const ranking = useRanking(dias, perfil);
+
   const [aberta, setAberta] = useState<string | null>(null);
   const [visaoAberta, setVisaoAberta] = useState(false);
 
@@ -135,7 +138,15 @@ export function PainelContas() {
 
   const melhorAlavanca = alavancaDe(inteligencia.alavanca);
 
-
+  const media = (vs: (number | null)[]) => {
+    const l = vs.filter((v): v is number => v !== null && Number.isFinite(v));
+    if (l.length === 0) return null;
+    return l.reduce((a, b) => a + b, 0) / l.length;
+  };
+  const viewsMedias = media(reels.map((r) => r.plays));
+  const alcanceMedio = media(reels.map((r) => r.reach));
+  const ganchoMedio = media(reels.map((r) => r.hook_pct));
+  const carregando = ranking.isPending;
 
   return (
     <div className="space-y-5">
@@ -144,18 +155,54 @@ export function PainelContas() {
         titulo="Suas contas"
         descricao={
           frescor
-            ? `Ranking de reels dos últimos ${DIAS} dias · coletado há ${frescor}.`
-            : `Ranking de reels dos últimos ${DIAS} dias das contas próprias.`
+            ? `Ranking de reels dos últimos ${dias} dias · coletado há ${frescor}.`
+            : `Ranking de reels dos últimos ${dias} dias das contas próprias.`
         }
       />
 
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+        <Segmented
+          rotulo="Período"
+          valor={dias}
+          aoMudar={setDias}
+          opcoes={PERIODOS.map((d) => ({ chave: String(d), texto: `${d}d`, valor: d }))}
+        />
+        <Segmented<string | null>
+          rotulo="Perfil"
+          valor={perfil}
+          aoMudar={setPerfil}
+          opcoes={[
+            { chave: "todas", texto: "Todas", valor: null },
+            ...contas.map((c) => ({
+              chave: c.handle,
+              texto: `@${c.handle}`,
+              valor: c.handle as string | null,
+            })),
+          ]}
+        />
+      </div>
+
       {/* 1 · KPIs */}
       <div className="space-y-2">
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <KpiSeguidores />
           <CartaoKpiSimples
             rotulo="Reels no período"
-            valor={ranking.isPending ? "…" : numero(reels.length)}
+            valor={carregando ? "…" : numero(reels.length)}
+          />
+          <CartaoKpiSimples
+            rotulo="Views médias"
+            valor={carregando ? "…" : viewsMedias === null ? "—" : compacto(Math.round(viewsMedias))}
+          />
+          <CartaoKpiSimples
+            rotulo="Alcance médio"
+            valor={
+              carregando ? "…" : alcanceMedio === null ? "—" : compacto(Math.round(alcanceMedio))
+            }
+          />
+          <CartaoKpiSimples
+            rotulo="Gancho 3s médio"
+            valor={carregando ? "…" : ganchoMedio === null ? "—" : `${numero(ganchoMedio, 1)}%`}
           />
           <CartaoKpiSimples
             rotulo="Melhor alavanca"
@@ -169,7 +216,8 @@ export function PainelContas() {
       </div>
 
       {/* 2 · Leitura da semana */}
-      <LeituraSemana dias={DIAS} />
+      <LeituraSemana dias={dias} />
+
 
       {/* 3 · Inteligência rápida */}
       <section className="cartao p-4">
