@@ -70,3 +70,39 @@ export function haQuantoTempo(iso: string | null): string | null {
   const m = Math.round(d / 30);
   return `${m} ${m === 1 ? "mês" : "meses"}`;
 }
+
+/** Reel de uma conta própria (radar_own_reels / radar_own_top_reels). */
+export type ReelProprio = {
+  id: string;
+  handle: string | null;
+  url: string | null;
+  caption: string | null;
+  views: number | null;
+  reach: number | null;
+  saves: number | null;
+  likes: number | null;
+  comments: number | null;
+  publishedAt: string | null;
+  vx: number | null;
+};
+
+/** Normaliza linhas das rpc de reels próprios. */
+export function normalizarReels(bruto: unknown): ReelProprio[] {
+  const lista = Array.isArray(bruto) ? bruto : [];
+  return lista.map((r, i) => {
+    const o = (r ?? {}) as Record<string, unknown>;
+    return {
+      id: texto(o["id"]) ?? `reel-${i}`,
+      handle: (texto(o["handle"]) ?? "")?.replace(/^@/, "") || null,
+      url: texto(o["url"]),
+      caption: texto(o["caption"]),
+      views: num(o["views"]),
+      reach: num(o["reach"]),
+      saves: num(o["saves"]),
+      likes: num(o["likes"]),
+      comments: num(o["comments"]),
+      publishedAt: texto(o["published_at"]),
+      vx: num(o["vx"]),
+    } satisfies ReelProprio;
+  });
+}
