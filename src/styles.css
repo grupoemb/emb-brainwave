@@ -60,6 +60,15 @@
   --color-primary: var(--azure);
   --color-primary-foreground: #ffffff;
   --color-muted-foreground: var(--muted);
+  --color-popover: var(--card-2);
+  --color-popover-foreground: var(--txt);
+  --color-card-foreground: var(--txt);
+  --color-accent: rgba(0, 164, 255, 0.14);
+  --color-accent-foreground: var(--txt);
+  --color-secondary: var(--card-2);
+  --color-secondary-foreground: var(--txt);
+  --color-destructive: var(--ruim);
+  --color-destructive-foreground: #ffffff;
 }
 
 @layer base {

@@ -82,12 +82,29 @@ export function DialogMeta({
 
   const seguidores = form.metric === "followers";
 
-  function mudarMetrica(m: MetricaMeta) {
-    setForm((f) => ({
-      ...f,
-      metric: m,
-      mode: m === "followers" ? (f.mode === "accumulate" ? "increase" : f.mode) : "accumulate",
-    }));
+  /** Valor do select: seguidores vira duas entradas explícitas. */
+  const valorMetrica = seguidores
+    ? form.mode === "absolute"
+      ? "followers:absolute"
+      : "followers:increase"
+    : form.metric;
+
+  const opcoesMetrica: { valor: string; rotulo: string }[] = [
+    { valor: "followers:increase", rotulo: "Novos seguidores" },
+    { valor: "followers:absolute", rotulo: "Seguidores (total)" },
+    ...METRICAS.filter((m) => m.valor !== "followers").map((m) => ({
+      valor: m.valor as string,
+      rotulo: m.rotulo,
+    })),
+  ];
+
+  function mudarMetrica(v: string) {
+    if (v.startsWith("followers:")) {
+      const mode = (v.split(":")[1] as ModoMeta) ?? "increase";
+      setForm((f) => ({ ...f, metric: "followers", mode }));
+      return;
+    }
+    setForm((f) => ({ ...f, metric: v as MetricaMeta, mode: "accumulate" }));
   }
 
   const valido = form.target > 0 && form.start_date < form.end_date;
@@ -106,12 +123,12 @@ export function DialogMeta({
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label>Métrica</Label>
-              <Select value={form.metric} onValueChange={(v) => mudarMetrica(v as MetricaMeta)}>
+              <Select value={valorMetrica} onValueChange={mudarMetrica}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {METRICAS.map((m) => (
+                  {opcoesMetrica.map((m) => (
                     <SelectItem key={m.valor} value={m.valor}>
                       {m.rotulo}
                     </SelectItem>
@@ -175,7 +192,11 @@ export function DialogMeta({
               type="number"
               min={1}
               inputMode="numeric"
-              placeholder={infoMetrica(form.metric).exemploAlvo}
+              placeholder={
+                seguidores && form.mode === "increase"
+                  ? "Ex.: 2000 novos seguidores"
+                  : infoMetrica(form.metric).exemploAlvo
+              }
               value={form.target || ""}
               onChange={(e) => setForm((f) => ({ ...f, target: Number(e.target.value) || 0 }))}
             />
