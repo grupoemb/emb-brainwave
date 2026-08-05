@@ -11,7 +11,6 @@ import {
 
 export type PainelContasDados = {
   contas: ContaVisao[];
-  topReels: ReelProprio[];
   ultimaColeta: string | null;
 };
 
@@ -23,9 +22,8 @@ export function useContas() {
     enabled: !!organizationId,
     staleTime: 60_000,
     queryFn: async () => {
-      const [visao, top, coleta] = await Promise.all([
+      const [visao, coleta] = await Promise.all([
         supabase.rpc("accounts_overview", { p_org: organizationId! }),
-        supabase.rpc("radar_own_top_reels", { p_org: organizationId!, p_limit: 12 }),
         supabase
           .from("post_metrics")
           .select("captured_at")
@@ -37,7 +35,6 @@ export function useContas() {
 
       return {
         contas: normalizarContas(visao.data),
-        topReels: top.error ? [] : normalizarReels(top.data),
         ultimaColeta: coleta.data?.[0]?.captured_at ?? null,
       };
     },
