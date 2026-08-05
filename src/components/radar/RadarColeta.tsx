@@ -184,7 +184,18 @@ export function RadarColeta() {
 
       {resultado && resultado.reels.length > 0 ? (
         <>
+          {resultado.source === "own" ? (
+            <span className="pill pill-bom inline-flex items-center gap-1 text-[.68rem]">
+              Sua conta · dados oficiais (grátis)
+            </span>
+          ) : resultado.source === "competitor" ? (
+            <span className="pill inline-flex items-center gap-1 border border-line text-[.68rem] text-muted">
+              Concorrente · coleta pública
+            </span>
+          ) : null}
+
           <TabelaReels
+
             reels={resultado.reels}
             handle={resultado.handle}
             total={resultado.count}
