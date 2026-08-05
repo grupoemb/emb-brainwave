@@ -23,7 +23,9 @@ export type {
   MixFormato,
   OutlierPainel,
   PautaPainel,
+  PerfilPainel,
   PontoSerie,
+
 } from "@/lib/painel.tipos";
 
 export const carregarPainel = createServerFn({ method: "GET" })
