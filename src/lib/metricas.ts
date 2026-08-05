@@ -663,3 +663,18 @@ export function filtrarPorRecorte(linhas: LinhaMetrica[], r: Recorte) {
   }
   return linhas.filter((l) => (l[r.dimensao] as string | null) === r.chave);
 }
+
+/** Resumo compacto de um conjunto de linhas — usado na comparação do drill-down. */
+export function resumoRecorte(linhas: LinhaMetrica[]) {
+  const t = calcularTaxas(linhas);
+  const rxs = linhas.filter((l) => l.rx !== null).map((l) => l.rx as number);
+  return {
+    posts: linhas.length,
+    alcance: t.alcance,
+    alcanceMedio: t.alcanceMedio,
+    rxMedio: rxs.length ? rxs.reduce((s, v) => s + v, 0) / rxs.length : null,
+    engajamento: t.engajamento,
+    interacoes: t.interacoes,
+  };
+}
+export type ResumoRecorte = ReturnType<typeof resumoRecorte>;

@@ -156,11 +156,19 @@ export function useMetricas(diasInicial: Periodo = 30) {
   const comparados = useMemo(() => {
     if (!intervaloComparado || !brutoComparado) return null;
     const linhas = filtrar(brutoComparado);
-    return { kpis: calcularKpis(linhas), taxas: calcularTaxas(linhas) };
+    return { linhas, kpis: calcularKpis(linhas), taxas: calcularTaxas(linhas) };
   }, [intervaloComparado, brutoComparado, filtrar]);
 
   const kpisComparados = comparados?.kpis ?? null;
   const taxasComparadas = comparados?.taxas ?? null;
+  const linhasComparadas = comparados?.linhas ?? null;
+
+  /** Contas presentes no período atual, sem depender do recorte de conta. */
+  const contasDisponiveis = useMemo(() => {
+    const s = new Set<string>();
+    for (const p of bruto?.posts ?? []) if (p.source_handle) s.add(p.source_handle);
+    return [...s].sort((a, b) => a.localeCompare(b, "pt-BR"));
+  }, [bruto]);
 
 
   return {
@@ -181,6 +189,8 @@ export function useMetricas(diasInicial: Periodo = 30) {
     intervaloComparado,
     kpisComparados,
     taxasComparadas,
+    linhasComparadas,
+    contasDisponiveis,
 
     comparando: qc.isFetching,
     carregando: q.isPending,
