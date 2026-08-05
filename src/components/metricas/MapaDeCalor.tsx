@@ -1,6 +1,6 @@
 import { Flame } from "lucide-react";
 
-import { DIAS_SEMANA, FAIXAS_HORA, numero, type CelulaCalor } from "@/lib/metricas";
+import { compacto, DIAS_SEMANA, FAIXAS_HORA, numero, type CelulaCalor } from "@/lib/metricas";
 
 /** Escala azul → cyan → dourado conforme a intensidade (0–1). */
 function corDaEscala(t: number) {
@@ -41,7 +41,7 @@ export function MapaDeCalor({
           <span className="pill pill-alerta inline-flex items-center gap-1.5">
             <Flame size={11} aria-hidden />
             melhor janela: {DIAS_SEMANA[melhor.dia]} {FAIXAS_HORA[melhor.faixa]}h ·{" "}
-            {numero(melhor.alcanceMedio)}
+            {compacto(melhor.alcanceMedio)}
           </span>
         ) : (
           <span className="text-xs text-muted">sem publicações com alcance no período</span>
@@ -122,7 +122,7 @@ function Linha({
             onClick={() => c && aoSelecionar?.(c)}
             title={
               c && c.n
-                ? `${dia} ${FAIXAS_HORA[f]}h · ${c.n} ${c.n === 1 ? "post" : "posts"} · ${numero(v)} de alcance médio`
+                ? `${dia} ${FAIXAS_HORA[f]}h · ${c.n} ${c.n === 1 ? "post" : "posts"} · ${compacto(v)} de alcance médio`
                 : `${dia} ${FAIXAS_HORA[f]}h · sem publicações`
             }
             className={

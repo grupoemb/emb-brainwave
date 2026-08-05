@@ -3,7 +3,7 @@ import { Bookmark, Flame, Heart, ShieldCheck, TrendingUp, UserPlus } from "lucid
 
 import { Dica } from "@/components/painel/Dica";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { numero } from "@/lib/metricas";
+import { compacto, numero } from "@/lib/metricas";
 import { GLOSSARIO } from "@/lib/glossario";
 import type { DestaquesPainel, MelhorPost } from "@/lib/painel.functions";
 
@@ -63,7 +63,7 @@ export function DestaquesPeriodo({
           rotulo="Melhor alcance"
           dica={GLOSSARIO.melhorAlcance}
           post={d.melhorAlcance}
-          valor={numero(d.melhorAlcance?.alcance ?? null)}
+          valor={compacto(d.melhorAlcance?.alcance ?? null)}
           dias={dias}
         />
         <Item
@@ -91,7 +91,7 @@ export function DestaquesPeriodo({
           rotulo="Mais salvo"
           dica="Post com o maior número de salvamentos na janela — o sinal mais forte de conteúdo de valor."
           post={d.maisSalvo}
-          valor={numero(d.maisSalvo?.saves ?? null)}
+          valor={compacto(d.maisSalvo?.saves ?? null)}
           dias={dias}
         />
         <Item
@@ -99,7 +99,7 @@ export function DestaquesPeriodo({
           rotulo="Mais seguidores"
           dica="Post que mais trouxe seguidores novos na janela."
           post={d.maisSeguidores}
-          valor={numero(d.maisSeguidores?.seguidores ?? null)}
+          valor={compacto(d.maisSeguidores?.seguidores ?? null)}
           dias={dias}
         />
         <div className="flex min-w-0 items-center gap-2.5 px-2 py-1.5">

@@ -46,14 +46,9 @@ export function normalizarContas(bruto: unknown): ContaVisao[] {
     .filter((c) => c.handle && c.reels > 0);
 }
 
-/** Número compacto em pt-BR: 8.420 → 8,4 mil · 1.240.000 → 1,2 mi. */
-export function compacto(v: number | null): string {
-  if (v === null) return "—";
-  const abs = Math.abs(v);
-  if (abs >= 1_000_000) return `${(v / 1_000_000).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} mi`;
-  if (abs >= 1_000) return `${(v / 1_000).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} mil`;
-  return v.toLocaleString("pt-BR", { maximumFractionDigits: 0 });
-}
+/** Número compacto em pt-BR (fonte única em @/lib/metricas). */
+export { compacto } from "@/lib/metricas";
+
 
 /** "há 3 h", "há 2 dias" — frescor aproximado da última coleta. */
 export function haQuantoTempo(iso: string | null): string | null {

@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 
-import { numero } from "@/lib/metricas";
+import { compacto, numero } from "@/lib/metricas";
 import type { CelulaCalorPainel, MixFormato } from "@/lib/painel.tipos";
 
 const DIAS = ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"];
@@ -36,7 +36,7 @@ export function JanelaPublicacao({
       <h2 className="rotulo mb-1">Melhores janelas</h2>
       <p className="mb-3 text-xs text-muted">
         {melhor && melhor.alcanceMedio
-          ? `Pico em ${DIAS[melhor.dia]} às ${FAIXAS[melhor.faixa]} — ${numero(melhor.alcanceMedio)} de alcance médio.`
+          ? `Pico em ${DIAS[melhor.dia]} às ${FAIXAS[melhor.faixa]} — ${compacto(melhor.alcanceMedio)} de alcance médio.`
           : "Sem leituras suficientes para cruzar dia e horário."}
       </p>
       <div className="grid grid-cols-[2rem_repeat(8,minmax(0,1fr))] gap-1">
@@ -60,7 +60,7 @@ export function JanelaPublicacao({
                   key={`${dia}-${faixa}`}
                   title={
                     c?.n
-                      ? `${DIAS[dia]} ${FAIXAS[faixa]} · ${c.n} post(s) · ${numero(v)} alcance médio`
+                      ? `${DIAS[dia]} ${FAIXAS[faixa]} · ${c.n} post(s) · ${compacto(v)} alcance médio`
                       : `${DIAS[dia]} ${FAIXAS[faixa]} · sem posts`
                   }
                   className="h-5 rounded-[.25rem] border border-line"
@@ -99,7 +99,7 @@ export function MixDeFormatos({ mix }: { mix: MixFormato[] }) {
                     {ROTULO_FORMATO[m.formato] ?? m.formato}
                   </span>
                   <span className="numero shrink-0 text-muted">
-                    {m.posts} · {numero(m.alcance)}
+                    {m.posts} · {compacto(m.alcance)}
                     {m.rxMedio !== null ? ` · ${numero(m.rxMedio, 2)}×` : ""}
                   </span>
                 </div>

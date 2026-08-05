@@ -1,4 +1,4 @@
-import { numero, type ItemDimensao } from "@/lib/metricas";
+import { compacto, numero, type ItemDimensao } from "@/lib/metricas";
 
 function corRx(rx: number | null) {
   if (rx === null) return "var(--muted)";
@@ -51,7 +51,7 @@ export function BarrasDimensao({
                     <span className="truncate font-medium text-corpo">{i.rotulo}</span>
                     <span className="flex shrink-0 items-center gap-2">
                       <span className="text-[.68rem] text-muted">
-                        {i.n} {i.n === 1 ? "post" : "posts"} · {numero(i.alcanceMedio)} alc.
+                        {i.n} {i.n === 1 ? "post" : "posts"} · {compacto(i.alcanceMedio)} alc.
                       </span>
                       <span className={"numero text-[.7rem] " + classe(i.rxMedio)}>
                         {i.rxMedio === null ? "—" : `${numero(i.rxMedio, 2)}×`}

@@ -1,7 +1,7 @@
 import type React from "react";
 
 import { EstadoVazio } from "@/components/ui/EstadoVazio";
-import { numero, type ItemDimensao } from "@/lib/metricas";
+import { compacto, numero, type ItemDimensao } from "@/lib/metricas";
 
 export function ComparativoContas({
   contas,
@@ -51,7 +51,7 @@ export function ComparativoContas({
                   <span>
                     {c.n} {c.n === 1 ? "post" : "posts"}
                   </span>
-                  <span className="numero text-corpo">{numero(c.alcance)} alcance</span>
+                  <span className="numero text-corpo">{compacto(c.alcance)} alcance</span>
                   <span className="numero text-corpo">
                     {numero(c.engajamento, 2)}% eng.
                   </span>

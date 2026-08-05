@@ -1,3 +1,4 @@
+import { compacto } from "@/lib/metricas";
 import {
   Area,
   AreaChart,
@@ -75,7 +76,7 @@ export function GraficoAlcance({
               }}
               labelStyle={{ color: "#8294ab" }}
               itemStyle={{ color: "#e9eef7" }}
-              formatter={(v: number) => [v.toLocaleString("pt-BR"), "Alcance"]}
+              formatter={(v: number) => [compacto(v), "Alcance"]}
             />
             <Area
               type="monotone"

@@ -309,6 +309,7 @@ export function Metricas() {
                     destaque
                     icone={<Eye size={13} />}
                     rotulo="Alcance total"
+                    compactar
                     valor={k.alcance}
                     valorAnterior={anterior(ka?.alcance)}
                     serie={m.sparkAlcance}
@@ -319,6 +320,7 @@ export function Metricas() {
                     familia="alcance"
                     icone={<Layers size={13} />}
                     rotulo="Impressões"
+                    compactar
                     valor={t.impressoes}
                     valorAnterior={anterior(ta?.impressoes)}
                     {...extras}
@@ -328,6 +330,7 @@ export function Metricas() {
                     familia="alcance"
                     icone={<Sparkle size={13} />}
                     rotulo="Impressões por post"
+                    compactar
                     valor={t.impressoesMedia}
                     valorAnterior={anterior(ta?.impressoesMedia)}
                     {...extras}
@@ -348,6 +351,7 @@ export function Metricas() {
                     destaque
                     icone={<Zap size={13} />}
                     rotulo="Interações"
+                    compactar
                     valor={t.interacoes}
                     valorAnterior={anterior(ta?.interacoes)}
                     serie={m.sparkInteracoes}
@@ -358,6 +362,7 @@ export function Metricas() {
                     familia="interacao"
                     icone={<Heart size={13} />}
                     rotulo="Curtidas"
+                    compactar
                     valor={k.likes}
                     valorAnterior={anterior(ka?.likes)}
                     participacao={parte(k.likes)}
@@ -368,6 +373,7 @@ export function Metricas() {
                     familia="interacao"
                     icone={<MessageCircle size={13} />}
                     rotulo="Comentários"
+                    compactar
                     valor={k.comments}
                     valorAnterior={anterior(ka?.comments)}
                     participacao={parte(k.comments)}
@@ -378,6 +384,7 @@ export function Metricas() {
                     familia="interacao"
                     icone={<Bookmark size={13} />}
                     rotulo="Salvamentos"
+                    compactar
                     valor={k.saves}
                     valorAnterior={anterior(ka?.saves)}
                     participacao={parte(k.saves)}
@@ -388,6 +395,7 @@ export function Metricas() {
                     familia="interacao"
                     icone={<Send size={13} />}
                     rotulo="Compartilhamentos"
+                    compactar
                     valor={k.shares}
                     valorAnterior={anterior(ka?.shares)}
                     participacao={parte(k.shares)}

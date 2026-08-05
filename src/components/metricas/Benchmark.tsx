@@ -16,7 +16,7 @@ import {
   recomendacoes,
   termometros,
 } from "@/lib/benchmark";
-import { numero, type Baseline, type ItemDimensao, type LinhaMetrica, type Taxas } from "@/lib/metricas";
+import { compacto, numero, type Baseline, type ItemDimensao, type LinhaMetrica, type Taxas } from "@/lib/metricas";
 
 
 function Pill({ nome }: { nome: ReturnType<typeof faixaRx> }) {
@@ -115,7 +115,7 @@ export function Benchmark({
                 {porConta.map((c) => (
                   <tr key={c.chave} className="border-t border-line">
                     <td className="py-2 pr-2 text-corpo">@{c.rotulo}</td>
-                    <td className="numero py-2 text-right text-txt">{numero(c.alcanceMedio)}</td>
+                    <td className="numero py-2 text-right text-txt">{compacto(c.alcanceMedio)}</td>
                     <td className="py-2 text-right">
                       <span className="numero text-txt">
                         {c.engajamento === null ? "—" : `${numero(c.engajamento, 2)}%`}

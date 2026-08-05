@@ -1,4 +1,4 @@
-import { numero } from "@/lib/metricas";
+import { compacto, numero } from "@/lib/metricas";
 
 export type FatiaComposicao = { rotulo: string; valor: number; cor: string };
 
@@ -20,7 +20,7 @@ export function BarraComposicao({
     <div className="cartao p-4">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <span className="rotulo">{titulo}</span>
-        <span className="numero text-sm text-txt">{numero(total)}</span>
+        <span className="numero text-sm text-txt">{compacto(total)}</span>
       </div>
       {descricao ? <p className="mt-1 text-xs text-muted">{descricao}</p> : null}
 
@@ -58,7 +58,7 @@ export function BarraComposicao({
                   {total > 0 ? ((f.valor / total) * 100).toFixed(1) : "0"}
                   <span className="text-corpo">%</span>
                   <span className="ml-1.5 text-[.7rem] font-normal text-muted">
-                    {numero(f.valor)}
+                    {compacto(f.valor)}
                   </span>
                 </p>
               </li>

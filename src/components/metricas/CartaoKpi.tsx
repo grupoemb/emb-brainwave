@@ -4,7 +4,7 @@ import { HelpCircle, Minus, TrendingDown, TrendingUp } from "lucide-react";
 import { Esqueleto } from "@/components/conteudo/Esqueleto";
 import { ACENTO, type Familia } from "@/components/metricas/GrupoKpis";
 import { Sparkline } from "@/components/metricas/Sparkline";
-import { classeVariacao, numero, textoVariacao, variacao } from "@/lib/metricas";
+import { classeVariacao, compacto, numero, textoVariacao, variacao } from "@/lib/metricas";
 
 function reduzido() {
   return typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -52,6 +52,7 @@ export function CartaoKpi({
   casas = 0,
   formula,
   carregando,
+  compactar = false,
   valorAnterior,
   textoAnterior,
   comparando,
@@ -75,6 +76,8 @@ export function CartaoKpi({
   formula: string;
   carregando?: boolean;
   /** valor do período comparado (undefined = comparação desligada) */
+  /** formata o valor como k/mi (volumes: alcance, views, salvamentos) */
+  compactar?: boolean;
   valorAnterior?: number | null | undefined;
   textoAnterior?: string | null | undefined;
   comparando?: boolean | undefined;
@@ -110,10 +113,12 @@ export function CartaoKpi({
     <span className="text-muted">—</span>
   ) : (
     <>
-      {animado.toLocaleString("pt-BR", {
-        minimumFractionDigits: casas,
-        maximumFractionDigits: casas,
-      })}
+      {compactar
+        ? compacto(animado)
+        : animado.toLocaleString("pt-BR", {
+            minimumFractionDigits: casas,
+            maximumFractionDigits: casas,
+          })}
       {sufixo ? <span className="text-corpo">{sufixo}</span> : null}
     </>
   );
@@ -188,7 +193,7 @@ export function CartaoKpi({
                 {textoVariacao(delta)}
               </span>
               <span className="text-muted">
-                antes {numero(valorAnterior ?? null, casas)}
+                antes {compactar ? compacto(valorAnterior ?? null) : numero(valorAnterior ?? null, casas)}
                 {valorAnterior !== null && sufixo ? sufixo : ""}
               </span>
             </>

@@ -8,7 +8,7 @@ import { EstadoVazio } from "@/components/ui/EstadoVazio";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { corDoCanal, type Canal } from "@/lib/conteudo";
 import { GLOSSARIO } from "@/lib/glossario";
-import { numero } from "@/lib/metricas";
+import { compacto, numero } from "@/lib/metricas";
 import type { ContaPainel } from "@/lib/painel.tipos";
 
 const BRONZE = { cor: "#cd8b57", fundo: "rgba(205,139,87,.14)", rotulo: "3º lugar" };
@@ -109,13 +109,13 @@ function CartaoConta({
       <div className="grid grid-cols-2 gap-x-3 gap-y-2.5">
         <Metrica
           rotulo="Alcance"
-          valor={conta.alcance === null ? "—" : numero(conta.alcance)}
+          valor={conta.alcance === null ? "—" : compacto(conta.alcance)}
           dica={GLOSSARIO.alcancePeriodo}
           destaque
         />
         <Metrica
           rotulo="Média/post"
-          valor={conta.alcanceMedio === null ? "—" : numero(conta.alcanceMedio)}
+          valor={conta.alcanceMedio === null ? "—" : compacto(conta.alcanceMedio)}
           dica={GLOSSARIO.alcanceMedio}
           destaque
         />
@@ -129,8 +129,8 @@ function CartaoConta({
           valor={conta.consistencia === null ? "—" : `${conta.consistencia}%`}
           dica={GLOSSARIO.consistencia}
         />
-        <Metrica rotulo="Salvos" valor={numero(conta.saves)} />
-        <Metrica rotulo="Compart." valor={numero(conta.shares)} />
+        <Metrica rotulo="Salvos" valor={compacto(conta.saves)} />
+        <Metrica rotulo="Compart." valor={compacto(conta.shares)} />
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
@@ -188,7 +188,7 @@ function CartaoConta({
           <span className="rotulo shrink-0 text-[.6rem]">top</span>
           <span className="flex-1 truncate text-xs text-corpo">{conta.melhorPost.title}</span>
           <span className="numero shrink-0 text-xs text-muted">
-            {numero(conta.melhorPost.alcance)}
+            {compacto(conta.melhorPost.alcance)}
           </span>
           <span className={classeRxPill(conta.melhorPost.rx) + " numero shrink-0"}>
             {conta.melhorPost.rx === null ? "—" : `${numero(conta.melhorPost.rx, 2)}×`}
@@ -227,7 +227,7 @@ export function Podio({ contas, dias }: { contas: ContaPainel[]; dias: number })
               <AvatarConta conta={c.conta} url={c.avatarUrl} tamanho={26} />
               <span className="flex-1 truncate text-sm text-corpo">@{c.conta}</span>
               <span className="numero shrink-0 text-xs text-muted">{c.posts} posts</span>
-              <span className="numero shrink-0 text-sm">{numero(c.alcance)}</span>
+              <span className="numero shrink-0 text-sm">{compacto(c.alcance)}</span>
             </div>
           ))}
         </div>

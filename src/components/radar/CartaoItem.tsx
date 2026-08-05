@@ -11,7 +11,7 @@ import {
   ROTULO_GANCHO,
   type ItemBiblioteca,
 } from "@/lib/biblioteca";
-import { numero } from "@/lib/metricas";
+import { compacto, numero } from "@/lib/metricas";
 
 function Chip({ children }: { children: React.ReactNode }) {
   return (
@@ -89,7 +89,7 @@ export function CartaoItem({ item, podeRemover }: { item: ItemBiblioteca; podeRe
 
         <div className="flex items-center gap-4">
           <span className="numero text-xs text-corpo">
-            {numero(item.views)} <span className="text-muted">views</span>
+            {compacto(item.views)} <span className="text-muted">views</span>
           </span>
           <span className="numero text-xs text-corpo">
             {numero(item.comments)} <span className="text-muted">coment.</span>

@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { ArrowDown, ArrowUp, Filter, Flame, Search } from "lucide-react";
 
-import { classeRx, ehOutlier, numero, rotuloFormato, type LinhaMetrica } from "@/lib/metricas";
+import { compacto, classeRx, ehOutlier, numero, rotuloFormato, type LinhaMetrica } from "@/lib/metricas";
 
 function data(iso: string | null) {
   if (!iso) return "—";
@@ -237,14 +237,14 @@ export function TabelaPosts({
                   <td className="numero py-2.5 pr-3 text-right text-corpo">
                     {data(l.published_at)}
                   </td>
-                  <td className="numero py-2.5 pr-3 text-right text-txt">{numero(l.reach)}</td>
+                  <td className="numero py-2.5 pr-3 text-right text-txt">{compacto(l.reach)}</td>
                   <td className="numero py-2.5 pr-3 text-right text-corpo">
-                    {numero(l.impressions)}
+                    {compacto(l.impressions)}
                   </td>
-                  <td className="numero py-2.5 pr-3 text-right text-txt">{numero(l.saves)}</td>
-                  <td className="numero py-2.5 pr-3 text-right text-txt">{numero(l.shares)}</td>
-                  <td className="numero py-2.5 pr-3 text-right text-corpo">{numero(l.comments)}</td>
-                  <td className="numero py-2.5 pr-3 text-right text-corpo">{numero(l.likes)}</td>
+                  <td className="numero py-2.5 pr-3 text-right text-txt">{compacto(l.saves)}</td>
+                  <td className="numero py-2.5 pr-3 text-right text-txt">{compacto(l.shares)}</td>
+                  <td className="numero py-2.5 pr-3 text-right text-corpo">{compacto(l.comments)}</td>
+                  <td className="numero py-2.5 pr-3 text-right text-corpo">{compacto(l.likes)}</td>
                   <td className="py-2.5 text-right">
                     <span className="inline-flex items-center justify-end gap-1">
                       <span className="hidden h-1.5 w-14 overflow-hidden rounded-full bg-white/6 sm:block">
