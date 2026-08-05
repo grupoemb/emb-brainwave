@@ -30,6 +30,7 @@ import { EstadoVazio } from "@/components/ui/EstadoVazio";
 
 import { BarraComposicao } from "@/components/metricas/BarraComposicao";
 import { BarrasDimensao } from "@/components/metricas/BarrasDimensao";
+import { PainelDrill } from "@/components/metricas/PainelDrill";
 import { Benchmark } from "@/components/metricas/Benchmark";
 import { CartaoKpi } from "@/components/metricas/CartaoKpi";
 import { ComparativoContas } from "@/components/metricas/ComparativoContas";
@@ -80,6 +81,14 @@ export function Metricas() {
   const [acumulado, setAcumulado] = useState(false);
   const [modo, setModo] = useState<"top" | "piores">("top");
   const [soOutliers, setSoOutliers] = useState(false);
+  const [drill, setDrill] = useState<Recorte | null>(null);
+  const [recorteTabela, setRecorteTabela] = useState<Recorte | null>(null);
+
+  const verNaTabela = (r: Recorte) => {
+    setRecorteTabela(r);
+    setDrill(null);
+    setAba("conteudo");
+  };
 
   const aba: Aba = ehAba(abaUrl) ? abaUrl : "geral";
   const setAba = (a: Aba) => {
@@ -458,6 +467,7 @@ export function Metricas() {
                     dados={m.serie}
                     acumulado={acumulado}
                     onToggle={() => setAcumulado((v) => !v)}
+                    aoSelecionar={(dia) => setDrill({ tipo: "dia", dia })}
                   />
                   <RadarDesempenho
                     taxas={t}
@@ -482,18 +492,27 @@ export function Metricas() {
           {aba === "conteudo" ? (
             <>
               <div className="secao-entrada grid gap-4 lg:grid-cols-3">
-                <DonutFormatos dados={m.formatos} />
+                <DonutFormatos
+                  dados={m.formatos}
+                  aoSelecionar={(nome) => setDrill({ tipo: "formatoNome", nome })}
+                />
                 <div className="grid gap-4 lg:col-span-2">
                   <BarrasDimensao
                     titulo="Desempenho por formato"
                     descricao="rx médio de cada formato — acima de 1,30× está performando."
                     itens={m.porFormato}
+                    aoSelecionar={(i) =>
+                      setDrill({ tipo: "dimensao", dimensao: "format", chave: i.chave, rotulo: i.rotulo })
+                    }
                   />
                   <BarrasDimensao
                     titulo="Desempenho por gancho"
                     descricao="Qual abertura de conteúdo entrega mais alcance relativo."
                     itens={m.porGancho}
                     vazio="Nenhum post do período tem gancho classificado."
+                    aoSelecionar={(i) =>
+                      setDrill({ tipo: "dimensao", dimensao: "hook", chave: i.chave, rotulo: i.rotulo })
+                    }
                   />
                 </div>
               </div>
@@ -504,19 +523,27 @@ export function Metricas() {
                   descricao="Como cada pilar editorial performa contra a mediana."
                   itens={porPilar}
                   vazio="Nenhum post do período tem pilar definido."
-                />
+                  aoSelecionar={(i) =>
+                      setDrill({ tipo: "dimensao", dimensao: "pillar_id", chave: i.chave, rotulo: i.rotulo })
+                    }
+                  />
                 <BarrasDimensao
                   titulo="Desempenho por tema"
                   descricao="Temas recorrentes ordenados por rx médio."
                   itens={m.porTema}
                   vazio="Nenhum post do período tem tema classificado."
                   limite={8}
-                />
+                  aoSelecionar={(i) =>
+                      setDrill({ tipo: "dimensao", dimensao: "theme", chave: i.chave, rotulo: i.rotulo })
+                    }
+                  />
               </div>
 
               <div className="secao-entrada">
                 <TabelaPosts
-                  linhas={m.linhas}
+                  linhas={recorteTabela ? filtrarPorRecorte(m.linhas, recorteTabela) : m.linhas}
+                  recorte={recorteTabela ? rotuloRecorte(recorteTabela) : null}
+                  aoLimparRecorte={() => setRecorteTabela(null)}
                   modo={modo}
                   setModo={setModo}
                   soOutliers={soOutliers}
@@ -547,7 +574,12 @@ export function Metricas() {
             ) : (
               <>
                 <div className="secao-entrada">
-                  <MapaDeCalor grade={m.calor.grade} max={m.calor.max} melhor={m.calor.melhor} />
+                  <MapaDeCalor
+                    grade={m.calor.grade}
+                    max={m.calor.max}
+                    melhor={m.calor.melhor}
+                    aoSelecionar={(c) => setDrill({ tipo: "calor", dia: c.dia, faixa: c.faixa })}
+                  />
                 </div>
                 <div className="secao-entrada">
                   <RitmoPublicacao cadencia={m.cadencia} maturacao={m.maturacao} />
@@ -558,6 +590,9 @@ export function Metricas() {
                     descricao="Educar, vender, engajar: o que a audiência responde melhor."
                     itens={m.porIntencao}
                     vazio="Nenhum post do período tem intenção classificada."
+                    aoSelecionar={(i) =>
+                      setDrill({ tipo: "dimensao", dimensao: "intent", chave: i.chave, rotulo: i.rotulo })
+                    }
                   />
                 </div>
               </>
@@ -580,13 +615,21 @@ export function Metricas() {
               </div>
             ) : (
               <div className="secao-entrada space-y-4">
-                <ComparativoContas contas={m.porConta} />
+                <ComparativoContas
+                  contas={m.porConta}
+                  aoSelecionar={(c) =>
+                    setDrill({ tipo: "dimensao", dimensao: "conta", chave: c.chave, rotulo: c.rotulo })
+                  }
+                />
                 <BarrasDimensao
                   titulo="rx médio por conta"
                   descricao="Performance relativa à mediana do formato, conta a conta."
                   itens={m.porConta}
                   vazio="Nenhuma conta identificada nos posts do período."
-                />
+                  aoSelecionar={(i) =>
+                      setDrill({ tipo: "dimensao", dimensao: "conta", chave: i.chave, rotulo: i.rotulo })
+                    }
+                  />
               </div>
             )
           ) : null}
