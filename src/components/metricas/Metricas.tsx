@@ -55,7 +55,12 @@ import { TrilhaMetricas } from "@/components/metricas/TrilhaMetricas";
 
 import { TabelaPosts } from "@/components/metricas/TabelaPosts";
 import { FaixaDeContexto } from "@/components/painel/FaixaDeContexto";
-import { rotuloIntervalo } from "@/lib/metricas";
+import {
+  filtrarPorRecorte,
+  rotuloIntervalo,
+  rotuloRecorte,
+  type Recorte,
+} from "@/lib/metricas";
 import { usePilares } from "@/hooks/useConteudo";
 import { useContasConectadas, useMetricas, type Periodo } from "@/hooks/useMetricas";
 
