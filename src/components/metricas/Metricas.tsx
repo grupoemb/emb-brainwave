@@ -130,12 +130,14 @@ export function Metricas() {
 
   return (
     <Revelar className="space-y-4">
+      {m.carregando ? null : <TrilhaMetricas aba={abaAtual.rotulo} dias={diasUrl} origem={origem} />}
       <CabecalhoTela
         icone={<BarChart3 size={17} />}
         titulo="Métricas"
         descricao="Desempenho das contas, ritmo de publicação e comparação com o mercado."
       />
       {faixa}
+
 
       <div className="secao-entrada sticky top-14 z-20 -mx-4 border-b border-line bg-bg/92 px-4 py-2 backdrop-blur lg:-mx-6 lg:px-6">
         <FiltrosMetricas
