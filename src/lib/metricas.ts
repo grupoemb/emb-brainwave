@@ -704,3 +704,182 @@ export function resumoRecorte(linhas: LinhaMetrica[]) {
   };
 }
 export type ResumoRecorte = ReturnType<typeof resumoRecorte>;
+
+// ===================== Catálogo de métricas da tabela de posts =====================
+
+export type ChaveMetrica =
+  | "published_at"
+  | "reach"
+  | "impressions"
+  | "saves"
+  | "shares"
+  | "comments"
+  | "likes"
+  | "followers_delta"
+  | "clicks"
+  | "retention_pct"
+  | "watch_time_s"
+  | "eng_pct"
+  | "saves_pct"
+  | "shares_pct"
+  | "comments_pct"
+  | "frequencia"
+  | "rx";
+
+export type DefMetrica = {
+  chave: ChaveMetrica;
+  rotulo: string;
+  grupo: "identificacao" | "alcance" | "interacao" | "desempenho";
+  /** Métricas ainda não coletadas pela integração atual. */
+  indisponivel?: boolean;
+  valor: (l: LinhaMetrica) => number | null;
+  formata: (v: number | null) => string;
+};
+
+const taxa = (num: number | null, den: number | null) =>
+  num === null || den === null || den <= 0 ? null : Number(((num / den) * 100).toFixed(2));
+
+const fmtNum = (v: number | null) => (v === null ? "—" : compacto(v));
+const fmtPct = (v: number | null) => (v === null ? "—" : `${numero(v, 1)}%`);
+
+export const METRICAS_TABELA: DefMetrica[] = [
+  {
+    chave: "published_at",
+    rotulo: "Data",
+    grupo: "identificacao",
+    valor: (l) => (l.published_at ? new Date(l.published_at).getTime() : null),
+    formata: (v) =>
+      v === null
+        ? "—"
+        : new Date(v).toLocaleDateString("pt-BR", {
+            day: "2-digit",
+            month: "2-digit",
+            timeZone: "America/Sao_Paulo",
+          }),
+  },
+  { chave: "reach", rotulo: "Alcance", grupo: "alcance", valor: (l) => l.reach, formata: fmtNum },
+  {
+    chave: "impressions",
+    rotulo: "Impressões",
+    grupo: "alcance",
+    valor: (l) => l.impressions,
+    formata: fmtNum,
+  },
+  {
+    chave: "frequencia",
+    rotulo: "Frequência",
+    grupo: "alcance",
+    valor: (l) =>
+      l.impressions === null || !l.reach ? null : Number((l.impressions / l.reach).toFixed(2)),
+    formata: (v) => (v === null ? "—" : `${numero(v, 2)}×`),
+  },
+  { chave: "saves", rotulo: "Salvos", grupo: "interacao", valor: (l) => l.saves, formata: fmtNum },
+  { chave: "shares", rotulo: "Shares", grupo: "interacao", valor: (l) => l.shares, formata: fmtNum },
+  {
+    chave: "comments",
+    rotulo: "Coment.",
+    grupo: "interacao",
+    valor: (l) => l.comments,
+    formata: fmtNum,
+  },
+  { chave: "likes", rotulo: "Curtidas", grupo: "interacao", valor: (l) => l.likes, formata: fmtNum },
+  {
+    chave: "eng_pct",
+    rotulo: "Engajamento %",
+    grupo: "desempenho",
+    valor: (l) => {
+      const inter = [l.likes, l.comments, l.saves, l.shares];
+      if (inter.every((v) => v === null)) return null;
+      return taxa(
+        inter.reduce<number>((s, v) => s + (v ?? 0), 0),
+        l.reach,
+      );
+    },
+    formata: fmtPct,
+  },
+  {
+    chave: "saves_pct",
+    rotulo: "Salvos %",
+    grupo: "desempenho",
+    valor: (l) => taxa(l.saves, l.reach),
+    formata: fmtPct,
+  },
+  {
+    chave: "shares_pct",
+    rotulo: "Shares %",
+    grupo: "desempenho",
+    valor: (l) => taxa(l.shares, l.reach),
+    formata: fmtPct,
+  },
+  {
+    chave: "comments_pct",
+    rotulo: "Coment. %",
+    grupo: "desempenho",
+    valor: (l) => taxa(l.comments, l.reach),
+    formata: fmtPct,
+  },
+  {
+    chave: "followers_delta",
+    rotulo: "Seguidores",
+    grupo: "desempenho",
+    indisponivel: true,
+    valor: (l) => l.followers_delta,
+    formata: (v) => (v === null ? "—" : `${v > 0 ? "+" : ""}${compacto(v)}`),
+  },
+  {
+    chave: "clicks",
+    rotulo: "Cliques",
+    grupo: "desempenho",
+    indisponivel: true,
+    valor: (l) => l.clicks,
+    formata: fmtNum,
+  },
+  {
+    chave: "retention_pct",
+    rotulo: "Retenção",
+    grupo: "desempenho",
+    indisponivel: true,
+    valor: (l) => l.retention_pct,
+    formata: fmtPct,
+  },
+  {
+    chave: "watch_time_s",
+    rotulo: "Tempo de exib.",
+    grupo: "desempenho",
+    indisponivel: true,
+    valor: (l) => l.watch_time_s,
+    formata: (v) => (v === null ? "—" : `${compacto(v)}s`),
+  },
+  {
+    chave: "rx",
+    rotulo: "rx",
+    grupo: "desempenho",
+    valor: (l) => l.rx,
+    formata: (v) => (v === null ? "—" : `${numero(v, 2)}×`),
+  },
+];
+
+export const METRICA_POR_CHAVE = new Map(METRICAS_TABELA.map((m) => [m.chave, m]));
+
+export function defMetrica(chave: ChaveMetrica): DefMetrica {
+  return METRICA_POR_CHAVE.get(chave) ?? METRICAS_TABELA[0]!;
+}
+
+export type FaixaRx = "todas" | "acima" | "media" | "abaixo" | "outlier";
+
+export const FAIXAS_RX: { valor: FaixaRx; rotulo: string }[] = [
+  { valor: "todas", rotulo: "Todas as faixas" },
+  { valor: "acima", rotulo: "Acima da média (≥ 1,3×)" },
+  { valor: "media", rotulo: "Na média (0,7×–1,3×)" },
+  { valor: "abaixo", rotulo: "Abaixo (< 0,7×)" },
+  { valor: "outlier", rotulo: "Fora da curva (≥ 2×)" },
+];
+
+export function naFaixaRx(rx: number | null, faixa: FaixaRx) {
+  if (faixa === "todas") return true;
+  if (rx === null) return false;
+  if (faixa === "acima") return rx >= 1.3;
+  if (faixa === "media") return rx >= 0.7 && rx < 1.3;
+  if (faixa === "abaixo") return rx < 0.7;
+  return rx >= 2;
+}
