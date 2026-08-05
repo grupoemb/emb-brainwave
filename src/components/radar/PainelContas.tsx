@@ -17,7 +17,7 @@ import { useContas } from "@/hooks/useContas";
 import { useRanking } from "@/hooks/useRanking";
 import { useTopReels } from "@/hooks/useTopReels";
 import { haQuantoTempo } from "@/lib/contas";
-import { numero } from "@/lib/metricas";
+import { compacto, numero } from "@/lib/metricas";
 import {
   alavancaDe,
   inteligenciaRapida,
@@ -27,9 +27,47 @@ import {
   topPorPerfil,
 } from "@/lib/ranking";
 
-const DIAS = 90;
+const PERIODOS = [7, 14, 30, 90];
 
 const rota = getRouteApi("/_authenticated/radar");
+
+function Segmented<T extends string | number | null>({
+  rotulo,
+  opcoes,
+  valor,
+  aoMudar,
+}: {
+  rotulo: string;
+  opcoes: { chave: string; texto: string; valor: T }[];
+  valor: T;
+  aoMudar: (v: T) => void;
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="rotulo text-[.62rem]">{rotulo}</span>
+      <div className="flex flex-wrap gap-1 rounded-[.6rem] border border-line p-1">
+        {opcoes.map((o) => {
+          const ativo = o.valor === valor;
+          return (
+            <button
+              key={o.chave}
+              type="button"
+              onClick={() => aoMudar(o.valor)}
+              aria-pressed={ativo}
+              className={
+                "rounded-[.45rem] px-2.5 py-1 text-xs transition-colors " +
+                (ativo ? "bg-azure/18 text-azureClaro" : "text-muted hover:bg-white/6")
+              }
+            >
+              {o.texto}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 
 
 function CartaoKpiSimples({ rotulo, valor }: { rotulo: string; valor: string }) {
@@ -63,7 +101,10 @@ function MiniStat({
 export function PainelContas() {
   const { data, isPending, error } = useContas();
   const top = useTopReels(12);
-  const ranking = useRanking(DIAS);
+  const [dias, setDias] = useState(90);
+  const [perfil, setPerfil] = useState<string | null>(null);
+  const ranking = useRanking(dias, perfil);
+
   const [aberta, setAberta] = useState<string | null>(null);
   const [visaoAberta, setVisaoAberta] = useState(false);
 
@@ -97,7 +138,15 @@ export function PainelContas() {
 
   const melhorAlavanca = alavancaDe(inteligencia.alavanca);
 
-
+  const media = (vs: (number | null)[]) => {
+    const l = vs.filter((v): v is number => v !== null && Number.isFinite(v));
+    if (l.length === 0) return null;
+    return l.reduce((a, b) => a + b, 0) / l.length;
+  };
+  const viewsMedias = media(reels.map((r) => r.plays));
+  const alcanceMedio = media(reels.map((r) => r.reach));
+  const ganchoMedio = media(reels.map((r) => r.hook_pct));
+  const carregando = ranking.isPending;
 
   return (
     <div className="space-y-5">
@@ -106,18 +155,54 @@ export function PainelContas() {
         titulo="Suas contas"
         descricao={
           frescor
-            ? `Ranking de reels dos últimos ${DIAS} dias · coletado há ${frescor}.`
-            : `Ranking de reels dos últimos ${DIAS} dias das contas próprias.`
+            ? `Ranking de reels dos últimos ${dias} dias · coletado há ${frescor}.`
+            : `Ranking de reels dos últimos ${dias} dias das contas próprias.`
         }
       />
 
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+        <Segmented
+          rotulo="Período"
+          valor={dias}
+          aoMudar={setDias}
+          opcoes={PERIODOS.map((d) => ({ chave: String(d), texto: `${d}d`, valor: d }))}
+        />
+        <Segmented<string | null>
+          rotulo="Perfil"
+          valor={perfil}
+          aoMudar={setPerfil}
+          opcoes={[
+            { chave: "todas", texto: "Todas", valor: null },
+            ...contas.map((c) => ({
+              chave: c.handle,
+              texto: `@${c.handle}`,
+              valor: c.handle as string | null,
+            })),
+          ]}
+        />
+      </div>
+
       {/* 1 · KPIs */}
       <div className="space-y-2">
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <KpiSeguidores />
           <CartaoKpiSimples
             rotulo="Reels no período"
-            valor={ranking.isPending ? "…" : numero(reels.length)}
+            valor={carregando ? "…" : numero(reels.length)}
+          />
+          <CartaoKpiSimples
+            rotulo="Views médias"
+            valor={carregando ? "…" : viewsMedias === null ? "—" : compacto(Math.round(viewsMedias))}
+          />
+          <CartaoKpiSimples
+            rotulo="Alcance médio"
+            valor={
+              carregando ? "…" : alcanceMedio === null ? "—" : compacto(Math.round(alcanceMedio))
+            }
+          />
+          <CartaoKpiSimples
+            rotulo="Gancho 3s médio"
+            valor={carregando ? "…" : ganchoMedio === null ? "—" : `${numero(ganchoMedio, 1)}%`}
           />
           <CartaoKpiSimples
             rotulo="Melhor alavanca"
@@ -131,7 +216,8 @@ export function PainelContas() {
       </div>
 
       {/* 2 · Leitura da semana */}
-      <LeituraSemana dias={DIAS} />
+      <LeituraSemana dias={dias} />
+
 
       {/* 3 · Inteligência rápida */}
       <section className="cartao p-4">
@@ -162,7 +248,10 @@ export function PainelContas() {
       <section className="cartao overflow-hidden">
         <div className="flex items-baseline justify-between gap-3 px-3 py-3">
           <h2 className="text-sm font-bold text-txt">Top 10 do período</h2>
-          <span className="text-xs text-muted">todos os perfis · {DIAS} dias</span>
+          <span className="text-xs text-muted">
+            {perfil ? `@${perfil}` : "todos os perfis"} · {dias} dias
+          </span>
+
         </div>
         {ranking.isPending ? (
           <div className="space-y-2 p-3">
