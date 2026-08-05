@@ -98,11 +98,6 @@ export function BarrasDimensao({
           </p>
         </>
 
-          </ul>
-          <p className="mt-3 text-[.65rem] text-muted">
-            A linha vertical marca 1,00× — a mediana do formato.
-          </p>
-        </>
       )}
     </div>
   );
