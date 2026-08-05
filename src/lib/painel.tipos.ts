@@ -100,12 +100,17 @@ export type MixFormato = {
   rxMedio: number | null;
 };
 
+export type PerfilPainel = { handle: string; avatarUrl: string | null };
+
 export type DadosPainel = {
   nome: string | null;
   ultimaColeta: string | null;
   dias: number;
+  perfis: PerfilPainel[];
+  perfilAtivo: string | null;
   kpis: KpisPainel;
   anterior: KpisPainel | null;
+
   operacao: {
     agendados: number;
     aguardandoAprovacao: number;
@@ -120,6 +125,8 @@ export type DadosPainel = {
   destaques: DestaquesPainel;
   producao: Record<string, number>;
   serie: PontoSerie[];
+  serieAnterior: PontoSerie[];
+
   mixFormatos: MixFormato[];
   calor: { grade: CelulaCalorPainel[]; max: number };
   audiencia: { temas: { texto: string; n: number }[]; perguntas: { texto: string; n: number }[] };
