@@ -25,7 +25,7 @@ export function CartaoConta({ conta, aoAbrir }: { conta: ContaVisao; aoAbrir: ()
       type="button"
       onClick={aoAbrir}
       className="cartao w-full p-5 text-left transition-colors hover:border-azure/40 hover:bg-white/[.03] focus-visible:border-azure/50"
-      title={`Analisar @${conta.handle}`}
+      title={`Ver ranking de @${conta.handle}`}
     >
       <div className="flex items-baseline justify-between gap-2">
         <span className="truncate font-bold text-txt">@{conta.handle}</span>
