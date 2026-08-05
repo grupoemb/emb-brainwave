@@ -18,6 +18,7 @@ import {
   Send,
   Sparkle,
   Target,
+  UserPlus,
   Users,
 
   Zap,
@@ -64,6 +65,8 @@ import {
 } from "@/lib/metricas";
 import { usePilares } from "@/hooks/useConteudo";
 import { useContasConectadas, useMetricas, type Periodo } from "@/hooks/useMetricas";
+import { useSeguidoresPeriodo } from "@/hooks/useSeguidoresPeriodo";
+
 
 /** Título + linha de leitura acima de um bloco analítico. */
 function TituloBloco({ titulo, leitura }: { titulo: string; leitura: string }) {
@@ -139,6 +142,14 @@ export function Metricas() {
   const anterior = (v: number | null | undefined) =>
     comparando ? ((v ?? null) as number | null) : undefined;
   const extras = { comparando: m.comparando, rotuloComparacao: rotuloComp };
+
+  const segAtual = useSeguidoresPeriodo(m.intervalo, m.conta);
+  const segAnterior = useSeguidoresPeriodo(m.intervaloComparado, m.conta);
+  const novosSeguidores = segAtual.dados.delta;
+  const semBaseSeguidores = novosSeguidores === null;
+  const rotuloPeriodo = `${m.dias}d`;
+  const sparkSeguidores = segAtual.dados.serie.map((p) => ({ valor: p.valor }));
+
 
   const totalInteracoes = t.interacoes ?? 0;
   const parte = (v: number | null) =>
@@ -305,7 +316,35 @@ export function Metricas() {
                   descricao="quantas pessoas viram e quantas vezes"
                   colunas="grid-cols-2 lg:grid-cols-4"
                 >
-                  <KpiSeguidores compactoVisual />
+                  <KpiSeguidores
+                    compactoVisual
+                    delta={novosSeguidores}
+                    rotuloDelta={rotuloPeriodo}
+                  />
+                  <CartaoKpi
+                    familia="alcance"
+                    icone={<UserPlus size={13} />}
+                    rotulo="Novos seguidores"
+                    carregando={segAtual.carregando}
+                    {...(semBaseSeguidores
+                      ? {
+                          texto: segAtual.semContas ? null : "coletando",
+                          formula: segAtual.dados.primeiroDia
+                            ? `Histórico de seguidores começou em ${new Date(
+                                `${segAtual.dados.primeiroDia}T12:00:00`,
+                              ).toLocaleDateString("pt-BR")}. São necessários ao menos 2 dias de coleta para calcular o ganho do período.`
+                            : "Sem histórico de seguidores para as contas do recorte no período. O cálculo aparece assim que houver 2 dias de coleta.",
+                        }
+                      : {
+                          valor: novosSeguidores,
+                          valorAnterior: anterior(segAnterior.dados.delta),
+                          serie: sparkSeguidores,
+                          formula:
+                            "Seguidores no último dia do período menos os do primeiro dia com leitura, somando as contas do recorte.",
+                        })}
+                    {...extras}
+                  />
+
                   <CartaoKpi
                     familia="alcance"
                     destaque

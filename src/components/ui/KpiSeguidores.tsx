@@ -4,11 +4,21 @@ import { useFollowers } from "@/hooks/useFollowers";
 import { compacto, numero } from "@/lib/metricas";
 
 /** KPI de seguidores consolidados — padrão dos demais cartões de KPI. */
-export function KpiSeguidores({ compactoVisual = false }: { compactoVisual?: boolean }) {
+export function KpiSeguidores({
+  compactoVisual = false,
+  delta: deltaExterno,
+  rotuloDelta = "7d",
+}: {
+  compactoVisual?: boolean;
+  /** ganho do período selecionado; quando omitido usa a variação de 7 dias */
+  delta?: number | null | undefined;
+  rotuloDelta?: string;
+}) {
   const { data, isPending, error } = useFollowers();
 
   const total = data?.total ?? null;
-  const delta = data?.delta7d ?? null;
+  const delta = deltaExterno !== undefined ? deltaExterno : (data?.delta7d ?? null);
+
 
   return (
     <div className="cartao relative flex min-h-[6.6rem] flex-col justify-between overflow-hidden p-3.5 transition-colors hover:bg-white/4">
@@ -42,7 +52,7 @@ export function KpiSeguidores({ compactoVisual = false }: { compactoVisual?: boo
         ) : (
           <span className={delta >= 0 ? "text-bom" : "text-ruim"}>
             {delta >= 0 ? "+" : "−"}
-            {compacto(Math.abs(delta))} <span className="text-muted">(7d)</span>
+            {compacto(Math.abs(delta))} <span className="text-muted">({rotuloDelta})</span>
           </span>
         )}
       </p>
